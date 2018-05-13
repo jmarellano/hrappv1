@@ -1,0 +1,64 @@
+{
+    "public": {
+        "config": {
+            "title": "HRAPP"
+        },
+        "emailAccounts": [
+            {
+                "name": "GMail",
+                "imap_host": "imap.gmail.com",
+                "imap_port": "993",
+                "smtp_host": "smtp.gmail.com",
+                "smtp_port": "465",
+                "mailbox_incoming": "INBOX",
+                "mailbox_outgoing": "[Gmail]/Sent Mail"
+            },
+            {
+                "name": "GMail - POP",
+                "pop_host": "pop.gmail.com",
+                "pop_port": "995",
+                "smtp_host": "smtp.gmail.com",
+                "smtp_port": "465",
+                "mailbox_incoming": "INBOX",
+                "mailbox_outgoing": "[Gmail]/Sent Mail"
+            },
+            {
+                "name": "TMQ",
+                "imap_host": "mail.txtmequick.com",
+                "imap_port": "993",
+                "smtp_host": "newhost2.txtmequick.com",
+                "smtp_port": "26",
+                "mailbox_incoming": "INBOX",
+                "mailbox_outgoing": "INBOX.Sent"
+            }
+        ],
+        "collections": {
+            "forms": "forms"
+        }
+    },
+    "config": {
+        "email": {
+            "info": {
+                "from": "Task-Tracker <jmarellano0410@gmail.com>",
+                "siteName": "Task-Tracker",
+                "supportEmail": "jmarellano0410@gmail.com"
+            },
+            "smtp": {
+                "username": "jmarellano0410@gmail.com",
+                "password": "John*080816",
+                "host": "smtp.gmail.com",
+                "port": "587"
+            },
+            "imap": {
+                "username": "jmarellano0410@gmail.com",
+                "password": "John*080816",
+                "host": "imap.gmail.com",
+                "port": "993"
+            }
+        }
+    },
+    "drive": {
+        "acc": "hrapp-660@hrapp-204004.iam.gserviceaccount.com",
+        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9BCX8mIsk7PAE\nMA2pJ9GM4L7D8yZabs9zSbeWMi6xSpBovCxKGTyboqnkwzzlyc/eeFPo1uohcm9Q\ntcbM4fhoHnbPdRq/nQsg1ttBqjo66t+WXx3i/n//YRNbBwyZX6xTxcPh/MguQ36L\nFEv6x0OQN/aE+lg1uWQFW3+PXxNH+jwdf4GdLp/0PC6beQPS5vJiiCN6jIlJad8R\nxgBwbanoyZibNbtbGATFaN7pujEryJjD3t+8XCeEMdBkqMAv3gZU0RprX0KrAd1R\n+VtOM+uffbfruULT/aHICgYotT0sVxd4CSHisi095iXheb5z1ix9kO2j2lluJVtJ\n0ZKdb9FJAgMBAAECggEAQ3SCDAHyknR+ebgef/JGbgTc/7g8RUTLgyTZQGBbWok2\nPTJ+idk00IQ+JnZouscJiKcfpvZf6xzYThD5SDASwzGwC/yKVby5dnhHGkmia1lb\n/uGmHFbgHicqTa+X1vqWWPU4oWNhm2UZ+Y9+SBqp6YOXVkCzj0TAxcqwHN381xAA\npM6TOTx0GpYSzmXOcGJZNCcEYIBVfm56LkmfnCJUn/x4MKTUuBXUE4O/cZMBMYXz\nQZu2beDRC0CjrmEyxYPQG3pEqWuIbSTuwDJQdgt6sXDZDz0sakCoJQ/JIIKgWpkN\nYIMmZqVbyyQmoDIJdrk53ruRySijjOMLcIKoyFq7MwKBgQDvj8Q+OOHZBMwmuYZe\nl8tDrCSYlrx49/7YvrohfbgDVnt8pv29BbyPaGO0dQ5RUefthPBd9gmgqrsehktg\niFgvyPDlr0pGDbtuh2chbtwHIJWzjygJcVGMa0mndpKHWFewscakF8fffAV0Lo5E\nBj68Fi1TD5dImQbwDPRFcD0nYwKBgQDJ/HtNdrmM3P4PubSNmOy91AhOOr1woAHn\nBGkDXz8NhDNjoTJNpVMujYb90Pb/C6w9/f9ePpQUnCk9RVuz6pc6rbcgNbC8+DIl\ndzQlt740F7d5OIbJMFrO8ntbLHGhEULMiNamuzHRMQZgckByYVjNWTRNa+VGyc45\nBkGLB5ryYwKBgQCeoNANc5T5IxgbvFWhZVoPIXnKIGYEpBJ4azLM4nZqn2V9kQYL\nmDTXsQP0hl5Isrekq5aOYVDWtrbY64wWC7J5UdFSBdRktssZ0UcU+Fdx0L3P/EdC\nmWqqVJCc9wLn5DOMqOsj1StgbLsfx4Qkvw3jdbvleDlwtQPHCIznPf8AiQKBgEyA\nelsOmpyFnxxpo771qsUDJ9opWVLs54uOGhAS5RjDd4tGpHzQHz9Ej1pW6RYUX7pj\nF3OklAVyWBRCzsbIFVs+LFvguf34q1WRXojinQGx8eXRyQsua1ZydNJFdQwiM4Cw\nW0xvHiEzRk0FOO+Zez7biHnCYeZ7zMXAXta/nKotAoGAKD0RQ9PbGEycK4S8N8Ml\nrvruZNFvGSf22giEf6T+NEPv+ZqqG5mRBjUULoXWX+Gkmo8+0vHCVlnPvKlwUOFu\n91nn9LnocqOvJJZGrMIttuwkutVeudpb5ewJNxNbrcICvcjuXmcJyD6Fe1P1aRs1\n+UKzpnXI52izfw1HMrKp92k=\n-----END PRIVATE KEY-----\n"
+    }
+}

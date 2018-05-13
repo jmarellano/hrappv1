@@ -1,0 +1,23 @@
+.bg-secondary-custom{
+    background-color: $secondary !important;
+}
+.bg-primary-custom{
+    background-color: $purple !important;
+}
+.nav-link, .close-modal{
+    color: $white;
+}
+.nav-link:hover, .close-modal:hover{
+    color: darken($white, 30%);
+}
+.left-nav, .right-nav{
+    width: 75px;
+    height: calc(100vh - 55px);
+}
+.main{
+    width: calc(100% - 160px);
+}
+.remove:hover{
+    cursor: pointer;
+    color: darken($white, 30%);
+}

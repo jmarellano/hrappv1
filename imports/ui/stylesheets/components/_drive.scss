@@ -1,0 +1,12 @@
+#my-file-selector{
+    display:none;
+}
+#drive .progress{
+    width:300px;
+}
+#drive {
+    width: calc(100% - 150px);
+}
+#drive .nav-link:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,183 @@
+import React, { Component } from 'react';
+import { withTracker } from 'meteor/react-meteor-data';
+import { ROUTES } from '../../api/classes/Const';
+import PropTypes from 'prop-types';
+
+import Register from './auth/Register';
+import Login from './auth/Login';
+import ForgotPassword from './auth/ForgotPassword';
+import ResetPassword from './auth/ResetPassword';
+
+import Messages from './messages/Messages';
+import Drive from './drive/Drive';
+import FormCreator from './forms/FormCreator';
+import FormViewer from './forms/FormViewer';
+import FormData from './forms/FormData';
+import Emails from './emails/Emails';
+import Teams from './teams/Teams';
+
+import Header from './layouts/Header';
+import LeftNav from './layouts/LeftNav';
+import RightNav from './layouts/RightNav';
+
+import NotFound from './NotFound';
+import Loader from './extras/Loader';
+
+class Section extends Component {
+    constructor(props) {
+        super(props);
+    }
+
+    filteredProps() {
+        let component = this.props.component || '';
+        switch (component) {
+            case ROUTES.LOGIN:
+            case ROUTES.REGISTER:
+            case ROUTES.FORGOT_PASSWORD:
+            case ROUTES.RESET_PASSWORD:
+            case ROUTES.VERIFY:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Auth: this.props.Client.Auth,
+                    user: this.props.user
+                };
+                break;
+            case ROUTES.MESSAGES:
+            case ROUTES.EMAILS:
+            case ROUTES.TEAMS:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Account: this.props.Client.Account,
+                    user: this.props.user,
+                    users: this.props.users
+                };
+                break;
+            case ROUTES.DRIVE:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Account: this.props.Client.Account,
+                    Drive: this.props.Client.Drive,
+                    user: this.props.user
+                };
+                break;
+            case ROUTES.FORMS_CREATOR:
+            case ROUTES.FORMS_VIEWER:
+            case ROUTES.FORMS_DATA:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Account: this.props.Client.Account,
+                    Form: this.props.Client.Form,
+                    user: this.props.user
+                };
+                break;
+            default:
+                return { ...this.props };
+        }
+    }
+
+    render() {
+        let component = this.props.component || '';
+        let continueRender = true;
+        if (this.props.isReady) {
+            switch (component) {
+                case ROUTES.LOGIN:
+                case ROUTES.REGISTER:
+                case ROUTES.FORGOT_PASSWORD:
+                case ROUTES.RESET_PASSWORD:
+                case ROUTES.VERIFY:
+                    if (this.props.user) {
+                        this.props.history.replace("/");
+                        continueRender = false;
+                    }
+                    break;
+                case ROUTES.MESSAGES:
+                case ROUTES.DRIVE:
+                case ROUTES.FORMS_CREATOR:
+                case ROUTES.FORMS_VIEWER:
+                case ROUTES.FORMS_DATA:
+                case ROUTES.EMAILS:
+                case ROUTES.TEAMS:
+                    if (!this.props.user) {
+                        this.props.history.replace(ROUTES.LOGIN);
+                        continueRender = false;
+                    }
+                    break;
+            }
+            if (continueRender)
+                switch (component) {
+                    case ROUTES.LOGIN:
+                    case ROUTES.VERIFY:
+                        return (<Login key={component} {...this.filteredProps()} />);
+                    case ROUTES.REGISTER:
+                        return (<Register key={component} {...this.filteredProps()} />);
+                    case ROUTES.FORGOT_PASSWORD:
+                        return (<ForgotPassword key={component} {...this.filteredProps()} />);
+                    case ROUTES.RESET_PASSWORD:
+                        return (<ResetPassword key={component} {...this.filteredProps()} />);
+                    case ROUTES.MESSAGES:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Messages key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    case ROUTES.DRIVE:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Drive key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    case ROUTES.FORMS_CREATOR:
+                        return (<FormCreator key={component} {...this.filteredProps()} />);
+                    case ROUTES.FORMS_VIEWER:
+                        return (<FormViewer key={component} {...this.filteredProps()} />);
+                    case ROUTES.FORMS_DATA:
+                        return (<FormData key={component} {...this.filteredProps()} />);
+                    case ROUTES.FORMS_NOT_FOUND:
+                        return (<NotFound type='FormsNotFound' key={component} {...this.filteredProps()} />);
+                    case ROUTES.EMAILS:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Emails key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    case ROUTES.TEAMS:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Teams key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    default:
+                        return (<NotFound type='RouteNotFound' key={component} {...this.filteredProps()} />);
+                }
+        }
+        return (
+            <div className='container'>
+                <div className='col-md-4 offset-md-4 text-center mt-4'>
+                    <Loader visible={true} large={true}>{this.props.title}</Loader>
+                </div>
+            </div>
+        );
+    }
+}
+
+Section.propTypes = {};
+
+export default withTracker((props) => {
+    return {};
+})(Section);
