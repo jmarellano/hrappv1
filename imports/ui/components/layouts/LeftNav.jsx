@@ -7,6 +7,7 @@ import HeaderNav from './HeaderNav';
 import Client from '../../../api/classes/Client';
 import FormMain from '../forms/FormMain';
 import Category from '../categories/Category';
+import Record from '../statistics/Record';
 
 class LeftNav extends Component {
     constructor(props) {
@@ -30,20 +31,23 @@ class LeftNav extends Component {
                         <a className="nav-link" href="#" onClick={() => { this.props.history.replace(ROUTES.TEAMS); }}><i className="fa fa-2x fa-users" /></a>
                     </HeaderNav>
                     {/* TODO import PST */}
-                    <HeaderNav key={3} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_STATISTICS}>
+                    <HeaderNav key={4} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_STATISTICS}>
                         <a className="nav-link" href="#" onClick={() => { this.props.history.replace(ROUTES.STATISTICS); }}><i className="fa fa-2x fa-bar-chart" /></a>
                     </HeaderNav>
-                    {/* TODO record */}
+                    <HeaderNav key={5} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
+                        <Record {...this.props} Statistics={this.Client.Statistics} />
+                    </HeaderNav>
                     {/* TODO import Date */}
-                    <HeaderNav key={4} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>
+                    <HeaderNav key={7} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>
                         <FormMain {...this.props} Form={this.Client.Form} />
                     </HeaderNav>
-                    <HeaderNav key={5} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_DRIVE}>
+                    <HeaderNav key={8} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_DRIVE}>
                         <a className="nav-link" href="#" onClick={() => { this.props.history.replace(ROUTES.DRIVE); }}><i className="fa fa-2x fa-hdd-o" /></a>
                     </HeaderNav>
-                    <HeaderNav key={6} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_EMAILS}>
+                    <HeaderNav key={9} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_EMAILS}>
                         <a className="nav-link" href="#" onClick={() => { this.props.history.replace(ROUTES.EMAILS); }}><i className="fa fa-2x fa-at" /></a>
                     </HeaderNav>
+                    {/* TODO Global settings */}
                     {/* TODO import Requests */}
                 </ul>
             </div>

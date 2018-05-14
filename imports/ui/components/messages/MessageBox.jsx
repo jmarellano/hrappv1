@@ -1,6 +1,7 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { MESSAGES_TYPE } from '../../../api/classes/Const';
+import { EmailFiles } from '../../../api/files';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
@@ -11,7 +12,16 @@ class MessageBox extends React.Component {
         super(props);
         this.state = {
             messageModal: false,
-            processing: false
+            processing: false,
+            type: MESSAGES_TYPE.EMAIL,
+            contact: '',
+            subject: '',
+            bcc: '',
+            cc: '',
+            sender: props.user.default_email || -1,
+            text: '',
+            files: [],
+            uploading: false,
         };
         this.styleSet = {
             overlay: {
@@ -28,7 +38,53 @@ class MessageBox extends React.Component {
             }
         };
         this.setMessageBox = this.setMessageBox.bind(this);
+        this.sendMessage = this.sendMessage.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.quillRef = null;
+        this.reactQuillRef = null;
+    }
+
+    componentDidMount() {
+        this.attachQuillRefs()
+    }
+
+    componentDidUpdate() {
+        this.attachQuillRefs()
+    }
+
+    attachQuillRefs() {
+        if (!this.reactQuillRef || typeof this.reactQuillRef.getEditor !== 'function') return;
+        this.quillRef = this.reactQuillRef.getEditor();
+    }
+
+    uploadFile(event) {
+        let self = this;
+        if (event.currentTarget.files && event.currentTarget.files[0]) {
+            let file = event.currentTarget.files[0];
+            if (file) {
+                this.setState({ uploading: true });
+                let uploadInstance = EmailFiles.insert({
+                    file: file,
+                    streams: 'dynamic',
+                    chunkSize: 'dynamic',
+                }, false);
+
+                uploadInstance.on('start', function () {
+                });
+
+                uploadInstance.on('uploaded', function (error, fileObj) {
+                    let arr = self.state.files;
+                    fileObj.filename = fileObj.name;
+                    fileObj.path = EmailFiles.link(fileObj);
+                    arr.push(fileObj);
+                    Bert.alert("Successful on adding attachment!", "success", "growl-top-right");
+                    self.setState({ uploading: false, files: arr });
+                    self.attach.value = null;
+                });
+                uploadInstance.start();
+            }
+        }
     }
 
     handleChangeInput(event) {
@@ -44,7 +100,79 @@ class MessageBox extends React.Component {
         this.setState({ messageModal: toggle });
     }
 
+    renderEmails() {
+        return this.props.user.connectedEmails.map((email, index) => {
+            if (email.status === 'pending')
+                return null;
+            return (
+                <option key={index} value={index}>{email.user}</option>
+            );
+        });
+    }
+
+    renderFiles() {
+        return this.state.files.map((item, index) => {
+            return (
+                <span key={index} className="badge badge-secondary text-light mr-1 mt-1">
+                    {item.name} <i className="fa fa-times remove" data-tip="Remove attached file" onClick={this.removeFilesToSend.bind(this, item)} />
+                </span>
+            );
+        });
+    }
+
+    removeFilesToSend(item) {
+        let arr = this.state.files;
+        let arr2 = arr.filter(function (el) {
+            return el !== item;
+        });
+        this.setState({ files: arr2 });
+    }
+
+    sendMessage(e) {
+        e.preventDefault();
+        if (this.state.sender > -1) {
+            let type = parseInt(this.state.type);
+            this.setState({ processing: true });
+            if (type === MESSAGES_TYPE.EMAIL)
+                this.props.Message.sendMessage({
+                    contact: this.state.contact,
+                    subject: this.state.subject,
+                    bcc: this.state.bcc,
+                    cc: this.state.cc,
+                    sender: this.props.user.connectedEmails[this.state.sender],
+                    text: this.quillRef.getText(0),
+                    html: this.state.text,
+                    files: this.state.files,
+                    type
+                }, (err) => {
+                    if (err)
+                        Bert.alert(err.reason, 'danger', 'growl-top-right');
+                    else {
+                        this.setState({
+                            contact: '',
+                            subject: '',
+                            bcc: '',
+                            cc: '',
+                            sender: this.props.user.default_email || -1,
+                            text: '',
+                            files: [],
+                            uploading: false
+                        });
+                        Bert.alert('Message created', 'success', 'growl-top-right');
+                    }
+                    this.setState({ processing: false });
+                });
+            else if (parseInt(this.state.type) === MESSAGES_TYPE.SMS)
+                null;
+        }
+    }
+
+    handleChange(value) {
+        this.setState({ text: value })
+    }
+
     render() {
+        let type = parseInt(this.state.type);
         return (
             <a className="nav-link" href="#" data-tip="create Message" onClick={this.setMessageBox.bind(this, true)}>
                 <i className="fa fa-2x fa-plus" aria-hidden="true" />
@@ -53,7 +181,7 @@ class MessageBox extends React.Component {
                     style={this.styleSet}
                     contentLabel="MessageModal"
                 >
-                    <form className="panel panel-primary">
+                    <form className="panel panel-primary" onSubmit={this.sendMessage}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
                                 Create Message
@@ -68,55 +196,67 @@ class MessageBox extends React.Component {
                         <div className="panel-body p-2">
                             <div className="row p-0 m-0">
                                 <div className="col-md-6 mt-1">
-                                    <input type="eadd" className="form-control" placeholder="Email Address" name="contact" required />
+                                    {type === MESSAGES_TYPE.EMAIL && <input type="email" className="form-control" placeholder="Email Address" name="contact" required onChange={this.handleChangeInput} />}
+                                    {type === MESSAGES_TYPE.SMS && <input type="text" className="form-control" placeholder="Mobile Number" name="contact" required onChange={this.handleChangeInput} />}
                                 </div>
                                 <div className="col-md-6 mt-1">
-                                    <input type="text" className="form-control" placeholder="Subject" name="subject" required />
+                                    {type === MESSAGES_TYPE.EMAIL && <input type="text" className="form-control" placeholder="Subject" name="subject" required onChange={this.handleChangeInput} />}
+                                    {type === MESSAGES_TYPE.SMS && <input type="text" className="form-control disabled" placeholder="Subject" name="subject" disabled />}
                                 </div>
                             </div>
                             <div className="row p-0 m-0">
                                 <div className="col-md-6 mt-1">
                                     <div className="row">
                                         <div className="col-md-6 pr-1">
-                                            <input type="text" className="form-control" placeholder="BCC" name="bcc" required />
+                                            {type === MESSAGES_TYPE.EMAIL && <input type="text" className="form-control" placeholder="BCC" name="bcc" onChange={this.handleChangeInput} />}
+                                            {type === MESSAGES_TYPE.SMS && <input type="text" className="form-control disabled" placeholder="BCC" name="bcc" disabled />}
                                         </div>
                                         <div className="col-md-6 pl-1">
-                                            <input type="text" className="form-control" placeholder="CC" name="cc" required />
+                                            {type === MESSAGES_TYPE.EMAIL && <input type="text" className="form-control" placeholder="CC" name="cc" onChange={this.handleChangeInput} />}
+                                            {type === MESSAGES_TYPE.SMS && <input type="text" className="form-control disabled" placeholder="CC" name="cc" disabled />}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-md-6 mt-1">
-                                    <select className="form-control" name="sender">
-                                        <option>
-                                            jmarellano0410@gmail.com
-                                        </option>
-                                    </select>
-                                </div>
+                                {
+                                    type === MESSAGES_TYPE.EMAIL &&
+                                    <div className="col-md-6 mt-1">
+                                        <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
+                                            <option value={{}}>Select Email</option>
+                                            {this.renderEmails()}
+                                        </select>
+                                    </div>
+                                }
+
                             </div>
                             <div className="row p-3 m-0 mb-4">
-                                <ReactQuill style={{ width: '100%', height: '220px' }} />
+                                <ReactQuill ref={(el) => { this.reactQuillRef = el }} style={{ width: '100%', height: '220px' }} value={this.state.text} onChange={this.handleChange} />
                             </div>
                             <div className="row p-3 m-0 mb-1">
                                 <div className="col-md-2 p-0">
-                                    <Button className="btn btn-success">
+                                    <Button className="btn btn-success message-box" type="submit" processing={this.state.processing}>
                                         &nbsp;Send&nbsp;
                                     </Button>
-                                    <Button className="btn ml-2">
-                                        <i className="fa fa-paperclip" />
-                                    </Button>
+                                    <label className="btn ml-2 text-center" type="button">
+                                        {(!this.state.uploading) ? <i className="fa fa-paperclip" /> : <i className="fa fa-circle-o-notch fa-spin" />}
+                                        <input type="file"
+                                            ref={(e) => {
+                                                this.attach = e
+                                            }}
+                                            style={{ display: "none" }}
+                                            className="hidden"
+                                            disabled={this.state.uploading}
+                                            onChange={this.uploadFile.bind(this)} />
+                                    </label>
                                 </div>
                                 <div className="col-md-2 p-0">
-                                    <select name="type" className="form-control">
+                                    <select name="type" className="form-control" onChange={this.handleChangeInput}>
                                         <option value={MESSAGES_TYPE.EMAIL}>Email</option>
                                         <option value={MESSAGES_TYPE.SMS}>SMS</option>
-                                        <option value={MESSAGES_TYPE.SKYPE}>Skype</option>
                                     </select>
                                 </div>
                                 <div className="col-md-8">
-                                    Files: &nbsp;
-                                    <span className="badge badge-secondary text-light mr-1 mt-1">seomthing_name.docx <i className="fa fa-times remove" /></span>
-                                    <span className="badge badge-secondary text-light mr-1 mt-1">343ss.docx <i className="fa fa-times remove" /></span>
-                                    <span className="badge badge-secondary text-light mr-1 mt-1">sada234edasd.docx <i className="fa fa-times remove" /></span>
+                                    Files:
+                                    {this.renderFiles()}
                                 </div>
                             </div>
                         </div>

@@ -39,8 +39,8 @@
     "config": {
         "email": {
             "info": {
-                "from": "Task-Tracker <jmarellano0410@gmail.com>",
-                "siteName": "Task-Tracker",
+                "from": "HRAppv1 <jmarellano0410@gmail.com>",
+                "siteName": "HRAppv1",
                 "supportEmail": "jmarellano0410@gmail.com"
             },
             "smtp": {

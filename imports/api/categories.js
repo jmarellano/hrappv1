@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { ROLES, isPermitted } from './classes/Const';
 //import { Candidates } from './candidates';
-import { check } from "meteor/check";
+import { check } from 'meteor/check';
 
-export const CategoriesAdd = "categories_add";
-export const CategoriesRemove = "categories_remove";
-export const ValidCategories = "categories_valid";
+export const CategoriesAdd = 'categories_add';
+export const CategoriesRemove = 'categories_remove';
+export const ValidCategories = 'categories_valid';
 export const CategoriesDB = new Mongo.Collection(Meteor.settings.public.collections.categories || 'categories', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
@@ -18,7 +18,7 @@ if (Meteor.isServer) {
                 CategoriesDB.insert(data);
                 return ('New category added');
             }
-            throw new Meteor.Error(403, "Not authorized");
+            throw new Meteor.Error(403, 'Not authorized');
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -39,7 +39,7 @@ if (Meteor.isServer) {
                 }
                 return null;
             } else
-                throw new Meteor.Error(403, "Not authorized");
+                throw new Meteor.Error(403, 'Not authorized');
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

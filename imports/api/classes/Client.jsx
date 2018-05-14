@@ -1,7 +1,10 @@
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
-import { FormsSave, GetForm, DeleteForm } from '../forms';
+import { FormsSave, GetForm, DeleteForm, FormsSubmit } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
+import { MessagesAddSender, MessagesSend } from '../messages';
+import { CandidatesGetId } from '../candidates';
+import { RecordJob, GetPostingStat } from "../settings";
 
 export default class Client {
     constructor() {
@@ -10,6 +13,9 @@ export default class Client {
         this.Drive = new Drive();
         this.Form = new Form();
         this.Category = new Category();
+        this.Message = new Message();
+        this.Candidate = new Candidate();
+        this.Statistics = new Statistics();
     }
 }
 
@@ -89,6 +95,11 @@ class Account {
             callback(err);
         });
     }
+    toggleMute(callback) {
+        Meteor.call(UsersToggleMute, (err) => {
+            callback(err);
+        });
+    }
 }
 
 class Drive {
@@ -138,6 +149,17 @@ class Form {
             callback(err, data);
         });
     }
+    submit(path, location, data, version, callback, failCallback) {
+        Meteor.call(FormsSubmit, {
+            _id: path[2],
+            location: { latitude: location.latitude, longitude: location.longitude },
+            applicantId: path[3],
+            obj: data,
+            version: version
+        }, (err, data) => {
+            callback(err, data);
+        });
+    }
 }
 
 class Category {
@@ -155,5 +177,93 @@ class Category {
         Meteor.call(CategoriesRemove, categoryId, (err) => {
             callback(err);
         });
+    }
+}
+
+class Message {
+    constructor() {
+
+    }
+
+    addSender(data, callback) {
+        Meteor.call(MessagesAddSender, data.credit, data.id, (err) => {
+            callback(err);
+        });
+    }
+    sendMessage(data, callback) {
+        Meteor.call(MessagesSend, data, (err) => {
+            callback(err);
+        });
+    }
+}
+
+class Candidate {
+    constructor() {
+
+    }
+
+    getId(data, callback) {
+        Meteor.call(CandidatesGetId, data, (err, data) => {
+            callback(err, data);
+        });
+    }
+}
+
+class Statistics {
+    constructor() {
+        this.lineData = [];
+        this.barData = [];
+        this.recording = false;
+        this.barChart = null;
+        this.lineChart = null;
+    }
+
+    setLineData(data) {
+        this.lineData = data;
+    }
+
+    setBarData(data) {
+        this.barData = data;
+    }
+
+    getDataFromServer(opt, callback) {
+        Meteor.call(GetPostingStat, opt, (err, data) => {
+            if (!err) {
+                if (this.barChart) {
+                    this.barChart.setData(data);
+                } else if (this.lineChart) {
+                    this.lineChart.setData(data);
+                }
+            } else {
+                console.log(err);
+            }
+            if (callback)
+                callback();
+        });
+    }
+
+    createLineGraph(options) {
+        this.lineChart = new Morris.Line({
+            data: this.lineData,
+            ...options
+        });
+    }
+
+    createBarGraph(options) {
+        this.barChart = new Morris.Bar({
+            data: this.barData,
+            ...options
+        });
+    }
+
+    recordPosting(data) {
+        if (!this.recording) {
+            this.recording = true;
+            Meteor.call(RecordJob, data, (err) => {
+                this.recording = false;
+                if (err)
+                    console.log(err);
+            });
+        }
     }
 }

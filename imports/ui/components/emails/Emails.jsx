@@ -93,24 +93,23 @@ class Emails extends React.Component {
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
                 this.setState({ processing: false });
             } else
-                null
-            // this.props.Messages.addSender(credit, userId, (err) => {
-            if (err)
-                Bert.alert(err.reason, 'danger', 'growl-top-right');
-            else {
-                Bert.alert('Account is added', 'success', 'growl-top-right');
-                this.setState({
-                    create: false,
-                    credit: {
-                        user: '',
-                        index: 0,
-                        password: '',
-                        status: 'pending', ...Meteor.settings.public.emailAccounts[0]
+                this.props.Message.addSender({ credit, id: userId }, (err) => {
+                    if (err)
+                        Bert.alert(err.reason, 'danger', 'growl-top-right');
+                    else {
+                        Bert.alert('Account is added', 'success', 'growl-top-right');
+                        this.setState({
+                            create: false,
+                            credit: {
+                                user: '',
+                                index: 0,
+                                password: '',
+                                status: 'pending', ...Meteor.settings.public.emailAccounts[0]
+                            }
+                        });
                     }
+                    this.setState({ processing: false });
                 });
-            }
-            this.setState({ processing: false });
-            // });
         });
     }
 

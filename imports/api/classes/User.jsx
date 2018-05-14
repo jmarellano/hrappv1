@@ -9,7 +9,7 @@ class User {
         this.id = obj._id;
         this.username = obj.username;
         this.emails = obj.emails;
-        this.connectedEmails = obj.profile.emails;
+        this.connectedEmails = obj.profile.emails || [];
         this.role = obj.profile.role;
         this.team = obj.profile.team;
         this.settings = obj.profile.settings;

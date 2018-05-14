@@ -15,6 +15,7 @@ import FormViewer from './forms/FormViewer';
 import FormData from './forms/FormData';
 import Emails from './emails/Emails';
 import Teams from './teams/Teams';
+import Graphs from './statistics/Graphs';
 
 import Header from './layouts/Header';
 import LeftNav from './layouts/LeftNav';
@@ -46,7 +47,6 @@ class Section extends Component {
                 };
                 break;
             case ROUTES.MESSAGES:
-            case ROUTES.EMAILS:
             case ROUTES.TEAMS:
                 return {
                     history: this.props.history,
@@ -79,7 +79,30 @@ class Section extends Component {
                     title: this.props.title,
                     Account: this.props.Client.Account,
                     Form: this.props.Client.Form,
+                    Candidate: this.props.Client.Candidate,
                     user: this.props.user
+                };
+                break;
+            case ROUTES.EMAILS:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Account: this.props.Client.Account,
+                    Message: this.props.Client.Message,
+                    user: this.props.user
+                };
+            case ROUTES.STATISTICS:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Account: this.props.Client.Account,
+                    Statistics: this.props.Client.Statistics,
+                    user: this.props.user,
+                    users: this.props.users
                 };
                 break;
             default:
@@ -105,10 +128,10 @@ class Section extends Component {
                 case ROUTES.MESSAGES:
                 case ROUTES.DRIVE:
                 case ROUTES.FORMS_CREATOR:
-                case ROUTES.FORMS_VIEWER:
                 case ROUTES.FORMS_DATA:
                 case ROUTES.EMAILS:
                 case ROUTES.TEAMS:
+                case ROUTES.STATISTICS:
                     if (!this.props.user) {
                         this.props.history.replace(ROUTES.LOGIN);
                         continueRender = false;
@@ -160,6 +183,13 @@ class Section extends Component {
                             <Header key={component + '_0'} {...this.filteredProps()} />,
                             <LeftNav key={component + '_1'} {...this.filteredProps()} />,
                             <Teams key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    case ROUTES.STATISTICS:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Graphs key={component + '_2'} {...this.filteredProps()} />,
                             <RightNav key={component + '_3'} {...this.filteredProps()} />
                         ]);
                     default:

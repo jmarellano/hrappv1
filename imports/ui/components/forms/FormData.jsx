@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-//import { FormsDDB, FormsDPub, FormsRemoveData } from '../../../api/forms';
+import { FormsDDB, FormsDPub, FormsRemoveData } from '../../../api/forms';
 import { ROUTES } from '../../../api/classes/Const';
 import { matchPath } from 'react-router';
 import PropTypes from 'prop-types';
-//import Reactable from 'reactable';
-//import ReactTooltip from 'react-tooltip';
-//import Modal from 'react-modal';
+import ReactTooltip from 'react-tooltip';
+import Modal from '../extras/Modal';
 import Button from '../extras/Button';
+import moment from 'moment';
 
 //import { Candidates, CandidatesPubValid } from '../../api/candidates';
 //import { Candidate } from "../../api/Classes/Client";
@@ -22,9 +22,6 @@ class FormData extends Component {
             remove: false,
             formDataId: null
         };
-        Table = Reactable.Table;
-        Tr = Reactable.Tr;
-        Td = Reactable.Td;
         this.fields = {};
         this.className = {
             base: 'modal-base',
@@ -34,13 +31,11 @@ class FormData extends Component {
     }
 
     componentDidMount() {
-        if (!this.props.user)
-            this.props.history.replace(ROUTES.MESSAGES);
-        this.props.Candidate.fetch((data) => {
-            this.setState({ active_candidates: data });
-        }, (err) => {
-            Bert.alert(err, 'danger', 'growl-top-right');
-        })
+        // this.props.Candidate.fetch((data) => {
+        //     this.setState({ active_candidates: data });
+        // }, (err) => {
+        //     Bert.alert(err, 'danger', 'growl-top-right');
+        // })
     }
 
     componentDidUpdate() {
@@ -66,7 +61,7 @@ class FormData extends Component {
                 "": <div><i className="fa fa-info-circle" data-tip={`Form version: ${item.version}`} /><ReactTooltip />
                 </div>,
                 "#": i + 1,
-                "Date": item.dateDisplay,
+                "Date": moment(item.createdAt).format("MM/DD/YYYY"),
                 "Time": moment(item.createdAt).format("hh:mm:ss a"),
                 "Applicant": name
             };
@@ -89,6 +84,7 @@ class FormData extends Component {
             this.fields = fields;
             arr.push(obj);
         });
+        console.log(arr, this.fields);
         return arr;
     }
 
@@ -108,12 +104,11 @@ class FormData extends Component {
     render() {
         return (
             <div>
-                {/* <h4 className="mb-4 container">
+                <h4 className="mb-4 container">
                     {this.state.name}
                 </h4>
                 <div className="container">
-                    <Table noDataText={this.props.loading ? <span><i className="fa fa-spin fa-circle-o-notch" /> Loading data...</span> : "No match records found."}
-                        className="table" data={this.renderBody()} sortable={true} filterable={true} />
+                    {/* // TODO table here */}
                 </div>
                 <Modal
                     isOpen={this.state.remove}
@@ -135,7 +130,7 @@ class FormData extends Component {
                             Close
                         </button>
                     </div>
-                </Modal> */}
+                </Modal>
             </div>
         )
     }
@@ -157,7 +152,7 @@ export default withTracker((props) => {
         loading = false;
     return {
         data: FormsDDB.find({}, { sort: { createdAt: -1 } }).fetch(),
-        active_candidate: Candidates.find({}, { sort: { name: 1 } }).fetch(),
+        active_candidate: [], //Candidates.find({}, { sort: { name: 1 } }).fetch(),
         loading
     };
 })(FormData);
