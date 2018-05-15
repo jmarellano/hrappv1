@@ -1,6 +1,5 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { Accounts } from 'meteor/accounts-base';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
@@ -29,10 +28,9 @@ class Settings extends Component {
                 padding: '0px'
             }
         };
-        this.onClose = this.onClose.bind(this);
-        this.settingsModal = this.settingsModal.bind(this);
         this.save = this.save.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
     }
 
 
@@ -62,22 +60,14 @@ class Settings extends Component {
         }
     }
 
-    onClose() {
-        this.setState({
-            settings: false,
-        });
-    }
-
-    settingsModal() {
-        this.setState({
-            settings: true,
-        });
+    toggleModal() {
+        this.setState({ settings: !this.state.settings });
     }
 
     render() {
         return (
             <div>
-                <a className="nav-link" href="#" onClick={this.settingsModal}>
+                <a className="nav-link" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-user" />
                     <b className="ml-1">{this.props.user.username}</b>
                     <span className="text-light">[{this.props.user.getRole()}]</span>
@@ -89,7 +79,7 @@ class Settings extends Component {
                                 Settings
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.onClose}>
+                                        onClick={this.toggleModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -145,7 +135,10 @@ class Settings extends Component {
     }
 }
 
-Settings.propTypes = {};
+Settings.propTypes = {
+    Account: PropTypes.object,
+    user: PropTypes.object
+};
 
 export default withTracker(() => {
     return {};

@@ -1,10 +1,10 @@
-import React from 'react';
-import { Accounts } from 'meteor/accounts-base';
-import { ROUTES } from '../../../api/classes/Const';
+import React, { Component } from 'react';
+import { withTracker } from 'meteor/react-meteor-data';
 import { matchPath } from 'react-router';
+import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 
-export default class ResetPassword extends React.Component {
+class ResetPassword extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -66,3 +66,13 @@ export default class ResetPassword extends React.Component {
         );
     }
 }
+
+ResetPassword.propTypes = {
+    Auth: PropTypes.object,
+    history: PropTypes.object,
+    location: PropTypes.object
+};
+
+export default withTracker(() => {
+    return {};
+})(ResetPassword);

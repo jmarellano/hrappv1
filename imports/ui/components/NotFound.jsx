@@ -15,7 +15,6 @@ export default NotFound = (props) => {
                     </button>
                 </div>
             );
-            break;
         default:
             return (
                 <div className='text-center'>

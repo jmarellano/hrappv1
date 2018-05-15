@@ -1,6 +1,5 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { Accounts } from 'meteor/accounts-base';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
@@ -44,32 +43,21 @@ class Forms extends Component {
                 padding: '0px'
             }
         };
-        this.onClose = this.onClose.bind(this);
-        this.formsModal = this.formsModal.bind(this);
-        this.formConfirmationClose = this.formConfirmationClose.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.confirmationModal = this.confirmationModal.bind(this);
         this.deleteForm = this.deleteForm.bind(this);
     }
 
-    onClose() {
-        this.setState({
-            forms: false,
-        });
+    toggleModal() {
+        this.setState({ forms: !this.state.forms });
     }
 
-    formsModal() {
-        this.setState({
-            forms: true,
-        });
-    }
-
-    formConfirmationClose() {
-        this.setState({
-            confirmation: false,
-        });
+    confirmationModal(selectedForm) {
+        this.setState({ confirmation: !this.state.confirmation, selectedForm });
     }
 
     deleteForm(callback) {
-        this.props.Form.deleteForm({ id: this.state.selectedForm.id }, (err, data) => {
+        this.props.Form.deleteForm({ id: this.state.selectedForm.id }, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
@@ -104,9 +92,7 @@ class Forms extends Component {
                             <i className="fa fa-pencil" aria-hidden="true" />
                         </button>
                         <button className="btn btn-danger ml-1"
-                            onClick={() => {
-                                this.setState({ confirmation: true, selectedForm: form });
-                            }} data-tip="Remove Form">
+                            onClick={this.confirmationModal.bind(this, form)} data-tip="Remove Form">
                             <i className="fa fa-times" aria-hidden="true" />
                         </button>
                     </td>
@@ -118,7 +104,7 @@ class Forms extends Component {
     render() {
         return (
             <div>
-                <a className="nav-link" href="#" onClick={this.formsModal}>
+                <a className="nav-link" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-th-list" />
                 </a>
                 <Modal isOpen={this.state.forms} contentLabel="FormsModal" style={this.styleSet}>
@@ -128,7 +114,7 @@ class Forms extends Component {
                                 Forms
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.onClose}>
+                                        onClick={this.toggleModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -181,7 +167,7 @@ class Forms extends Component {
                                 Form Deletion
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.formConfirmationClose}>
+                                        onClick={this.confirmationModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -202,7 +188,13 @@ class Forms extends Component {
     }
 }
 
-Forms.propTypes = {};
+Forms.propTypes = {
+    Form: PropTypes.object,
+    forms: PropTypes.array,
+    isReady: PropTypes.bool,
+    isMax: PropTypes.bool,
+    viewMore: PropTypes.func
+};
 
 export default withTracker((props) => {
     let forms = FormsDB.find({}).fetch().map((item, index) => new Form(item, index));

@@ -4,7 +4,7 @@ import { FormsSave, GetForm, DeleteForm, FormsSubmit } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend } from '../messages';
 import { CandidatesGetId } from '../candidates';
-import { RecordJob, GetPostingStat } from "../settings";
+import { RecordJob, GetPostingStat, SettingsSave } from "../settings";
 
 export default class Client {
     constructor() {
@@ -16,6 +16,7 @@ export default class Client {
         this.Message = new Message();
         this.Candidate = new Candidate();
         this.Statistics = new Statistics();
+        this.Settings = new Settings();
     }
 }
 
@@ -265,5 +266,17 @@ class Statistics {
                     console.log(err);
             });
         }
+    }
+}
+
+class Settings {
+    constructor() {
+
+    }
+
+    save(settings, callback) {
+        Meteor.call(SettingsSave, { emailGetInterval: settings.interval, country: settings.country }, (err) => {
+            callback(err);
+        });
     }
 }

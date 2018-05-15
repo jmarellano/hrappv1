@@ -1,9 +1,10 @@
-import React from 'react';
-//import { UsersRegister } from '../../api/users';
+import React, { Component } from 'react';
 import { ROUTES } from '../../../api/classes/Const';
+import { withTracker } from 'meteor/react-meteor-data';
+import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 
-export default class Signup extends React.Component {
+class Signup extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -83,3 +84,13 @@ export default class Signup extends React.Component {
         );
     }
 }
+
+Signup.propTypes = {
+    Auth: PropTypes.object,
+    history: PropTypes.object,
+    title: PropTypes.object
+};
+
+export default withTracker(() => {
+    return {};
+})(Signup);

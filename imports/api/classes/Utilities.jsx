@@ -7,6 +7,9 @@ class Utilities {
     formatDate(date) {
         return moment(date).format("MM/DD/YYYY hh:mm:ss A");
     }
+    trunc(text, max) {
+        return text.substr(0, max - 1) + (text.length > max ? '...' : '');
+    }
     bytesToSize(bytes) {
         var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
         if (bytes == 0) return '0 Byte';

@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import { CategoriesDB } from '../../../api/categories';
 import { withTracker } from 'meteor/react-meteor-data';
+import Mongo from 'meteor/mongo';
+import CategoryClass from '../../../api/classes/Category';
+import PropTypes from 'prop-types';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
-import { CategoriesDB } from '../../../api/categories';
-import CategoryClass from '../../../api/classes/Category';
 import moment from 'moment';
 
 class Record extends Component {
@@ -109,7 +111,14 @@ class Record extends Component {
     }
 }
 
-export default withTracker(props => {
+Record.propTypes = {
+    user: PropTypes.object,
+    categories: PropTypes.array,
+    Statistics: PropTypes.object,
+    users: PropTypes.array
+};
+
+export default withTracker(() => {
     return {
         categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => new CategoryClass(item)),
     };

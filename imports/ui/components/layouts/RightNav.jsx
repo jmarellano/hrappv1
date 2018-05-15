@@ -1,10 +1,7 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { ROUTES, ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import HeaderNav from './HeaderNav';
-import moment from 'moment-timezone';
-
 import Client from '../../../api/classes/Client';
 import Timezone from '../timezone/Timezone';
 import MessageBox from '../messages/MessageBox';
@@ -46,7 +43,9 @@ class RightNav extends Component {
     }
 }
 
-RightNav.propTypes = {};
+RightNav.propTypes = {
+    user: PropTypes.object
+};
 
 export default withTracker(() => {
     return {};

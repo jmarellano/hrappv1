@@ -141,19 +141,19 @@ if (Meteor.isServer) {
         try {
             check(data, Object);
             let msgId = MessagesDB.insert(data);
-            // let icon = "";
-            // if (data.info.text && data.info.text.length > 360)
-            //     data.info.text = data.info.text.substr(0, 360) + '...';
-            // if (outgoing)
-            //     return msgId;
-            // if (data.type === MESSAGES_TYPE.EMAIL)
-            //     icon = '/images/e-mail-10.png';
-            // if (data.type === MESSAGES_TYPE.SMS)
-            //     icon = '/images/sms-256.png';
-            // if (data.type === MESSAGES_TYPE.SKYPE)
-            //     icon = '/images/Skype.png';
-            // if (data.type === MESSAGES_TYPE.WA)
-            //     icon = '/images/Whatsapp.png';
+            let icon = "";
+            if (data.text && data.text.length > 360)
+                data.text = data.text.substr(0, 360) + '...';
+            if (outgoing)
+                return msgId;
+            if (data.type === MESSAGES_TYPE.EMAIL)
+                icon = '/images/e-mail-10.png';
+            if (data.type === MESSAGES_TYPE.SMS)
+                icon = '/images/sms-256.png';
+            if (data.type === MESSAGES_TYPE.SKYPE)
+                icon = '/images/Skype.png';
+            if (data.type === MESSAGES_TYPE.WA)
+                icon = '/images/Whatsapp.png';
             // IncomingDB.insert({
             //     title: `Received a message from ${candidate.json.name ? candidate.json.name : data.eadd}`,
             //     message: data.info.text,

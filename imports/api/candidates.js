@@ -15,14 +15,20 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(contact, String);
-            return CandidatesDB.update({ contact }, {
-                $set: {
+            let candidate = CandidatesDB.findOne({ contact });
+            if (candidate)
+                return CandidatesDB.update({ contact }, {
+                    $set: {
+                        lastMessage
+                    }
+                });
+            else
+                return CandidatesDB.insert({
                     contact,
                     createdAt: moment().valueOf(),
                     retired: VALUE.FALSE,
                     lastMessage
-                }
-            });
+                });
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -45,4 +51,13 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    Meteor.publish(ValidCandidates, function () {
+        try {
+            return CandidatesDB.find({ 'retired': VALUE.FALSE });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
 }

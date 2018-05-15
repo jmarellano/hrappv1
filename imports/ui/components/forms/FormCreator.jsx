@@ -2,16 +2,14 @@ import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { TMQFormBuilder } from '../extras/TMQFormBuilder.js';
 import { ROUTES } from '../../../api/classes/Const';
-import { FormsDB } from '../../../api/forms';
 import { matchPath } from 'react-router';
 import PropTypes from 'prop-types';
-import Form from '../../../api/classes/Form';
 
 class FormCreator extends React.Component {
     constructor() {
         super();
         this.state = {
-            option: "true",
+            option: 'true',
             processing: false,
             loading: false
         };
@@ -27,9 +25,9 @@ class FormCreator extends React.Component {
                 let submit = (e) => {
                     e.preventDefault();
                     this.setState({ processing: true });
-                    this.props.Form.save({ id: this.props.id, formBuilder: this.formBuilder }, (err) => {
-                        if (err)
-                            Bert.alert(err.reason, 'danger', 'growl-top-right');
+                    this.props.Form.save({ id: this.props.id, formBuilder: this.formBuilder }, (error, data) => {
+                        if (error)
+                            Bert.alert(error.reason, 'danger', 'growl-top-right');
                         else
                             Bert.alert(data, 'success', 'growl-top-right', 'fa-check');
                         this.setState({ processing: false });
@@ -154,7 +152,11 @@ class FormCreator extends React.Component {
         );
     }
 }
-FormCreator.propTypes = {};
+FormCreator.propTypes = {
+    Form: PropTypes.object,
+    id: PropTypes.string,
+    history: PropTypes.object
+};
 
 export default withTracker((props) => {
     const match = matchPath(props.location.pathname, {

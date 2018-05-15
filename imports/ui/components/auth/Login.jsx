@@ -1,11 +1,12 @@
-import React from 'react';
-import { Meteor } from 'meteor/meteor';
+import React, { Component } from 'react';
 import { Accounts } from 'meteor/accounts-base';
 import { ROUTES } from '../../../api/classes/Const';
 import { matchPath } from 'react-router';
+import { withTracker } from 'meteor/react-meteor-data';
+import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 
-export default class Login extends React.Component {
+class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -124,3 +125,16 @@ export default class Login extends React.Component {
         );
     }
 }
+
+
+
+Login.propTypes = {
+    location: PropTypes.object,
+    Auth: PropTypes.object,
+    history: PropTypes.object,
+    title: PropTypes.string
+};
+
+export default withTracker(() => {
+    return {};
+})(Login);

@@ -98,7 +98,10 @@ class Timezone extends React.Component {
     }
 }
 
-Timezone.propTypes = {};
+Timezone.propTypes = {
+    user: PropTypes.object,
+    Account: PropTypes.object
+};
 
 export default withTracker(() => {
     return {};

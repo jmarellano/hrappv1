@@ -1,11 +1,11 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { ROUTES, ROLES } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
+import PropTypes from 'prop-types';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 
-class Emails extends React.Component {
+class Emails extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -61,7 +61,7 @@ class Emails extends React.Component {
         this.handleChangeInput = this.handleChangeInput.bind(this);
     }
 
-    componentWillUpdate(nextProps, nextState) {
+    componentWillUpdate(nextProps) {
         if (nextProps.user !== this.props.user)
             this.setState({ agent: nextProps.user.id });
     }
@@ -93,9 +93,9 @@ class Emails extends React.Component {
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
                 this.setState({ processing: false });
             } else
-                this.props.Message.addSender({ credit, id: userId }, (err) => {
-                    if (err)
-                        Bert.alert(err.reason, 'danger', 'growl-top-right');
+                this.props.Message.addSender({ credit, id: userId }, (error) => {
+                    if (error)
+                        Bert.alert(error.reason, 'danger', 'growl-top-right');
                     else {
                         Bert.alert('Account is added', 'success', 'growl-top-right');
                         this.setState({
@@ -123,7 +123,7 @@ class Emails extends React.Component {
                 this.setState({ processing: false });
             } else
                 null
-            // this.props.Messages.removeListener(credit, (err) => {
+            // this.props.Messages.removeListener(credit, (err) => { // TODO
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
@@ -185,7 +185,7 @@ class Emails extends React.Component {
 
     render() {
         let credit = this.state.credit;
-        let user = this.props.active_users.filter((user) => { return user.id === this.state.user.id })[0];
+        let user = this.props.active_users.filter((userObj) => { return userObj.id === this.state.user.id })[0];
         if (!user.connectedEmails) {
             user.connectedEmails = [];
         }
@@ -332,8 +332,7 @@ class Emails extends React.Component {
                             Welcome to {this.props.title}!
                         </h3>
                         <p>
-                            To get started, setup first your email account by clicking the button "+ New Email
-                            Account"
+                            To get started, setup first your email account by clicking New Email Account button
                             in this page. By setting this up, you will be able to receive / send message to others.
                         </p>
                         <button className="btn btn-secondary" type="button" onClick={this.firstClose}>Ok
@@ -345,7 +344,13 @@ class Emails extends React.Component {
     }
 }
 
-Emails.propTypes = {};
+Emails.propTypes = {
+    location: PropTypes.object,
+    user: PropTypes.object,
+    Account: PropTypes.object,
+    Message: PropTypes.object,
+    title: PropTypes.string
+};
 
 export default withTracker((props) => {
     return {

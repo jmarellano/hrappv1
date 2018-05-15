@@ -1,8 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { TMQFormBuilder } from '../extras/TMQFormBuilder.js';
-import { FormsDB } from '../../../api/forms';
-//import { CandidatesPubValid, Candidates } from '../../api/candidates';
 import { ROUTES, ROLES, isPermitted } from '../../../api/classes/Const';
 import { matchPath } from 'react-router';
 import PropTypes from 'prop-types';
@@ -102,7 +100,7 @@ class FormViewer extends React.Component {
             };
         }).get();
         let template = this.state.form;
-        this.props.Form.submit([null, match.params.component, match.params.data, match.params.applicant], this.location, array, template.template.length, (err, data) => {
+        this.props.Form.submit([null, match.params.component, match.params.data, match.params.applicant], this.location, array, template.template.length, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
@@ -110,7 +108,7 @@ class FormViewer extends React.Component {
                 Bert.alert('Data submitted', 'success', 'growl-top-right', 'fa-check');
             }
             this.setState({ allowed: false }, function () {
-                captcha.reset();
+                this.captcha.reset();
             });
         });
     }
@@ -143,14 +141,13 @@ class FormViewer extends React.Component {
     getCandidateId(e) {
         e.preventDefault();
         if (!this.state.email)
-            return callback();
+            return;
         this.setState({ gettingId: true });
         this.props.Candidate.getId(this.state.email, (err, id) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
                 this.setState({ id, gettingId: false });
-            callback();
         });
     }
 
@@ -174,7 +171,7 @@ class FormViewer extends React.Component {
                         <ul id="tmq-form-builder-center" className="text-center" />
                         {
                             this.props.location.pathname.split("/")[3] &&
-                            <ReCAPTCHA ref={(el) => { captcha = el; }} size="normal" sitekey="6LcLLCgUAAAAAG5U2RfKxQ9dBw0xWNVrGcSAFFm8" onChange={this.onChange.bind(this)} />
+                            <ReCAPTCHA ref={(el) => { this.captcha = el; }} size="normal" sitekey="6LcLLCgUAAAAAG5U2RfKxQ9dBw0xWNVrGcSAFFm8" onChange={this.onChange.bind(this)} />
                         }
                     </div>
                 </form>
@@ -214,7 +211,15 @@ class FormViewer extends React.Component {
         );
     }
 }
-FormViewer.propTypes = {};
+FormViewer.propTypes = {
+    Form: PropTypes.object,
+    id: PropTypes.string,
+    location: PropTypes.object,
+    Candidate: PropTypes.object,
+    history: PropTypes.object,
+    user: PropTypes.object
+
+};
 export default withTracker((props) => {
     const match = matchPath(props.location.pathname, {
         path: '/:component/:data',

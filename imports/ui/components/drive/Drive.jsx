@@ -1,10 +1,8 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
-import { ROUTES, DRIVE } from '../../../api/classes/Const';
-import Button from '../extras/Button';
+import { DRIVE } from '../../../api/classes/Const';
+import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
-
 import DriveList from './DriveList';
 import '../extras/MediaUploader.js';
 
@@ -244,9 +242,12 @@ class Drive extends React.Component {
     }
 }
 
-Drive.propTypes = {};
+Drive.propTypes = {
+    Drive: PropTypes.object,
+    user: PropTypes.object
+};
 
-export default withTracker(props => {
+export default withTracker(() => {
 
     return {
 

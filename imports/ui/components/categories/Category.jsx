@@ -1,9 +1,9 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { ValidCategories, CategoriesDB } from '../../../api/categories';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Modal from '../extras/Modal';
-import { ValidCategories, CategoriesDB } from '../../../api/categories';
 import CategoryClass from '../../../api/classes/Category';
 
 class Category extends React.Component {
@@ -41,10 +41,8 @@ class Category extends React.Component {
         this.addCategory = this.addCategory.bind(this);
         this.removeCategory = this.removeCategory.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
-        this.modalOpen = this.modalOpen.bind(this);
-        this.modalClose = this.modalClose.bind(this);
-        this.confirmationOpen = this.confirmationOpen.bind(this);
-        this.confirmationClose = this.confirmationClose.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.confirmationModal = this.confirmationModal.bind(this);
         this.styleSet = {
             overlay: {
                 zIndex: '8888',
@@ -160,26 +158,18 @@ class Category extends React.Component {
         }
     }
 
-    modalOpen() {
-        this.setState({ categoryModal: true });
+    toggleModal() {
+        this.setState({ categoryModal: !this.state.categoryModal });
     }
 
-    modalClose() {
-        this.setState({ categoryModal: false });
-    }
-
-    confirmationOpen() {
-        this.setState({ confirmation: true });
-    }
-
-    confirmationClose() {
-        this.setState({ confirmation: false });
+    confirmationModal() {
+        this.setState({ confirmation: !this.state.confirmation });
     }
 
     render() {
         return (
             <div>
-                <a className="nav-link" href="#" onClick={this.modalOpen}>
+                <a className="nav-link" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-object-group" />
                 </a>
                 <Modal
@@ -193,7 +183,7 @@ class Category extends React.Component {
                                 Category
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.modalClose}>
+                                        onClick={this.toggleModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -320,7 +310,7 @@ class Category extends React.Component {
                                         <div className="col-md-12">
                                             <button className="btn btn-danger"
                                                 disabled={!this.props.categories.length || !this.state.category_id.length} type="button"
-                                                onClick={this.confirmationOpen}>Remove
+                                                onClick={this.confirmationModal}>Remove
                                             </button>
                                         </div>
                                     </div>
@@ -340,7 +330,7 @@ class Category extends React.Component {
                                 Category
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.confirmationClose}>
+                                        onClick={this.confirmationModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -361,7 +351,10 @@ class Category extends React.Component {
     }
 }
 
-Category.propTypes = {};
+Category.propTypes = {
+    categories: PropTypes.array,
+    Category: PropTypes.object
+};
 
 export default withTracker(() => {
 

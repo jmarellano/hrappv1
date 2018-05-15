@@ -1,7 +1,7 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { Meteor } from 'meteor/meteor';
-import { ROUTES, ROLES, isPermitted } from '../../../api/classes/Const';
+import { ROLES, isPermitted } from '../../../api/classes/Const';
+import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Util from '../../../api/classes/Utilities';
 import Modal from '../extras/Modal/components/Modal';
@@ -66,7 +66,7 @@ class DriveList extends React.Component {
             trash: false
         });
     }
-    undoTrash(file, callback) {
+    undoTrash(file) {
         this.setState({
             file
         }, () => {
@@ -184,12 +184,13 @@ class DriveList extends React.Component {
     }
 }
 
-DriveList.propTypes = {};
+DriveList.propTypes = {
+    Drive: PropTypes.object,
+    files: PropTypes.object,
+    user: PropTypes.object,
+    getFiles: PropTypes.func
+};
 
-export default withTracker(props => {
-
-    return {
-
-    };
-
+export default withTracker(() => {
+    return {};
 })(DriveList);

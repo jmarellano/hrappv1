@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES } from '../../api/classes/Const';
+import { SettingsDB } from '../../api/settings';
 import moment from 'moment';
 
 Meteor.startup(() => {
@@ -12,5 +13,11 @@ Meteor.startup(() => {
         user.email = 'tmq.hrapp@gmail.com';
         user.password = 'gemgem';
         Accounts.createUser(user);
+    }
+    if (!SettingsDB.findOne()) {
+        let settings = {};
+        settings.emailGetInterval = 9000;
+        settings.country = 172;
+        SettingsDB.insert(settings);
     }
 });

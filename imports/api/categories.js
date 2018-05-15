@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { ROLES, isPermitted } from './classes/Const';
-//import { Candidates } from './candidates';
+import { CandidatesDB } from './candidates';
 import { check } from 'meteor/check';
 
 export const CategoriesAdd = 'categories_add';
@@ -25,7 +25,6 @@ if (Meteor.isServer) {
         }
     };
     functions[CategoriesRemove] = function (categoryId) {
-        console.log(categoryId);
         try {
             categoryId = new Mongo.ObjectID(categoryId);
             check(this.userId, String);
@@ -33,7 +32,7 @@ if (Meteor.isServer) {
             if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_CATEGORIES)) {
                 let categories = CategoriesDB.findOne({ _id: categoryId });
                 if (categories) {
-                    //Candidates.update({ category: categories.category }, { $set: { category: "" } }, { multi: true });
+                    Candidates.update({ category: categories.category }, { $set: { category: "" } }, { multi: true });
                     CategoriesDB.remove({ _id: categoryId });
                     return ('Category Removed.');
                 }

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { CategoriesDB } from '../../../api/categories';
+import CategoryClass from '../../../api/classes/Category';
+import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Select from 'react-select';
 import moment from 'moment';
-import { CategoriesDB } from '../../../api/categories';
-import CategoryClass from '../../../api/classes/Category';
 
 class Graphs extends Component {
     constructor(props) {
@@ -95,12 +96,11 @@ class Graphs extends Component {
         });
     }
     activeUsers() {
-        return this.props.users.map((agent, index) => {
+        return this.props.users.map((agent) => {
             return { value: agent.id, label: agent.username };
         });
     }
     render() {
-        console.log(this.state.id);
         return (
             <form className="pull-left main mt-3" onSubmit={this.loadGraph}>
                 <div className="row col-sm-12 graph-menu">
@@ -160,6 +160,13 @@ class Graphs extends Component {
         )
     }
 }
+
+Graphs.propTypes = {
+    user: PropTypes.object,
+    categories: PropTypes.array,
+    Statistics: PropTypes.object,
+    users: PropTypes.array
+};
 
 export default withTracker(() => {
     return {

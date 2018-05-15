@@ -1,6 +1,5 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Forms from './Forms';
 
 class FormMain extends Component {

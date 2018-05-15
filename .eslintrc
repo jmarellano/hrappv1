@@ -1,0 +1,52 @@
+{
+    "parser": "babel-eslint",
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended"
+    ],
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "no-console": 0,
+        "no-undef": "warn",
+        "no-redeclare": "error",
+        "no-shadow": "error",
+        "no-empty": 0,
+        "no-useless-call": "warn"
+    },
+    "globals": {
+        "console": false,
+        "server": true,
+        "PATH": true,
+        "functions": true,
+        "db": false,
+        "alert": false,
+        "window": false,
+        "document": false,
+        "XMLHttpRequest": false,
+        "setTimeout": false,
+        "setInterval": false,
+        "clearTimeout": false,
+        "$": false,
+        "Blob": false,
+        "navigator": false,
+        "MediaRecorder": false,
+        "speechSynthesis": false,
+        "Promise": false,
+        "Bert": false,
+        "moment": false,
+        "Meteor": false,
+        "NotFound": true,
+        "process": false,
+        "routes": true,
+        "require": false,
+        "GS": true,
+        "Util": true,
+        "Picker": true,
+        "clearInterval": true,
+        "Set": true,
+        "FileReader": true,
+        "MediaUploader": true
+    }
+}

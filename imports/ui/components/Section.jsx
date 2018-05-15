@@ -45,7 +45,6 @@ class Section extends Component {
                     Auth: this.props.Client.Auth,
                     user: this.props.user
                 };
-                break;
             case ROUTES.MESSAGES:
             case ROUTES.TEAMS:
                 return {
@@ -55,9 +54,9 @@ class Section extends Component {
                     title: this.props.title,
                     Account: this.props.Client.Account,
                     user: this.props.user,
-                    users: this.props.users
+                    users: this.props.users,
+                    settings: this.props.settings
                 };
-                break;
             case ROUTES.DRIVE:
                 return {
                     history: this.props.history,
@@ -66,9 +65,9 @@ class Section extends Component {
                     title: this.props.title,
                     Account: this.props.Client.Account,
                     Drive: this.props.Client.Drive,
-                    user: this.props.user
+                    user: this.props.user,
+                    settings: this.props.settings
                 };
-                break;
             case ROUTES.FORMS_CREATOR:
             case ROUTES.FORMS_VIEWER:
             case ROUTES.FORMS_DATA:
@@ -80,9 +79,9 @@ class Section extends Component {
                     Account: this.props.Client.Account,
                     Form: this.props.Client.Form,
                     Candidate: this.props.Client.Candidate,
-                    user: this.props.user
+                    user: this.props.user,
+                    settings: this.props.settings
                 };
-                break;
             case ROUTES.EMAILS:
                 return {
                     history: this.props.history,
@@ -91,7 +90,8 @@ class Section extends Component {
                     title: this.props.title,
                     Account: this.props.Client.Account,
                     Message: this.props.Client.Message,
-                    user: this.props.user
+                    user: this.props.user,
+                    settings: this.props.settings
                 };
             case ROUTES.STATISTICS:
                 return {
@@ -102,9 +102,9 @@ class Section extends Component {
                     Account: this.props.Client.Account,
                     Statistics: this.props.Client.Statistics,
                     user: this.props.user,
-                    users: this.props.users
+                    users: this.props.users,
+                    settings: this.props.settings
                 };
-                break;
             default:
                 return { ...this.props };
         }
@@ -206,8 +206,19 @@ class Section extends Component {
     }
 }
 
-Section.propTypes = {};
+Section.propTypes = {
+    component: PropTypes.string,
+    history: PropTypes.object,
+    location: PropTypes.object,
+    match: PropTypes.object,
+    title: PropTypes.string,
+    Client: PropTypes.object,
+    user: PropTypes.object,
+    users: PropTypes.array,
+    settings: PropTypes.object,
+    isReady: PropTypes.bool
+};
 
-export default withTracker((props) => {
+export default withTracker(() => {
     return {};
 })(Section);

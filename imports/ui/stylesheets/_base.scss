@@ -27,3 +27,12 @@ label[type='button']{
 .message-box{
     margin-top: -6px !important;
 }
+.bg-secondary-light{
+    background-color: lighten($secondary, 30%) !important;
+}
+.bg-secondary-title{
+    background-color: lighten($secondary, 20%) !important;
+}
+.vh{
+    height: calc(100vh - 55px);
+}

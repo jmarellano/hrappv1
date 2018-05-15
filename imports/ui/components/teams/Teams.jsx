@@ -1,6 +1,5 @@
 import React from 'react';
-import { UsersSave, UsersRemove, RetiredUsers } from '../../../api/users';
-import { ROLES, isPermitted, RETIRED } from '../../../api/classes/Const';
+import { ROLES } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
@@ -35,11 +34,11 @@ class Teams extends React.Component {
             }
         };
         this.saveRole = this.saveRole.bind(this);
-        this.close = this.close.bind(this);
-        this.retireClose = this.retireClose.bind(this);
+        this.roleModal = this.roleModal.bind(this);
+        this.retireModal = this.retireModal.bind(this);
         this.retire = this.retire.bind(this);
         this.remove = this.remove.bind(this);
-        this.removeClose = this.removeClose.bind(this);
+        this.removeModal = this.removeModal.bind(this);
     }
 
     componentDidMount() {
@@ -64,7 +63,7 @@ class Teams extends React.Component {
         this.setState({ user, role: true, selectedRole, selectedRoleString });
     }
 
-    saveRole(callback) {
+    saveRole() {
         this.props.Account.changeRole({ role: this.state.selectedRole, id: this.state.user.id }, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -74,7 +73,7 @@ class Teams extends React.Component {
         });
     }
 
-    retire(callback) {
+    retire() {
         this.props.Account.retire(this.state.user.id, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -86,7 +85,7 @@ class Teams extends React.Component {
         });
     }
 
-    remove(callback) {
+    remove() {
         this.props.Account.remove(this.state.user.id, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -96,16 +95,16 @@ class Teams extends React.Component {
         });
     }
 
-    close() {
-        this.setState({ role: false });
+    roleModal(user) {
+        this.setState({ role: !this.state.role, user });
     }
 
-    retireClose() {
-        this.setState({ retire: false });
+    retireModal(user) {
+        this.setState({ retire: !this.state.retire, user });
     }
 
-    removeClose() {
-        this.setState({ remove: false });
+    removeModal(user) {
+        this.setState({ remove: !this.state.remove, user });
     }
 
     render() {
@@ -150,13 +149,9 @@ class Teams extends React.Component {
                                             <div>
                                                 {(role === ROLES.GUESTS) &&
                                                     <a href="#removeModal m-r-sm"
-                                                        data-toggle="modal" onClick={() => {
-                                                            this.setState({ remove: true, user });
-                                                        }} className="btn btn-danger">Remove</a>}
+                                                        data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
                                                 {(role !== ROLES.GUESTS) &&
-                                                    <a href="#" data-toggle="modal" onClick={() => {
-                                                        this.setState({ retire: true, user });
-                                                    }} className="btn btn-warning">Retire</a>}
+                                                    <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user)} className="btn btn-warning">Retire</a>}
                                             </div>
                                         </td>
                                     </tr>
@@ -204,7 +199,7 @@ class Teams extends React.Component {
                                 Change Role
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.close}>
+                                        onClick={this.roleModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -230,7 +225,7 @@ class Teams extends React.Component {
                                 Retire User
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.retireClose}>
+                                        onClick={this.retireModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -255,7 +250,7 @@ class Teams extends React.Component {
                                 Remove User
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                        onClick={this.removeClose}>
+                                        onClick={this.removeModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -274,8 +269,11 @@ class Teams extends React.Component {
     }
 }
 
-Teams.propTypes = {};
+Teams.propTypes = {
+    Account: PropTypes.object,
+    users: PropTypes.array
+};
 
-export default withTracker((props) => {
+export default withTracker(() => {
     return {};
 })(Teams);

@@ -1,7 +1,6 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { ROUTES, ROLES } from '../../../api/classes/Const';
-import PropTypes from 'prop-types';
+import { ROUTES } from '../../../api/classes/Const';
 import HeaderNav from './HeaderNav';
 import Settings from '../account/Settings';
 
@@ -49,8 +48,6 @@ class Header extends Component {
         );
     }
 }
-
-Header.propTypes = {};
 
 export default withTracker(() => {
     return {};

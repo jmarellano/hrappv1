@@ -8,6 +8,7 @@ import Client from '../../../api/classes/Client';
 import FormMain from '../forms/FormMain';
 import Category from '../categories/Category';
 import Record from '../statistics/Record';
+import Global from '../settings/Global';
 
 class LeftNav extends Component {
     constructor(props) {
@@ -47,7 +48,9 @@ class LeftNav extends Component {
                     <HeaderNav key={9} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_EMAILS}>
                         <a className="nav-link" href="#" onClick={() => { this.props.history.replace(ROUTES.EMAILS); }}><i className="fa fa-2x fa-at" /></a>
                     </HeaderNav>
-                    {/* TODO Global settings */}
+                    <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
+                        <Global {...this.props} Settings={this.Client.Settings} />
+                    </HeaderNav>
                     {/* TODO import Requests */}
                 </ul>
             </div>
@@ -55,7 +58,10 @@ class LeftNav extends Component {
     }
 }
 
-LeftNav.propTypes = {};
+LeftNav.propTypes = {
+    user: PropTypes.object,
+    history: PropTypes.object
+};
 
 export default withTracker(() => {
     return {};
