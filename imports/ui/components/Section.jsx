@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { ROUTES } from '../../api/classes/Const';
+import { ROUTES, isPermitted, ROLES } from '../../api/classes/Const';
 import PropTypes from 'prop-types';
 
 import Register from './auth/Register';
@@ -138,6 +138,37 @@ class Section extends Component {
                     }
                     break;
             }
+            if (continueRender)
+                switch (component) {
+                    case ROUTES.MESSAGES:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES))
+                            continueRender = false;
+                        break;
+                    case ROUTES.DRIVE:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_DRIVE))
+                            continueRender = false;
+                        break;
+                    case ROUTES.FORMS_CREATOR:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_FORMS))
+                            continueRender = false;
+                        break;
+                    case ROUTES.FORMS_DATA:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_FORMS))
+                            continueRender = false;
+                        break;
+                    case ROUTES.EMAILS:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_EMAILS))
+                            continueRender = false;
+                        break;
+                    case ROUTES.TEAMS:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_TEAMS))
+                            continueRender = false;
+                        break;
+                    case ROUTES.STATISTICS:
+                        if (!isPermitted(this.props.user.role, ROLES.VIEW_STATISTICS))
+                            continueRender = false;
+                        break;
+                }
             if (continueRender)
                 switch (component) {
                     case ROUTES.LOGIN:

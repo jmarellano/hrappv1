@@ -1,39 +1,16 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import { ROUTES, SEARCH } from '../../../api/classes/Const';
-import Button from '../extras/Button';
-import DropdownSelectDup from '../extras/DropdownSelectDup';
 import { ValidCandidates, CandidatesDB } from '../../../api/candidates';
+import PropTypes from 'prop-types';
+import DropdownSelectDup from '../extras/DropdownSelectDup';
 import Candidate from '../../../api/classes/Candidate';
 
 class Candidates extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            display: [SEARCH.CATEGORIES, SEARCH.NAME, SEARCH.EMAIL, SEARCH.NUMBER, SEARCH.CLAIMER, SEARCH.ASSIGNED, SEARCH.FOLLOWING, SEARCH.CLAIMED, SEARCH.UNCLAIMED],
-            displayOptions: [
-                {
-                    label: 'All', value: SEARCH.ALL, options: [
-                        { value: SEARCH.CATEGORIES, label: 'Category' },
-                        { value: SEARCH.NAME, label: 'Name' },
-                        { value: SEARCH.EMAIL, label: 'Email' },
-                        { value: SEARCH.NUMBER, label: 'Mobile' },
-                        { value: SEARCH.CLAIMER, label: 'Claimer' },
-                        { value: SEARCH.ASSIGNED, label: 'Assigned' },
-                        { value: SEARCH.FOLLOWING, label: 'Following' },
-                        { value: SEARCH.CLAIMED, label: 'Claimed' },
-                        { value: SEARCH.UNCLAIMED, label: 'Unclaim' },
-                    ]
-                }
-            ],
         };
-        this.changeDisplay = this.changeDisplay.bind(this);
-    }
-
-    changeDisplay(display) {
-        this.setState({ display });
-        //this.props.Client.Account.updateDisplaySetting(display);
     }
 
     renderCandidates() {
@@ -75,7 +52,7 @@ class Candidates extends React.Component {
                     <div className="col-md-12">
                         <label className="sr-only" htmlFor="inlineFormInputGroupUsername2">Username</label>
                         <div className="input-group mb-2 mr-sm-2">
-                            <input type="text" className="form-control" placeholder="Search" />
+                            <input type="text" className="form-control" placeholder="Search" name="search" value={this.props.search} onChange={this.props.changeSearch} />
                             <div className="input-group-prepend">
                                 <button className="btn btn-primary input-group-text"><i className="fa fa-search" /></button>
                             </div>
@@ -87,10 +64,7 @@ class Candidates extends React.Component {
                                 <h5>Inbox</h5>
                             </div>
                             <div className="col-md-6">
-                                <DropdownSelectDup name='filter' options={this.state.displayOptions}
-                                    value={this.state.display}
-                                    onChange={this.changeDisplay}
-                                    className='no-highlight' />
+                                <DropdownSelectDup name='filter' options={this.props.displayOptions} value={this.props.display} onChange={this.props.changeDisplay} className='no-highlight' />
                             </div>
                         </div>
                         <hr />
@@ -105,10 +79,20 @@ class Candidates extends React.Component {
     }
 }
 
-Candidates.propTypes = {};
+Candidates.propTypes = {
+    candidates: PropTypes.array,
+    displayOptions: PropTypes.array,
+    display: PropTypes.array,
+    isReady: PropTypes.bool,
+    search: PropTypes.string,
+    candidate: PropTypes.object,
+    changeDisplay: PropTypes.func,
+    changeSearch: PropTypes.func,
+    searchCandidate: PropTypes.func
+};
 
-export default withTracker(props => {
-    let isReady = Meteor.subscribe(ValidCandidates).ready();
+export default withTracker((props) => {
+    let isReady = Meteor.subscribe(ValidCandidates, props.candidate).ready();
     return {
         isReady,
         candidates: CandidatesDB.find().fetch().map((item, index) => new Candidate(item, index))
