@@ -186,7 +186,7 @@ class DriveList extends React.Component {
 
 DriveList.propTypes = {
     Drive: PropTypes.object,
-    files: PropTypes.object,
+    files: PropTypes.array,
     user: PropTypes.object,
     getFiles: PropTypes.func
 };

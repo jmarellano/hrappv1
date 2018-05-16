@@ -1,7 +1,6 @@
-import fs from 'fs';
-import readline from 'readline';
 import { google } from 'googleapis';
 import Future from 'fibers/future';
+import HTTP from 'meteor/http';
 
 class Drive {
     constructor() {
@@ -65,7 +64,7 @@ class Drive {
             headers: {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
             },
-            data: { "properties": { "trashedBy": undo ? null : this.userId }, "trashed": !undo }
+            data: { 'properties': { 'trashedBy': undo ? null : this.userId }, 'trashed': !undo }
         };
         HTTP.call('PATCH', 'https://www.googleapis.com/drive/v3/files/' + id, options, function (err, res) {
             if (err && err !== null)
@@ -88,7 +87,7 @@ class Drive {
             body.emailAddress = value;
         }
         let future = new Future();
-        this.drive.permissions.create(params, function (err, data) {
+        this.drive.permissions.create(params, function () {
             future.return(true);
         });
         return future.wait();

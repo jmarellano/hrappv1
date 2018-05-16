@@ -91,7 +91,8 @@ class Section extends Component {
                     Account: this.props.Client.Account,
                     Message: this.props.Client.Message,
                     user: this.props.user,
-                    settings: this.props.settings
+                    settings: this.props.settings,
+                    users: this.props.users
                 };
             case ROUTES.STATISTICS:
                 return {
@@ -121,7 +122,7 @@ class Section extends Component {
                 case ROUTES.RESET_PASSWORD:
                 case ROUTES.VERIFY:
                     if (this.props.user) {
-                        this.props.history.replace("/");
+                        this.props.history.replace('/');
                         continueRender = false;
                     }
                     break;

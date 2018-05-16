@@ -59,14 +59,17 @@ class FormCreator extends React.Component {
             this.setState({ processing: false });
         });
     }
+    exec(text) {
+        document.execCommand(text);
+    }
     render() {
         return (
             <div className="container-fluid">
                 <form id="tmq-form-builder" onSubmit={this.onSubmit}>
                     <div id="tmq-form-builder-form-title">
                         <input id="form-title" type="text" defaultValue="Untitled Form" required />
-                        <button type="button" className="form-options" onClick={function () { document.execCommand('italic') }}><b>I</b></button>
-                        <button type="button" className="form-options" onClick={function () { document.execCommand('bold') }}><b>B</b></button>
+                        <button type="button" className="form-options" onClick={this.exec.bind(this, 'italic')}><b>I</b></button>
+                        <button type="button" className="form-options" onClick={this.exec.bind(this, 'bold')}><b>B</b></button>
                         <span className="form-options">Editable</span><input className="form-options" type="radio" id="options" name="options" checked={this.state.option === "false"} onChange={this.handleOptionChange.bind(this)} value="false" />
                         <span className="form-options">Sortable</span><input className="form-options" type="radio" name="options" id="options" checked={this.state.option === "true"} onChange={this.handleOptionChange.bind(this)} value="true" />
                     </div>

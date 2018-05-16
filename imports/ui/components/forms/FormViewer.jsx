@@ -26,6 +26,7 @@ class FormViewer extends React.Component {
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.getCandidateId = this.getCandidateId.bind(this);
+        this.routeMessages = this.routeMessages.bind(this);
         this.location = false;
         this.styleSet = {
             overlay: {
@@ -151,14 +152,16 @@ class FormViewer extends React.Component {
         });
     }
 
+    routeMessages() {
+        this.props.history.replace(ROUTES.MESSAGES);
+    }
+
     render() {
         return (
             <div className="container">
                 <form onSubmit={this.saveForm.bind(this)}>
                     <div id="tmq-form-builder">
-                        <button className="btn btn-secondary pull-left" onClick={() => {
-                            this.props.history.replace(ROUTES.MESSAGES)
-                        }}>
+                        <button className="btn btn-secondary pull-left" onClick={this.routeMessages}>
                             <i className="fa fa-arrow-left " /> Go Home
                         </button>
                         {

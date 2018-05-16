@@ -217,6 +217,5 @@ if (Meteor.isServer) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
-        this.ready();
     });
 }

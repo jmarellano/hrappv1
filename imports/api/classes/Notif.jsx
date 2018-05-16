@@ -1,4 +1,3 @@
-import React from 'react';
 import moment from 'moment-timezone';
 
 class Notif {
@@ -11,7 +10,7 @@ class Notif {
     }
 
     getDateCreated(default_timezone = moment.tz.guess()) {
-        return moment(this.createdAt).tz(default_timezone).format("h:mmA MMM DD");
+        return moment(this.createdAt).tz(default_timezone).format('h:mmA MMM DD');
     }
 
 }

@@ -20,7 +20,7 @@ class RightNav extends Component {
     }
 
     render() {
-        let mute = this.props.user.mute ? "fa fa-2x fa-volume-off" : "fa fa-2x fa-volume-up";
+        let mute = this.props.user.mute ? 'fa fa-2x fa-volume-off' : 'fa fa-2x fa-volume-up';
         return (
             <div className="left-nav pull-right bg-secondary">
                 <ul className="navbar-nav ml-auto text-center">

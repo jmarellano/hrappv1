@@ -5,6 +5,7 @@ import { ValidCandidates, CandidatesDB } from '../../../api/candidates';
 import PropTypes from 'prop-types';
 import DropdownSelectDup from '../extras/DropdownSelectDup';
 import Candidate from '../../../api/classes/Candidate';
+import ReactTooltip from 'react-tooltip';
 
 class Candidates extends React.Component {
     constructor(props) {
@@ -40,6 +41,7 @@ class Candidates extends React.Component {
                             </div>
                         </div>
                     </div>
+                    <ReactTooltip />
                 </div>
             );
         });
@@ -63,7 +65,7 @@ class Candidates extends React.Component {
                             <div className="col-md-6 mt-1">
                                 <h5>Inbox</h5>
                             </div>
-                            <div className="col-md-6">
+                            <div className="col-md-6 p-0">
                                 <DropdownSelectDup name='filter' options={this.props.displayOptions} value={this.props.display} onChange={this.props.changeDisplay} className='no-highlight' />
                             </div>
                         </div>
@@ -95,7 +97,7 @@ export default withTracker((props) => {
     let isReady = Meteor.subscribe(ValidCandidates, props.candidate).ready();
     return {
         isReady,
-        candidates: CandidatesDB.find().fetch().map((item, index) => new Candidate(item, index))
+        candidates: CandidatesDB.find().fetch().map((item) => new Candidate(item))
     };
 
 })(Candidates);

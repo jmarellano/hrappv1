@@ -47,6 +47,8 @@
         "clearInterval": true,
         "Set": true,
         "FileReader": true,
-        "MediaUploader": true
+        "MediaUploader": true,
+        "Morris": true,
+        "MongoInternals": true
     }
 }

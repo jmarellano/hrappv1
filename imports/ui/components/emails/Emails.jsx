@@ -176,16 +176,20 @@ class Emails extends Component {
     }
 
     renderValidUsers() {
-        return this.props.active_users.map((user, index) => {
+        return this.props.users.map((user, index) => {
             return (
                 <option key={index} value={user.id}>{user.username}</option>
             );
         });
     }
 
+    setRemove(account) {
+        this.setState({ credit: account, remove: true })
+    }
+
     render() {
         let credit = this.state.credit;
-        let user = this.props.active_users.filter((userObj) => { return userObj.id === this.state.user.id })[0];
+        let user = this.props.users.filter((userObj) => { return userObj.id === this.state.user.id })[0];
         if (!user.connectedEmails) {
             user.connectedEmails = [];
         }
@@ -247,9 +251,7 @@ class Emails extends Component {
                                                         onClick={this.setDefault.bind(this, index)}>Set
                                                         Default
                                                     </button>
-                                                    <button className="btn btn-danger mr-1" onClick={() => {
-                                                        this.setState({ credit: account, remove: true })
-                                                    }}>Remove
+                                                    <button className="btn btn-danger mr-1" onClick={this.setRemove.bind(this, account)}>Remove
                                                     </button>
                                                 </div>
                                             </td>
@@ -349,11 +351,10 @@ Emails.propTypes = {
     user: PropTypes.object,
     Account: PropTypes.object,
     Message: PropTypes.object,
-    title: PropTypes.string
+    title: PropTypes.string,
+    users: PropTypes.array
 };
 
-export default withTracker((props) => {
-    return {
-        active_users: [props.user] // TODO
-    };
+export default withTracker(() => {
+    return {};
 })(Emails);

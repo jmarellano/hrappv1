@@ -46,7 +46,7 @@ class User {
     }
 
     getSupervisorName() {
-        return ""; // TODO
+        return ''; // TODO
     }
 
     isRetired() {
@@ -54,7 +54,7 @@ class User {
     }
 
     getDateJoined() {
-        return moment(this.createdAt).format("MM/DD/YYYY hh:mm:ss A");
+        return moment(this.createdAt).format('MM/DD/YYYY hh:mm:ss A');
     }
 
 }

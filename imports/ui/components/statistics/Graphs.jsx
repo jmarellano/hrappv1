@@ -127,7 +127,7 @@ class Graphs extends Component {
                             <Select
                                 className="mb"
                                 name="form-field-name"
-                                value={this.state.id}
+                                value={this.state.id.value}
                                 onChange={this.handleAgentChange}
                                 options={this.activeUsers()}
                             />
@@ -140,21 +140,19 @@ class Graphs extends Component {
                     </div>
                 </div>
                 {
-                    this.state.loading ?
-                        <h2 className="text-center">
-                            <i className="fa fa-spin fa-circle-o-notch" /> Loading...
-                        </h2>
-                        : ''
+                    this.state.loading &&
+                    <h2 className="text-center">
+                        <i className="fa fa-spin fa-circle-o-notch" /> Loading...
+                    </h2>
                 }
                 {
-                    this.state.graphLoaded ?
-                        <div className="graph-container p-4">
-                            <div className="caption">Job Postings</div>
-                            <div className="page-content">
-                                <div ref={instance => { this.bgraph = instance }} style={{ height: '250px' }} />
-                            </div>
+                    this.state.graphLoaded &&
+                    <div className="graph-container p-4">
+                        <div className="caption">Job Postings</div>
+                        <div className="page-content">
+                            <div ref={instance => { this.bgraph = instance }} style={{ height: '250px' }} />
                         </div>
-                        : ''
+                    </div>
                 }
             </form>
         )

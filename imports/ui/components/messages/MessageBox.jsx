@@ -174,7 +174,7 @@ class MessageBox extends React.Component {
     render() {
         let type = parseInt(this.state.type);
         return (
-            <a className="nav-link" href="#" data-tip="create Message" onClick={this.setMessageBox.bind(this, true)}>
+            <a className="nav-link" href="#" data-tip="Create Message" onClick={this.setMessageBox.bind(this, true)}>
                 <i className="fa fa-2x fa-plus" aria-hidden="true" />
                 <Modal
                     isOpen={this.state.messageModal}
@@ -267,7 +267,10 @@ class MessageBox extends React.Component {
     }
 }
 
-MessageBox.propTypes = {};
+MessageBox.propTypes = {
+    user: PropTypes.object,
+    Message: PropTypes.object
+};
 
 export default withTracker(() => {
     return {};

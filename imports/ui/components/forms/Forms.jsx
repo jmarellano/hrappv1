@@ -1,10 +1,11 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
+import { ROUTES } from '../../../api/classes/Const';
+import { ValidForms, FormsDB } from '../../../api/forms';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
-import { ROUTES } from '../../../api/classes/Const';
-import { ValidForms, FormsDB } from '../../../api/forms';
+import ReactTooltip from 'react-tooltip'
 import Form from '../../../api/classes/Form';
 
 class Forms extends Component {
@@ -67,6 +68,18 @@ class Forms extends Component {
         });
     }
 
+    routeViewer(form) {
+        window.open(ROUTES.FORMS_VIEWER + '/' + form.id);
+    }
+
+    routeData(form) {
+        window.open(ROUTES.FORMS_DATA + '/' + form.id);
+    }
+
+    routeCreator(form) {
+        window.open(ROUTES.FORMS_CREATOR + '/' + form.id);
+    }
+
     renderForms() {
         return this.props.forms.map((form, index) => {
             return (
@@ -74,27 +87,22 @@ class Forms extends Component {
                     <td className="pt-3">{form.name}</td>
                     <td className="text-right">
                         <button className="btn btn-default ml-1"
-                            onClick={() => {
-                                window.open(ROUTES.FORMS_VIEWER + "/" + form.id);
-                            }} data-tip="View Form">
+                            onClick={this.routeViewer.bind(this, form)} data-tip="View Form">
                             <i className="fa fa-eye" aria-hidden="true" />
                         </button>
                         <button className="btn btn-primary ml-1"
-                            onClick={() => {
-                                window.open(ROUTES.FORMS_DATA + "/" + form.id);
-                            }} data-tip="View Data">
+                            onClick={this.routeData.bind(this, form)} data-tip="View Data">
                             <i className="fa fa-table" aria-hidden="true" />
                         </button>
                         <button className="btn btn-warning ml-1"
-                            onClick={() => {
-                                window.open(ROUTES.FORMS_CREATOR + "/" + form.id);
-                            }} data-tip="Edit Form">
+                            onClick={this.routeCreator.bind(this, form)} data-tip="Edit Form">
                             <i className="fa fa-pencil" aria-hidden="true" />
                         </button>
                         <button className="btn btn-danger ml-1"
                             onClick={this.confirmationModal.bind(this, form)} data-tip="Remove Form">
                             <i className="fa fa-times" aria-hidden="true" />
                         </button>
+                        <ReactTooltip />
                     </td>
                 </tr>
             );
@@ -104,7 +112,7 @@ class Forms extends Component {
     render() {
         return (
             <div>
-                <a className="nav-link" href="#" onClick={this.toggleModal}>
+                <a className="nav-link" data-tip="Forms" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-th-list" />
                 </a>
                 <Modal isOpen={this.state.forms} contentLabel="FormsModal" style={this.styleSet}>
@@ -135,9 +143,7 @@ class Forms extends Component {
                                     </tbody>
                                 </table>
                                 <hr />
-                                <button onClick={() => {
-                                    window.open(ROUTES.FORMS_CREATOR + "/0");
-                                }} className="btn btn-primary ml-1 pull-right" type="button">
+                                <button onClick={this.routeCreator.bind(this, { id: 0 })} className="btn btn-primary ml-1 pull-right" type="button">
                                     <i className="fa fa-plus" aria-hidden="true" /> New
                                 </button>
                                 {
@@ -197,7 +203,7 @@ Forms.propTypes = {
 };
 
 export default withTracker((props) => {
-    let forms = FormsDB.find({}).fetch().map((item, index) => new Form(item, index));
+    let forms = FormsDB.find({}).fetch().map((item) => new Form(item));
     return {
         isReady: Meteor.subscribe(ValidForms, props.limit).ready(),
         forms,

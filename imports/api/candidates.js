@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
-import { ROLES, ROUTES, isPermitted, VALUE } from './classes/Const';
-import Util from './classes/Utilities';
+import { ROLES, isPermitted, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 
-export const ValidCandidates = "candidates_valid";
-export const CandidateCreate = "candidates_create";
-export const CandidatesGetId = "candidates_get_id";
+export const ValidCandidates = 'candidates_valid';
+export const CandidateCreate = 'candidates_create';
+export const CandidatesGetId = 'candidates_get_id';
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
 
@@ -58,6 +58,5 @@ if (Meteor.isServer) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
-        this.ready();
     });
 }

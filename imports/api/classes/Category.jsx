@@ -1,6 +1,3 @@
-import React from 'react';
-import { ROLES } from './Const';
-
 class Category {
 
     constructor(obj) {

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 export const NotifPub = 'notifications';
 export const NotificationsDB = new Mongo.Collection(Meteor.settings.public.collections.notifications || 'notifications', { idGeneration: 'MONGO' });

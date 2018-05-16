@@ -28,7 +28,7 @@ export default withTracker(props => {
         user = Meteor.user();
     if (user)
         user = new User(user, 0);
-    if (isReady) {
+    if (isReady && user) {
         isReady = Meteor.subscribe(ValidUsers).ready() && Meteor.subscribe(SettingsPub).ready();
     }
     return {

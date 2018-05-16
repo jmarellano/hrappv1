@@ -15,20 +15,20 @@ PATH = {
 };
 let EmailFiles = new FilesCollection({
     debug: false,
-    collectionName: Meteor.settings.public.collections.emailFiles || "emailfiles",
-    permissions: 0774,
-    parentDirPermissions: 0774,
+    collectionName: Meteor.settings.public.collections.emailFiles || 'emailfiles',
+    permissions: '0774',
+    parentDirPermissions: '0774',
     allowClientCode: true,
     storagePath: PATH.UPLOAD,
-    onAfterUpload: function (fileRef) {
+    onAfterUpload: function () {
         return true;
     }
 });
 let PSTFiles = new FilesCollection({
     debug: false,
-    collectionName: Meteor.settings.public.collections.pstFiles || "pstfiles",
-    permissions: 0774,
-    parentDirPermissions: 0774,
+    collectionName: Meteor.settings.public.collections.pstFiles || 'pstfiles',
+    permissions: '0774',
+    parentDirPermissions: '0774',
     allowClientCode: true,
     storagePath: PATH.UPLOAD,
     onBeforeUpload: function (file) {

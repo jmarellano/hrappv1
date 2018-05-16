@@ -1,10 +1,6 @@
-import React from 'react';
-import { ROLES } from './Const';
-import moment from 'moment';
-
 class Form {
 
-    constructor(obj, index) {
+    constructor(obj) {
         this.id = obj._id;
         this.dateModified = obj.dateModified;
         this.name = obj.name;

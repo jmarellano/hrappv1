@@ -169,7 +169,7 @@ class Category extends React.Component {
     render() {
         return (
             <div>
-                <a className="nav-link" href="#" onClick={this.toggleModal}>
+                <a className="nav-link" data-tip="Categories" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-object-group" />
                 </a>
                 <Modal

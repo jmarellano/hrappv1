@@ -1,5 +1,4 @@
 import React from 'react';
-import { ROLES } from './Const';
 import Avatar, { getRandomColor } from '../../ui/components/extras/Avatar';
 import moment from 'moment';
 import Util from './Utilities';
@@ -7,7 +6,7 @@ import Moment from 'react-moment';
 
 class Candidate {
 
-    constructor(obj, index) {
+    constructor(obj) {
         this.id = obj._id;
         this.name = obj.name;
         this.email = obj.email;
@@ -23,11 +22,11 @@ class Candidate {
     }
 
     getDateJoined() {
-        return moment(this.createdAt).format("MM/DD/YYYY hh:mm:ss A");
+        return moment(this.createdAt).format('MM/DD/YYYY hh:mm:ss A');
     }
 
     getLastMessageDate() {
-        return moment(this.lastMessage.createdAt).format("dddd, MMMM DD, YYYY");
+        return moment(this.lastMessage.createdAt).format('dddd, MMMM DD, YYYY');
     }
 
     isRead() {
@@ -53,7 +52,7 @@ class Candidate {
     }
 
     getCategory() {
-        return this.category && <Avatar key={index} username={this.category} color={getRandomColor()} />;
+        return this.category && <Avatar username={this.category} color={getRandomColor()} />;
     }
 
     getLastMessageTime() {

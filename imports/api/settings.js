@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-
-import { CategoriesDB } from './categories';
+import { Mongo } from 'meteor/mongo';
 import moment from 'moment';
 
-export const SettingsPub = "settings";
-export const SettingsSave = "settings_save";
+export const SettingsPub = 'settings';
+export const SettingsSave = 'settings_save';
 export const RecordJob = 'record-job';
 export const GetPostingStat = 'posting-stat';
 export const SettingsDB = new Mongo.Collection(Meteor.settings.public.collections.settings || 'settings', { idGeneration: 'MONGO' });
@@ -21,11 +20,11 @@ if (Meteor.isServer) {
                 timestamp: data.timestamp,
                 site: data.site,
                 url: data.link,
-                category: data.category,
+                category: new Mongo.ObjectID(data.category),
                 postedBy: this.userId
             });
         } catch (err) {
-            throw new Meteor.Error(403, "Not authorized");
+            throw new Meteor.Error(403, 'Not authorized');
         }
     }
     functions[GetPostingStat] = function (opt) {
@@ -40,7 +39,7 @@ if (Meteor.isServer) {
             if (opt.range && opt.range.from && opt.range.to) {
                 let range = moment(opt.range.to).diff(moment(opt.range.from), 'days');
                 query.timestamp = { $lte: opt.range.to, $gte: opt.range.from };
-                if (opt.agentId !== "0")
+                if (opt.agentId !== '0')
                     query.postedBy = opt.agentId;
                 if (range < 32) {
                     criteria = {
@@ -105,10 +104,10 @@ if (Meteor.isServer) {
                 },
                 {
                     $sort: {
-                        "_id.id.year": 1,
-                        "_id.id.month": 1,
-                        "_id.id.day": 1,
-                        "_id.id.hr": 1,
+                        '_id.id.year': 1,
+                        '_id.id.month': 1,
+                        '_id.id.day': 1,
+                        '_id.id.hr': 1,
                     }
                 }
             ];
@@ -135,7 +134,7 @@ if (Meteor.isServer) {
             return temp;
         } catch (err) {
             console.log(err);
-            throw new Meteor.Error(403, "Not authorized");
+            throw new Meteor.Error(403, 'Not authorized');
         }
     }
     functions[SettingsSave] = function (data) {
@@ -144,7 +143,7 @@ if (Meteor.isServer) {
             check(data, Object);
             return SettingsDB.update({}, data, { upsert: true });
         } catch (err) {
-            throw new Meteor.Error(403, "Not authorized");
+            throw new Meteor.Error(403, 'Not authorized');
         }
     };
     Meteor.publish(SettingsPub, function (key = {}) {
@@ -153,7 +152,7 @@ if (Meteor.isServer) {
             check(this.userId, String);
             return SettingsDB.find(key);
         } catch (err) {
-            throw new Meteor.Error(403, "Not authorized");
+            throw new Meteor.Error(403, 'Not authorized');
         }
     });
 }

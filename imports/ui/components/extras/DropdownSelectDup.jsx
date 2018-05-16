@@ -102,7 +102,7 @@ class DropdownSelect extends React.Component {
                 <input
                     type='text'
                     name={this.props.name || ''}
-                    className={'form-control dropdown-multi text-right'}
+                    className={'form-control dropdown-multi text-right pr-4'}
                     disabled={this.props.disabled || false}
                     value={this.renderValue()}
                     readOnly={true}

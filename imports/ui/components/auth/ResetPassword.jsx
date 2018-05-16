@@ -46,7 +46,7 @@ class ResetPassword extends Component {
     }
 
     redirect() {
-        this.props.history.replace("/");
+        this.props.history.replace('/');
     }
 
     render() {

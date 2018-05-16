@@ -1,10 +1,11 @@
+import { Accounts } from 'meteor/accounts-base';
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend } from '../messages';
 import { CandidatesGetId } from '../candidates';
-import { RecordJob, GetPostingStat, SettingsSave } from "../settings";
+import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 
 export default class Client {
     constructor() {
@@ -106,8 +107,8 @@ class Account {
 class Drive {
     constructor() { }
     getFiles(data, callback) {
-        Meteor.call(DriveGetFiles, data, (err, data) => {
-            callback(err, data);
+        Meteor.call(DriveGetFiles, data, (err, result) => {
+            callback(err, result);
         });
     }
     getToken(callback) {
@@ -116,13 +117,13 @@ class Drive {
         });
     }
     insertPermission(data, callback) {
-        Meteor.call(DriveInsertPermission, data, null, "anyone", "reader", (err, data) => {
-            callback(err, data);
+        Meteor.call(DriveInsertPermission, data, null, 'anyone', 'reader', (err, result) => {
+            callback(err, result);
         });
     }
     removeFile(data, undo, callback) {
-        Meteor.call(DriveRemoveFile, data.id, undo, (err, data) => {
-            callback(err, data);
+        Meteor.call(DriveRemoveFile, data.id, undo, (err, result) => {
+            callback(err, result);
         });
     }
 }
@@ -135,30 +136,30 @@ class Form {
         Meteor.call(FormsSave, {
             _id: id,
             name: formBuilder.getData().form.title,
-            template: (formBuilder !== null) ? JSON.stringify(formBuilder.getData()) : ""
-        }, (err, data) => {
-            callback(err, data);
+            template: (formBuilder !== null) && JSON.stringify(formBuilder.getData())
+        }, (err, result) => {
+            callback(err, result);
         });
     }
     getForm(data, callback) {
-        Meteor.call(GetForm, data.id, (err, data) => {
-            callback(err, data);
+        Meteor.call(GetForm, data.id, (err, result) => {
+            callback(err, result);
         });
     }
     deleteForm(data, callback) {
-        Meteor.call(DeleteForm, data.id, (err, data) => {
-            callback(err, data);
+        Meteor.call(DeleteForm, data.id, (err, result) => {
+            callback(err, result);
         });
     }
-    submit(path, location, data, version, callback, failCallback) {
+    submit(path, location, data, version, callback) {
         Meteor.call(FormsSubmit, {
             _id: path[2],
             location: { latitude: location.latitude, longitude: location.longitude },
             applicantId: path[3],
             obj: data,
             version: version
-        }, (err, data) => {
-            callback(err, data);
+        }, (err, result) => {
+            callback(err, result);
         });
     }
 }
@@ -204,8 +205,8 @@ class Candidate {
     }
 
     getId(data, callback) {
-        Meteor.call(CandidatesGetId, data, (err, data) => {
-            callback(err, data);
+        Meteor.call(CandidatesGetId, data, (err, result) => {
+            callback(err, result);
         });
     }
 }
