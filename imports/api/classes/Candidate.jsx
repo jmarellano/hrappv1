@@ -1,5 +1,4 @@
 import React from 'react';
-import Avatar, { getRandomColor } from '../../ui/components/extras/Avatar';
 import moment from 'moment';
 import Util from './Utilities';
 import Moment from 'react-moment';
@@ -15,6 +14,50 @@ class Candidate {
         this.retired = obj.retired;
         this.createdAt = obj.createdAt;
         this.lastMessage = obj.lastMessage;
+        this.max = obj.max;
+        this.followers = obj.followers;
+        this.number = obj.number;
+        this.address = obj.address;
+        this.zip = obj.zip;
+        this.resume = obj.resume;
+        this.portfolio = obj.portfolio;
+        this.disc = obj.disc;
+        this.disc_d = obj.disc_d;
+        this.disc_i = obj.disc_i;
+        this.disc_s = obj.disc_s;
+        this.disc_c = obj.disc_c;
+        this.values = obj.values;
+        this.values_aesthetic = obj.values_aesthetic;
+        this.values_economic = obj.values_economic;
+        this.values_individualistic = obj.values_individualistic;
+        this.values_political = obj.values_political;
+        this.values_altruist = obj.values_altruist;
+        this.values_regulatory = obj.values_regulatory;
+        this.values_theoretical = obj.values_theoretical;
+        this.iq = obj.iq;
+        this.TEST_METEOR = obj.TEST_METEOR;
+        this.TEST_LIVE = obj.TEST_LIVE;
+        this.TEST_WRITING = obj.TEST_WRITING;
+        this.TEST_WRITING_Duplication = obj.TEST_WRITING_Duplication;
+        this.TEST_WRITING_Style = obj.TEST_WRITING_Style;
+        this.TEST_WRITING_Grammar = obj.TEST_WRITING_Grammar;
+        this.TEST_WRITING_Marketing = obj.TEST_WRITING_Marketing;
+        this.TEST_WRITING_Impact = obj.TEST_WRITING_Impact;
+        this.VIDEO = obj.VIDEO;
+        this.INTERVIEW = obj.INTERVIEW;
+        this.MANAGER = obj.MANAGER;
+        this.TEST_IMAGE = obj.TEST_IMAGE;
+        this.TEST_CREATIVE = obj.TEST_CREATIVE;
+        this.TEST_WEBFLOW = obj.TEST_WEBFLOW;
+        this.TEST_MOCK = obj.TEST_MOCK;
+        this.TEST_MOCK_Voice = obj.TEST_MOCK_Voice;
+        this.TEST_MOCK_Accent = obj.TEST_MOCK_Accent;
+        this.TEST_MOCK_Acknowledgement = obj.TEST_MOCK_Acknowledgement;
+        this.TEST_MOCK_Comprehension = obj.TEST_MOCK_Comprehension;
+        this.TEST_MOCK_Sales = obj.TEST_MOCK_Sales;
+        this.TEST_MOCK_Care = obj.TEST_MOCK_Care;
+        this.TEST_SIMULATION = obj.TEST_SIMULATION;
+        this.others = obj.others;
     }
 
     isRetired() {
@@ -34,7 +77,7 @@ class Candidate {
     }
 
     isReply() {
-        return this.lastMessage.from === this.name || this.lastMessage.from === this.email || this.lastMessage.from === this.contact;
+        return this.lastMessage.to === this.number || this.lastMessage.to === this.email || this.lastMessage.to === this.contact;
     }
 
     getSubject() {
@@ -52,7 +95,11 @@ class Candidate {
     }
 
     getCategory() {
-        return this.category && <Avatar username={this.category} color={getRandomColor()} />;
+        return <div className="badge badge-warning mr-1 text-light">{this.category}</div>;
+    }
+
+    getDisplayName() {
+        return this.name || this.email || this.contact;
     }
 
     getLastMessageTime() {

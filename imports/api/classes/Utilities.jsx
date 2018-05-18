@@ -1,4 +1,5 @@
 import moment from 'moment';
+import PhoneNumber from 'awesome-phonenumber';
 
 class Utilities {
     constructor() {
@@ -37,6 +38,23 @@ class Utilities {
         instance.onStop(() => {
             handle.stop();
         });
+    }
+    numberValidator(input) {
+        if (!input) return { isValid: false };
+        const phone = PhoneNumber(input);
+        if (phone.isValid())
+            return {
+                isValid: phone.isValid(),
+                fromUS: phone.getRegionCode() === "US",
+                region: phone.getRegionCode(),
+                internationalFormat: phone.getNumber("international"),
+                nationalFormat: phone.getNumber("national"),
+                e164Format: phone.getNumber("e164"),
+                rfc3966Format: phone.getNumber("rfc3966"),
+                number: input,
+                countryCode: PhoneNumber.getCountryCodeForRegionCode(phone.getRegionCode()),
+            };
+        return { isValid: false };
     }
 }
 

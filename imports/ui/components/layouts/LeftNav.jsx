@@ -1,6 +1,6 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { ROUTES, ROLES } from '../../../api/classes/Const';
+import { ROUTES, ROLES, isPermitted } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import HeaderNav from './HeaderNav';
 import ReactTooltip from 'react-tooltip';
@@ -22,6 +22,7 @@ class LeftNav extends Component {
         this.routeStatistics = this.routeStatistics.bind(this);
         this.routeDrive = this.routeDrive.bind(this);
         this.routeEmails = this.routeEmails.bind(this);
+        this.routeRequests = this.routeRequests.bind(this);
     }
 
     routeMessages() {
@@ -42,6 +43,13 @@ class LeftNav extends Component {
 
     routeEmails() {
         this.props.history.replace(ROUTES.EMAILS);
+    }
+
+    routeRequests() {
+        if (isPermitted(this.props.user.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER))
+            this.props.history.replace(ROUTES.REQUESTS_ADMIN);
+        else
+            this.props.history.replace(ROUTES.REQUESTS);
     }
 
     render() {
@@ -77,7 +85,9 @@ class LeftNav extends Component {
                     <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
                         <Global {...this.props} Settings={this.Client.Settings} />
                     </HeaderNav>
-                    {/* TODO import Requests */}
+                    <HeaderNav key={11} type="navbar">
+                        <a className="nav-link" data-tip="View Requests" href="#" onClick={this.routeRequests}><i className="fa fa-2x fa-bullhorn" /></a>
+                    </HeaderNav>
                 </ul>
                 <ReactTooltip />
             </div>

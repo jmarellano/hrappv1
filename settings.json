@@ -14,7 +14,7 @@
                 "mailbox_outgoing": "[Gmail]/Sent Mail"
             },
             {
-                "name": "GMail - POP",
+                "name": "GMail - POP3",
                 "pop_host": "pop.gmail.com",
                 "pop_port": "995",
                 "smtp_host": "smtp.gmail.com",

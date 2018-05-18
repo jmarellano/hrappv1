@@ -135,7 +135,14 @@ class Forms extends Component {
                                     <thead className="thead-dark">
                                         <tr>
                                             <th scope="col">Form Name</th>
-                                            <th scope="col"></th>
+                                            <th scope="col">
+                                                <form className="input-group mb-2 mr-sm-2" onSubmit={this.props.searchForm}>
+                                                    <input type="text" className="form-control" placeholder="Search" name="search" value={this.props.search} onChange={this.props.changeSearch} />
+                                                    <div className="input-group-prepend">
+                                                        <Button type="submit" className="btn btn-primary input-group-text"><i className="fa fa-search" /></Button>
+                                                    </div>
+                                                </form>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -199,13 +206,16 @@ Forms.propTypes = {
     forms: PropTypes.array,
     isReady: PropTypes.bool,
     isMax: PropTypes.bool,
-    viewMore: PropTypes.func
+    viewMore: PropTypes.func,
+    searchForm: PropTypes.func,
+    changeSearch: PropTypes.func,
+    search: PropTypes.string
 };
 
 export default withTracker((props) => {
     let forms = FormsDB.find({}).fetch().map((item) => new Form(item));
     return {
-        isReady: Meteor.subscribe(ValidForms, props.limit).ready(),
+        isReady: Meteor.subscribe(ValidForms, props.form.search, props.limit).ready(),
         forms,
         isMax: props.limit >= (forms[0] ? forms[0].max : 0)
     };

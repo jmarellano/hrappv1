@@ -16,6 +16,8 @@ import FormData from './forms/FormData';
 import Emails from './emails/Emails';
 import Teams from './teams/Teams';
 import Graphs from './statistics/Graphs';
+import Requests from './requests/Requests';
+import RequestsAdmin from './requests/RequestsAdmin';
 
 import Header from './layouts/Header';
 import LeftNav from './layouts/LeftNav';
@@ -55,7 +57,8 @@ class Section extends Component {
                     Account: this.props.Client.Account,
                     user: this.props.user,
                     users: this.props.users,
-                    settings: this.props.settings
+                    settings: this.props.settings,
+                    Candidate: this.props.Client.Candidate
                 };
             case ROUTES.DRIVE:
                 return {
@@ -106,6 +109,19 @@ class Section extends Component {
                     users: this.props.users,
                     settings: this.props.settings
                 };
+            case ROUTES.REQUESTS:
+            case ROUTES.REQUESTS_ADMIN:
+                return {
+                    history: this.props.history,
+                    location: this.props.location,
+                    match: this.props.match,
+                    title: this.props.title,
+                    Account: this.props.Client.Account,
+                    Request: this.props.Client.Request,
+                    user: this.props.user,
+                    users: this.props.users,
+                    settings: this.props.settings
+                };
             default:
                 return { ...this.props };
         }
@@ -133,6 +149,8 @@ class Section extends Component {
                 case ROUTES.EMAILS:
                 case ROUTES.TEAMS:
                 case ROUTES.STATISTICS:
+                case ROUTES.REQUESTS:
+                case ROUTES.REQUESTS_ADMIN:
                     if (!this.props.user) {
                         this.props.history.replace(ROUTES.LOGIN);
                         continueRender = false;
@@ -167,6 +185,14 @@ class Section extends Component {
                         break;
                     case ROUTES.STATISTICS:
                         if (!isPermitted(this.props.user.role, ROLES.VIEW_STATISTICS))
+                            continueRender = false;
+                        break;
+                    case ROUTES.REQUESTS_ADMIN:
+                        if (!(isPermitted(this.props.user.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER)))
+                            continueRender = false;
+                        break;
+                    case ROUTES.REQUESTS:
+                        if (!isPermitted(this.props.user.role, ROLES.STAFFS))
                             continueRender = false;
                         break;
                 }
@@ -224,9 +250,25 @@ class Section extends Component {
                             <Graphs key={component + '_2'} {...this.filteredProps()} />,
                             <RightNav key={component + '_3'} {...this.filteredProps()} />
                         ]);
+                    case ROUTES.REQUESTS_ADMIN:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <RequestsAdmin key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    case ROUTES.REQUESTS:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Requests key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
                     default:
                         return (<NotFound type='RouteNotFound' key={component} {...this.filteredProps()} />);
                 }
+            else
+                this.props.history.replace(ROUTES.LOGIN);
         }
         return (
             <div className='container'>

@@ -3,8 +3,8 @@ import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
-import { MessagesAddSender, MessagesSend } from '../messages';
-import { CandidatesGetId } from '../candidates';
+import { MessagesAddSender, MessagesSend, MessagesRemoveSender } from '../messages';
+import { CandidatesGetId, CandidatesInfo, CandidatesStats } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 
 export default class Client {
@@ -186,9 +186,13 @@ class Message {
     constructor() {
 
     }
-
     addSender(data, callback) {
         Meteor.call(MessagesAddSender, data.credit, data.id, (err) => {
+            callback(err);
+        });
+    }
+    removeSender(data, callback) {
+        Meteor.call(MessagesRemoveSender, data.credit, data.id, (err) => {
             callback(err);
         });
     }
@@ -206,6 +210,18 @@ class Candidate {
 
     getId(data, callback) {
         Meteor.call(CandidatesGetId, data, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    changeInfo(data, callback) {
+        Meteor.call(CandidatesInfo, data, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    changeStats(data, contact, callback) {
+        Meteor.call(CandidatesStats, data, contact, (err, result) => {
             callback(err, result);
         });
     }

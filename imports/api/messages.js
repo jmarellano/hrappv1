@@ -1,16 +1,88 @@
 import { Meteor } from 'meteor/meteor';
 import { ROLES, isPermitted, MESSAGES_TYPE, MESSAGES_STATUS } from './classes/Const';
 import { check } from 'meteor/check';
-import moment from 'moment';
 import { CandidateCreate } from './candidates';
+import Util from './classes/Utilities';
+import moment from 'moment';
+import POP3Client from 'poplib';
+
 export const MessagesAddSender = 'messages_add_sender';
+export const MessagesRemoveSender = 'messages_add_sender';
+export const MessagesAddListener = 'messages_add_listener';
 export const MessagesSend = 'messages_send';
 export const MessagesSave = 'messages_save';
+export const ValidMessages = 'messages_pub';
+let databaseName = Meteor.settings.public.collections.messages || 'messages';
 export const MessagesDB = new Mongo.Collection(Meteor.settings.public.collections.messages || 'messages', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
     import nodemailer from 'nodemailer';
     import SMTPConnection from 'nodemailer/lib/smtp-connection';
+    functions[MessagesAddListener] = function (credit, id = this.userId) {
+        if (credit.imap_host) {
+            // TODO imap
+            console.log("failed", credit);
+        } else if (credit.pop_host) {
+            let count = 1;
+            let connection = new POP3Client(credit.pop_port, credit.pop_host, {
+                tlserrs: false,
+                enabletls: (credit.pop_port === '995'),
+                debug: false
+            });
+            connection.on('error', function (err) {
+                if (err.errno === 111) console.error(`Connection for ${credit.user}: Unable to connect to server`);
+                else console.error(`Connection for ${credit.user}: ${err}`);
+            });
+            connection.on('connect', function () {
+                connection.login(credit.user, credit.password);
+            });
+            connection.on('login', Meteor.bindEnvironment((status, rawdata) => {
+                if (status) {
+                    console.log("LOGIN/PASS success");
+                    Meteor.defer(() => {
+                        connection.list();
+                    });
+                } else {
+                    connection.quit();
+                    Meteor.users.update({
+                        _id: id,
+                        'profile.emails': credit
+                    }, { $set: { 'profile.emails.$.status': 'disconnected' } });
+                }
+            }));
+            connection.on('list', Meteor.bindEnvironment((status, msgcount, msgnumber, data, rawdata) => {
+                if (status === false) {
+                    console.log('LIST failed');
+                    Meteor.setTimeout(() => { connection.list() }, 1000);
+                } else {
+                    console.log("LIST success with " + msgcount + " element(s)");
+                    connection.retr(count);
+                    // for (let i = 1; i <= msgcount; i++) {
+                    //     //Meteor.setTimeout(() => { connection.retr(i); }, 1000);
+                    // }
+                }
+            }));
+            connection.on('retr', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
+                if (status === true) {
+                    console.log("RETR success for msgnumber " + msgnumber);
+                    connection.dele(msgnumber);
+                } else {
+                    console.log("RETR failed for msgnumber " + msgnumber);
+                    Meteor.setTimeout(() => { count = 1; connection.list(); }, 1000);
+                }
+            }));
+            connection.on('dele', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
+                if (status === true) {
+                    console.log("DELE success for msgnumber " + msgnumber);
+                    count++;
+                    connection.retr(count);
+                } else {
+                    console.log("DELE failed for msgnumber " + msgnumber);
+                    Meteor.setTimeout(() => { connection.dele(msgnumber); }, 1000);
+                }
+            }));
+        }
+    };
     functions[MessagesAddSender] = function (credit, id = this.userId) {
         try {
             check(this.userId, String);
@@ -36,17 +108,33 @@ if (Meteor.isServer) {
                                 _id: id,
                                 'profile.emails': credit
                             }, { $set: { 'profile.emails.$.status': 'disconnected' } });
-                        } else
+                        } else {
                             Meteor.users.update({
                                 _id: id,
                                 'profile.emails': credit
                             }, { $set: { 'profile.emails.$.status': 'connected' } });
+                            server.addSender(id, credit.user, connection);
+                            functions[MessagesAddListener].call(this, credit, id);
+                        }
                         connection.quit();
                     }));
                 }));
                 return true;
             }
             throw new Meteor.Error(403, 'Not authorized');
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[MessagesRemoveSender] = function (credit, id = this.userId) {
+        try {
+            check(this.userId, String);
+            check(credit, Object);
+            check(id, String);
+            let user = Meteor.user();
+            server.removeSender(id, credit.user);
+            return true;
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -166,4 +254,19 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    Meteor.publish(ValidMessages, function (contact, limit) {
+        console.log("todo subscribinf");
+        try {
+            let count = MessagesDB.find({ contact }, { sort: { createdAt: -1 } }).count();
+            let cursor = MessagesDB.find({ contact }, { sort: { createdAt: -1 }, limit });
+            Util.setupHandler(this, databaseName, cursor, (doc) => {
+                doc.max = count;
+                return doc;
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
 }

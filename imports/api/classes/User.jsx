@@ -1,5 +1,5 @@
 import React from 'react';
-import { ROLES } from './Const';
+import { ROLES, MESSAGES_TYPE } from './Const';
 import Avatar, { getRandomColor } from '../../ui/components/extras/Avatar';
 import moment from 'moment';
 
@@ -31,22 +31,18 @@ class User {
     }
 
     getRole() {
-        let role = 'MEMBER';
-        if (this.role === ROLES.SUPERVISOR)
-            role = 'SUPERVISOR';
-        if (this.role === ROLES.MANAGERS)
-            role = 'MANAGER';
+        let role = 'GUESTS';
+        if (this.role === ROLES.STAFFS)
+            role = 'STAFF';
+        if (this.role === ROLES.ADMIN)
+            role = 'ADMIN';
         if (this.role === ROLES.SUPERUSER)
-            role = 'MANAGER';
+            role = 'ADMIN';
         return role;
     }
 
     setTeamName(name) {
         return this.teamName = name;
-    }
-
-    getSupervisorName() {
-        return ''; // TODO
     }
 
     isRetired() {
@@ -55,6 +51,20 @@ class User {
 
     getDateJoined() {
         return moment(this.createdAt).format('MM/DD/YYYY hh:mm:ss A');
+    }
+
+    checkSender(contact, type) {
+        let val = false;
+        switch (type) {
+            case MESSAGES_TYPE.EMAIL:
+                if (this.connectedEmails.filter((item) => item.user === contact).length)
+                    val = true;
+                break;
+            case MESSAGES_TYPE.SMS:
+                //TODO
+                break;
+        }
+        return val;
     }
 
 }

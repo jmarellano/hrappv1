@@ -142,11 +142,14 @@ if (Meteor.isServer) {
         }
     }
         ;
-    Meteor.publish(ValidForms, function (limit) {
+    Meteor.publish(ValidForms, function (key, limit) {
         let cursor = null;
+        let query = { retired: { $exists: false } };
+        if (key && key.length)
+            query['name'] = { $regex: key, $options: 'i' };
         try {
-            let count = FormsDB.find({ retired: { $exists: false } }, { sort: { name: 1 } }).count();
-            cursor = FormsDB.find({ retired: { $exists: false } }, { sort: { name: 1 }, limit });
+            let count = FormsDB.find(query, { sort: { name: 1 } }).count();
+            cursor = FormsDB.find(query, { sort: { name: 1 }, limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;
                 return doc;

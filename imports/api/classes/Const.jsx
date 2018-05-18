@@ -102,6 +102,17 @@ export const MESSAGES_STATUS = {
     FAILED: 3,
 };
 
+export const REQUEST = {
+    PENDING: 0,
+    APPROVED: 1,
+    DECLINED: 2,
+};
+
+export const REQUEST_TYPE = {
+    TRANSFER_CLAIM: "Transfer_Claim",
+    FOLLOW_REQUEST: "Follow_Request"
+};
+
 export const COUNTRIES = [
     { "name": "Afghanistan", "code": "AF" },
     { "name": "�land Islands", "code": "AX" },

@@ -1,10 +1,10 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
-import { ValidCandidates, CandidatesDB } from '../../../api/candidates';
+import { ValidCandidates } from '../../../api/candidates';
 import PropTypes from 'prop-types';
 import DropdownSelectDup from '../extras/DropdownSelectDup';
-import Candidate from '../../../api/classes/Candidate';
+import Button from '../extras/Button';
 import ReactTooltip from 'react-tooltip';
 
 class Candidates extends React.Component {
@@ -12,6 +12,10 @@ class Candidates extends React.Component {
         super(props);
         this.state = {
         };
+    }
+
+    selectCandidate(candidate) {
+        this.props.selectCandidate(candidate);
     }
 
     renderCandidates() {
@@ -23,7 +27,7 @@ class Candidates extends React.Component {
             return (
                 <div key={index}>
                     {component}
-                    <div className="list-item p-1">
+                    <div className="list-item p-1" onClick={this.selectCandidate.bind(this, candidate)}>
                         <div className="row">
                             <div className="col-sm-12">
                                 {candidate.getCategory()}
@@ -53,30 +57,38 @@ class Candidates extends React.Component {
                 <div className="row">
                     <div className="col-md-12">
                         <label className="sr-only" htmlFor="inlineFormInputGroupUsername2">Username</label>
-                        <div className="input-group mb-2 mr-sm-2">
+                        <form className="input-group mb-2 mr-sm-2" onSubmit={this.props.searchCandidate}>
                             <input type="text" className="form-control" placeholder="Search" name="search" value={this.props.search} onChange={this.props.changeSearch} />
                             <div className="input-group-prepend">
-                                <button className="btn btn-primary input-group-text"><i className="fa fa-search" /></button>
+                                <Button type="submit" className="btn btn-primary input-group-text"><i className="fa fa-search" /></Button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                     <div className="col-md-12">
                         <div className="row">
-                            <div className="col-md-6 mt-1">
+                            <div className="col-md-3 mt-1">
                                 <h5>Inbox</h5>
                             </div>
-                            <div className="col-md-6 p-0">
+                            <div className="col-md-9 p-0">
                                 <DropdownSelectDup name='filter' options={this.props.displayOptions} value={this.props.display} onChange={this.props.changeDisplay} className='no-highlight' />
                             </div>
                         </div>
                         <hr />
                     </div>
                     <div id="candidates-list" className="col-md-12">
-                        {this.props.isReady && this.renderCandidates()}
+                        {this.renderCandidates()}
+                        {
+                            this.props.isReady && !this.props.candidates.length &&
+                            < div className="text-center">No candidate is found</div>
+                        }
+                        {
+                            this.props.isReady && this.props.candidates.length && this.props.candidates[0].max > this.props.candidates.length ?
+                                <button className="btn btn-sm btn-success mt-1 mb-1 form-control" onClick={this.props.viewMore}>View More</button> : null
+                        }
                         {!this.props.isReady && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
                     </div>
                 </div>
-            </div>
+            </div >
         );
     }
 }
@@ -90,14 +102,15 @@ Candidates.propTypes = {
     candidate: PropTypes.object,
     changeDisplay: PropTypes.func,
     changeSearch: PropTypes.func,
-    searchCandidate: PropTypes.func
+    searchCandidate: PropTypes.func,
+    viewMore: PropTypes.func,
+    selectCandidate: PropTypes.func
 };
 
 export default withTracker((props) => {
     let isReady = Meteor.subscribe(ValidCandidates, props.candidate).ready();
     return {
-        isReady,
-        candidates: CandidatesDB.find().fetch().map((item) => new Candidate(item))
+        isReady
     };
 
 })(Candidates);

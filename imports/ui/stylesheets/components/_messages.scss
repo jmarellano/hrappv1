@@ -22,3 +22,19 @@
     transition: all 0.5s ease;
     cursor:pointer;
 }
+
+.open-reply{
+    height: calc(100vh - 648px); 
+    overflow-y: scroll;
+    overflow-x: none;
+}
+
+.close-reply{
+    height: calc(100vh - 248px); 
+    overflow-y: scroll;
+    overflow-x: none;
+}
+
+.card-header{
+    cursor: pointer;
+}

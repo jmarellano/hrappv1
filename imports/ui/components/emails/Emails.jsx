@@ -84,7 +84,7 @@ class Emails extends Component {
     saveCredit(e) {
         e.preventDefault();
         let email = Meteor.settings.public.emailAccounts[this.state.credit.index];
-        let credit = { ...this.state.credit, ...email };
+        let credit = { ...email, ...this.state.credit };
         let user = this.props.user;
         let userId = (user.role === ROLES.ADMIN || user.role === ROLES.SUPERUSER) ? this.state.agent : user.id;
         this.setState({ processing: true });
@@ -104,7 +104,7 @@ class Emails extends Component {
                                 user: '',
                                 index: 0,
                                 password: '',
-                                status: 'pending', ...Meteor.settings.public.emailAccounts[0]
+                                status: 'pending'
                             }
                         });
                     }
@@ -122,24 +122,23 @@ class Emails extends Component {
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
                 this.setState({ processing: false });
             } else
-                null
-            // this.props.Messages.removeListener(credit, (err) => { // TODO
-            if (err)
-                Bert.alert(err.reason, 'danger', 'growl-top-right');
-            else {
-                this.setState({
-                    remove: false,
-                    credit: {
-                        user: '',
-                        index: 0,
-                        password: '',
-                        status: 'pending', ...Meteor.settings.public.emailAccounts[0]
+                this.props.Message.removeSender({ credit, id: this.state.user.id }, (error) => {
+                    if (error)
+                        Bert.alert(error.reason, 'danger', 'growl-top-right');
+                    else {
+                        this.setState({
+                            remove: false,
+                            credit: {
+                                user: '',
+                                index: 0,
+                                password: '',
+                                status: 'pending'
+                            }
+                        });
+                        Bert.alert('Account is removed', 'success', 'growl-top-right');
                     }
+                    this.setState({ processing: false });
                 });
-                Bert.alert('Account is removed', 'success', 'growl-top-right');
-            }
-            this.setState({ processing: false });
-            // });
         });
     }
 

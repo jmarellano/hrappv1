@@ -1,7 +1,10 @@
 import { Accounts } from 'meteor/accounts-base';
+import { MessagesDB } from '../messages';
 
 export default class Server {
     constructor() {
+        this.messageSender = [];
+        this.messageListener = [];
     }
 
     run() {
@@ -22,5 +25,20 @@ export default class Server {
             else
                 return true;
         });
+        console.log('Creating Indexes...');
+        MessagesDB._ensureIndex({ contact: 1 });
+    }
+
+    addSender(id, email, connection) {
+        this.messageSender.push({ id, email, connection });
+    }
+
+    removeSender(id, email) {
+        let connections = this.messageSender.filter((e) => {
+            return ![{ id, email }].some(function (s) {
+                return s.id === e.id && s.email === e.email;
+            });
+        });
+        this.messageSender = connections;
     }
 }
