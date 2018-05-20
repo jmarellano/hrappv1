@@ -16,13 +16,13 @@ class CandidatesContent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            limit: 1
+            limit: 20
         };
         this.viewMore = this.viewMore.bind(this);
     }
 
     viewMore() {
-        this.setState({ limit: this.state.limit + 1 });
+        this.setState({ limit: this.state.limit + 20 });
     }
 
     render() {

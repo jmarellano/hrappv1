@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
-import { FormsSave, GetForm, DeleteForm, FormsSubmit } from '../forms';
+import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats } from '../candidates';
@@ -162,6 +162,11 @@ class Form {
             callback(err, result);
         });
     }
+    getHeaders(id, version, callback) {
+        Meteor.call(FormHeaders, id, version, (err, result) => {
+            callback(err, result);
+        });
+    }
 }
 
 class Category {
@@ -188,7 +193,7 @@ class Message {
     }
     addSender(data, callback) {
         Meteor.call(MessagesAddSender, data.credit, data.id, (err) => {
-            callback(err);
+            callback(err, data);
         });
     }
     removeSender(data, callback) {

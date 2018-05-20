@@ -7,7 +7,7 @@ import moment from 'moment';
 import POP3Client from 'poplib';
 
 export const MessagesAddSender = 'messages_add_sender';
-export const MessagesRemoveSender = 'messages_add_sender';
+export const MessagesRemoveSender = 'messages_remove_sender';
 export const MessagesAddListener = 'messages_add_listener';
 export const MessagesSend = 'messages_send';
 export const MessagesSave = 'messages_save';

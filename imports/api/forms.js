@@ -1,50 +1,43 @@
 import { Meteor } from 'meteor/meteor';
+import { Mongo } from 'meteor/mongo';
 //import { IncomingDB } from './messages';
-import { ROLES, ROUTES, isPermitted, VALUE } from './classes/Const';
+import { ROLES, isPermitted, VALUE } from './classes/Const';
 import Util from './classes/Utilities';
 //import Notification from './Classes/Notification';
 import { CandidatesDB } from './candidates';
 import { check } from 'meteor/check';
 import moment from 'moment';
-import Forms from '../ui/components/forms/Forms';
 
-// export const FormsRemoveData = "forms_remove_data";
 export const ValidForms = "forms_valid";
 export const FormsDPub = "formsd";
 export const FormsSave = 'forms_save';
 export const GetForm = 'forms_get';
 export const DeleteForm = 'forms_delete';
-// export const FormsRemove = "forms_remove";
 export const FormsSubmit = "forms_submit";
+export const FormHeaders = "forms_header";
 let databaseName = Meteor.settings.public.collections.forms || 'forms';
+let databaseName2 = Meteor.settings.public.collections.formsData || 'formsd';
 export const FormsDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
-export const FormsDDB = new Mongo.Collection(Meteor.settings.public.collections.formsData || 'formsd', { idGeneration: 'MONGO' });
+export const FormsDDB = new Mongo.Collection(databaseName2, { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
-    // functions[FormsRemoveData] = function (id) {
-    //     try {
-    //         check(this.userId, String);
-    //         check(id, Meteor.Collection.ObjectID);
-    //         let user = Meteor.user();
-    //         if (user && isPerimitted(user.profile.role, ROLES.MANAGE_FORMS)) {
-    //             FormsDDB.update({ _id: id }, {
-    //                 "$set": {
-    //                     "removed": FORMS_REMOVE.TRUE,
-    //                 }
-    //             });
-    //             return ('Form saved.');
-    //         }
-    //         throw new Meteor.Error(403, "Not authorized");
-    //     } catch (err) {
-    //         console.error(err);
-    //         throw new Meteor.Error('bad', err.message);
-    //     }
-    // };
     functions[GetForm] = function (id) {
         try {
             check(this.userId, String);
             check(id, String);
             return FormsDB.findOne({ _id: new Mongo.ObjectID(id) });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[FormHeaders] = function (id, version) {
+        try {
+            check(this.userId, String);
+            check(id, String);
+            check(version, String);
+            let form = FormsDB.findOne({ _id: new Mongo.ObjectID(id) });
+            return { headers: (form && form.headers) ? form.headers[version] : [], max: Object.keys(form.headers).length };
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -70,7 +63,7 @@ if (Meteor.isServer) {
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.MANAGE_FORMS)) {
                 let id = data._id;
-                FormsDB.update({ _id: id }, {
+                FormsDB.update({ _id: new Mongo.ObjectID(id) }, {
                     '$set': {
                         'name': data.name,
                         'dateModified': moment().valueOf()
@@ -112,8 +105,11 @@ if (Meteor.isServer) {
                 "removed": VALUE.FALSE
             }, function () {
                 let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });
+                let set = {};
+                set['headers.' + data.version] = data.obj.map((item) => item.label).filter(item => item.length > 0);
                 if (fData) {
-                    FormsDB.update({ _id: data._id }, {
+                    FormsDB.update({ _id: new Mongo.ObjectID(data._id) }, {
+                        $set: set,
                         $push: {
                             progress: {
                                 member: null,
@@ -160,15 +156,23 @@ if (Meteor.isServer) {
         }
         this.ready();
     });
-    Meteor.publish(FormsDPub, function (key) {
+    Meteor.publish(FormsDPub, function (key, limit) {
+        let cursor = null;
         try {
             check(this.userId, String);
             key.form_id = new Mongo.ObjectID(key.form_id);
             key.removed = VALUE.FALSE;
-            return FormsDDB.find(key);
+            key.version = parseInt(key.version);
+            let count = FormsDDB.find(key, { sort: { createdAt: -1 } }).count();
+            cursor = FormsDDB.find(key, { sort: { createdAt: -1 }, limit });
+            Util.setupHandler(this, databaseName2, cursor, (doc) => {
+                doc.max = count;
+                return doc;
+            });
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
+        this.ready();
     });
 }
