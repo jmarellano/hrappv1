@@ -9,11 +9,75 @@ export const ValidCandidates = 'candidates_valid';
 export const CandidateCreate = 'candidates_create';
 export const CandidatesGetId = 'candidates_get_id';
 export const CandidatesInfo = 'candidates_info';
-export const CandidatesStats = 'candidates_info';
+export const CandidatesStats = 'candidates_stats';
+export const CandidatesClaim = 'candidates_claim';
+export const CandidatesUnclaim = 'candidates_unclaim';
+export const CandidatesTransferClaim = 'candidates_transfer';
+export const CandidatesFollower = 'candidates_follower';
+
+
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
+    functions[CandidatesFollower] = function (id, user, follow = false) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            check(user, String);
+            console.log('test', user);
+            if (follow)
+                return CandidatesDB.update({ _id: id }, { $push: { 'followers': { id: user, typing: false } } });
+            else
+                return CandidatesDB.update({ _id: id }, { $pull: { 'followers': { id: user } } });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[CandidatesTransferClaim] = function (id, user) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            check(user, String);
+            return CandidatesDB.update({ _id: id }, {
+                $set: {
+                    'claimed': user
+                }
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[CandidatesClaim] = function (id) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            return CandidatesDB.update({ _id: id }, {
+                $set: {
+                    'claimed': this.userId
+                }
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[CandidatesUnclaim] = function (id) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            return CandidatesDB.update({ _id: id }, {
+                $unset: {
+                    'claimed': ''
+                }
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
     functions[CandidatesInfo] = function (data) {
         try {
             check(this.userId, String);
@@ -90,18 +154,6 @@ if (Meteor.isServer) {
             let query = { 'retired': VALUE.FALSE };
             let or = [];
             let searchString = candidate.search;
-            let claimed = null;
-            if (candidate.filter.indexOf(SEARCH.CLAIMED) > -1)
-                claimed = { $exists: true };
-            if (candidate.filter.indexOf(SEARCH.UNCLAIMED) > -1)
-                claimed = { $exists: false };
-            if (candidate.filter.indexOf(SEARCH.UNCLAIMED) < 0 && candidate.filter.indexOf(SEARCH.CLAIMED) < 0)
-                claimed = null;
-            if (candidate.filter.indexOf(SEARCH.UNCLAIMED) > -1 && candidate.filter.indexOf(SEARCH.CLAIMED) > -1)
-                claimed = null;
-            if (candidate.filter.indexOf(SEARCH.ASSIGNED) > -1 && (candidate.filter.indexOf(SEARCH.CLAIMED) < 0 && candidate.filter.indexOf(SEARCH.UNCLAIMED) < 0))
-                claimed = this.userId;
-            query['claimed'] = claimed;
             if (candidate.filter.indexOf(SEARCH.NAME) > -1)
                 or.push({ name: { $regex: searchString, $options: 'i' } });
             if (candidate.filter.indexOf(SEARCH.EMAIL) > -1) {
@@ -114,7 +166,19 @@ if (Meteor.isServer) {
             }
             if (candidate.filter.indexOf(SEARCH.CATEGORIES) > -1)
                 or.push({ category: { $regex: searchString, $options: 'i' } });
-            if (or.length && searchString.length)
+            if (!(or.length && searchString.length))
+                or = [];
+            if (candidate.filter.indexOf(SEARCH.CLAIMED) > -1) {
+                or.push({ claimed: { $exists: true } });
+                or.push({ claimed: { $ne: null } });
+            }
+            if (candidate.filter.indexOf(SEARCH.UNCLAIMED) > -1)
+                or.push({ claimed: { $exists: false } });
+            if (candidate.filter.indexOf(SEARCH.ASSIGNED) > -1)
+                or.push({ claimed: this.userId });
+            if (candidate.filter.indexOf(SEARCH.FOLLOWING) > -1)
+                or.push({ 'followers.id': this.userId });
+            if (or.length)
                 query['$or'] = or;
             let count = CandidatesDB.find(query, { sort: { createdAt: -1 } }).count();
             let cursor = CandidatesDB.find(query, { sort: { createdAt: -1 }, limit: candidate.limit });

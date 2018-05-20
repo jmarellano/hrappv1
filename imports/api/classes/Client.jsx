@@ -4,7 +4,7 @@ import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } 
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender } from '../messages';
-import { CandidatesGetId, CandidatesInfo, CandidatesStats } from '../candidates';
+import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 
 export default class Client {
@@ -227,6 +227,36 @@ class Candidate {
 
     changeStats(data, contact, callback) {
         Meteor.call(CandidatesStats, data, contact, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    claim(id, callback) {
+        Meteor.call(CandidatesClaim, id, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    unclaim(id, callback) {
+        Meteor.call(CandidatesUnclaim, id, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    transferClaim(data, callback) {
+        Meteor.call(CandidatesTransferClaim, data.id, data.user, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    removeFollower(data, callback) {
+        Meteor.call(CandidatesFollower, data.id, data.user, false, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    addFollower(data, callback) {
+        Meteor.call(CandidatesFollower, data.id, data.user, true, (err, result) => {
             callback(err, result);
         });
     }

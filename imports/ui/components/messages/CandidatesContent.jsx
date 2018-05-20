@@ -9,6 +9,9 @@ import PropTypes from 'prop-types';
 
 import Info from './Info';
 import Stats from './Stats';
+import Transfer from './Transfer';
+import Claim from './Claim';
+import Followers from './Followers';
 import CandidateMessages from './CandidateMessages';
 import CandidateClass from '../../../api/classes/Candidate';
 
@@ -41,22 +44,22 @@ class CandidatesContent extends React.Component {
                             <Info selectedCandidate={candidate} Candidate={this.props.Candidate} />
                             {candidate.email && <small className="badge bg-secondary-light text-light mr-1">{candidate.email}</small>}
                             {candidate.number && <small className="badge bg-secondary-light text-light mr-1">{candidate.number}</small>}
-                            {
-                                (isPermitted(this.props.user.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER)) &&
-                                <a className="link badge badge-success text-light pull-right mr-1 mt-1" data-tip="Transfer Claim"><i className="fa fa-exchange" /> Transfer</a>
-                            }
-                            {!candidate.claimed && <a className="link badge badge-success text-light pull-right mr-1 mt-1" data-tip="Claim"><i className="fa fa-check-square" /> Claim</a>}
-                            <a className="link badge badge-primary text-light pull-right mr-1 mt-1" data-tip="View followers">
-                                <i className="fa fa-eye" />&nbsp;
-                                {candidate.followers ? candidate.followers.length : 0} Followers
-                            </a>
+                            <Transfer {...this.props} />
+                            <Claim {...this.props} />
+                            <Followers {...this.props} />
                         </div>
                         <hr />
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-sm-12">
-                        <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} messages={this.props.messages} />
+                        {
+                            isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) ||
+                                this.props.user.id === candidate.claimed ||
+                                (candidate.followers && candidate.followers.filter((item) => item.id === this.props.user.id).length) ?
+                                <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} messages={this.props.messages} /> :
+                                <div>You need to be follower of this candidate or claim it to view messages.</div>
+                        }
                     </div>
                 </div>
                 <ReactTooltip />

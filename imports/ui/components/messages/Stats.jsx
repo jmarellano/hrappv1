@@ -74,7 +74,6 @@ class Stats extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        console.log(this.props.selectedCandidate);
         if (this.props.selectedCandidate !== prevProps.selectedCandidate)
             this.setState({
                 resume: this.props.selectedCandidate.resume,
@@ -201,7 +200,6 @@ class Stats extends Component {
         return arr.map((item, index) => {
             if (!category[item.base] || category[item.base] === 0)
                 return null;
-            console.log(this.state[item.name]);
             return (
                 <div key={index} className="form-group row">
                     <label className={`col-sm-8 control-label mt-2 ${item.sub && 'text-right'}`} htmlFor={item.name}>

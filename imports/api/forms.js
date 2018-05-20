@@ -83,7 +83,8 @@ if (Meteor.isServer) {
     functions[FormsSubmit] = function (data) {
         try {
             check(data, Object);
-            let dup = null;
+            let dup = null,
+                applicantId = data.applicantId ? data.applicantId : null;
             if (data.applicantId) {
                 dup = FormsDDB.findOne({
                     form_id: new Mongo.ObjectID(data._id),
@@ -101,7 +102,8 @@ if (Meteor.isServer) {
                 "data": data.obj,
                 "version": data.version,
                 "createdAt": moment().valueOf(),
-                "applicantId": data.applicantId ? data.applicantId : null,
+                "applicantId": applicantId,
+                "applicantName": dup.name || dup.email || dup.contact,
                 "removed": VALUE.FALSE
             }, function () {
                 let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });

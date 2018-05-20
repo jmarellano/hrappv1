@@ -58,6 +58,7 @@ class Candidate {
         this.TEST_MOCK_Care = obj.TEST_MOCK_Care;
         this.TEST_SIMULATION = obj.TEST_SIMULATION;
         this.others = obj.others;
+        this.claimed = obj.claimed;
     }
 
     isRetired() {
@@ -104,6 +105,11 @@ class Candidate {
 
     getLastMessageTime() {
         return <Moment fromNow>{moment(this.lastMessage.createdAt)}</Moment>;
+    }
+
+    getClaimer() {
+        let user = Meteor.users.findOne({ _id: this.claimed });
+        return user ? user.username : 'N\\A';
     }
 }
 export default Candidate;

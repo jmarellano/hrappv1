@@ -7,6 +7,7 @@ import DropdownSelectDup from '../extras/DropdownSelectDup';
 import Button from '../extras/Button';
 import ReactTooltip from 'react-tooltip';
 
+import TooltipStats from './TooltipStats';
 class Candidates extends React.Component {
     constructor(props) {
         super(props);
@@ -36,8 +37,8 @@ class Candidates extends React.Component {
                                     <span className="pull-right">
                                         {!candidate.isRead() && <i data-tip="New" className="message--new fa fa-comment ml-1" aria-hidden="true" />}
                                         {candidate.isReply() && <i data-tip="Replied" className="fa fa-reply ml-1" aria-hidden="true" />}
-                                        <i className="fa fa-list-alt ml-1" aria-hidden="true" />
-                                        <i className="fa fa-info-circle ml-1" aria-hidden="true" />
+                                        <i className="fa fa-list-alt ml-1" data-tip data-for={"stats" + index} aria-hidden="true" />
+                                        <i className="fa fa-info-circle ml-1" data-tip={`Claimed by: ${candidate.getClaimer()}`} aria-hidden="true" />
                                     </span>
                                 </b>
                                 <p className="mb-1">{candidate.getSubject()}</p>
@@ -45,6 +46,9 @@ class Candidates extends React.Component {
                             </div>
                         </div>
                     </div>
+                    <ReactTooltip id={"stats" + index} place="right" aria-haspopup="true" role="example">
+                        <TooltipStats candidate={candidate} Candidate={this.props.Candidate} />
+                    </ReactTooltip>
                     <ReactTooltip />
                 </div>
             );
@@ -104,7 +108,8 @@ Candidates.propTypes = {
     changeSearch: PropTypes.func,
     searchCandidate: PropTypes.func,
     viewMore: PropTypes.func,
-    selectCandidate: PropTypes.func
+    selectCandidate: PropTypes.func,
+    Candidate: PropTypes.object
 };
 
 export default withTracker((props) => {

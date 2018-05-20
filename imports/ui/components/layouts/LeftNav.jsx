@@ -85,9 +85,9 @@ class LeftNav extends Component {
                     <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
                         <Global {...this.props} Settings={this.Client.Settings} />
                     </HeaderNav>
-                    <HeaderNav key={11} type="navbar">
+                    {/* <HeaderNav key={11} type="navbar">
                         <a className="nav-link" data-tip="View Requests" href="#" onClick={this.routeRequests}><i className="fa fa-2x fa-bullhorn" /></a>
-                    </HeaderNav>
+                    </HeaderNav> */}
                 </ul>
                 <ReactTooltip />
             </div>

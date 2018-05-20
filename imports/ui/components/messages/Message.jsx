@@ -23,6 +23,12 @@ class Message extends React.Component {
             type = 'SMS';
         if (MESSAGES_TYPE.SKYPE === message.type)
             type = 'SKYPE';
+        let emails = this.props.users.filter((user) => {
+            let email = user.connectedEmails.filter((e) => e.user === message.from);
+            if (email.length)
+                return true;
+            return false;
+        });
         return (
             <div className="mb-2">
                 <div className="row">
@@ -32,7 +38,6 @@ class Message extends React.Component {
                         </small>
                         <small className="pull-right">
                             {message.getDateTime()}
-                            <i className="fa fa-reply ml-1" />
                             <i className="fa fa-trash ml-1 text-danger" />
                         </small>
                     </div>
@@ -53,7 +58,9 @@ class Message extends React.Component {
                                     From:
                                     <b>
                                         {message.status === MESSAGES_STATUS.RECEIVED && this.props.candidate.getDisplayName()} &nbsp;
-                                        {message.status === MESSAGES_STATUS.SENT && this.props.user.checkSender(message.from, message.type) && 'me'} &nbsp;
+                                        {message.status === MESSAGES_STATUS.SENT && this.props.user.checkSender(message.from, message.type) && 'me'}
+                                        {message.status === MESSAGES_STATUS.SENT && !this.props.user.checkSender(message.from, message.type) && emails.length && emails[0].username}
+                                        &nbsp;
                                     </b>
                                     <small>via {message.from}</small>
                                 </div>
@@ -75,7 +82,8 @@ class Message extends React.Component {
 Message.propTypes = {
     message: PropTypes.object,
     candidate: PropTypes.object,
-    user: PropTypes.object
+    user: PropTypes.object,
+    users: PropTypes.array
 };
 
 export default withTracker(() => {

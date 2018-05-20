@@ -96,12 +96,12 @@ class Messages extends React.Component {
                             selectCandidate={this.selectCandidate}
                             candidates={this.props.candidates} />
                     </div>
-                    <div className="col-md-7">
+                    <div className="col-md-9">
                         {this.state.candidate && <CandidatesContent {...this.props} candidate={this.state.candidate} Candidate={this.props.Candidate} />}
                     </div>
-                    <div className="col-md-2 p-0 m-0">
+                    {/* <div className="col-md-2 p-0 m-0">
                         <Notification {...this.props} />
-                    </div>
+                    </div> */}
                 </div>
             </div>
         );

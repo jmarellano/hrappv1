@@ -46,7 +46,9 @@ class MessageBox extends React.Component {
     }
 
     componentDidMount() {
-        this.attachQuillRefs()
+        this.attachQuillRefs();
+        if (this.state.type === MESSAGES_TYPE.EMAIL)
+            this.setState({ sender: this.props.user.default_email });
     }
 
     componentDidUpdate() {

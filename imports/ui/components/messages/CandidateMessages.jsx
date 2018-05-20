@@ -47,11 +47,13 @@ class CandidateMessages extends React.Component {
     }
 
     componentDidMount() {
-        this.attachQuillRefs()
+        this.attachQuillRefs();
+        if (this.state.type === MESSAGES_TYPE.EMAIL)
+            this.setState({ sender: this.props.user.default_email });
     }
 
     componentDidUpdate() {
-        this.attachQuillRefs()
+        this.attachQuillRefs();
     }
 
     attachQuillRefs() {
@@ -175,7 +177,7 @@ class CandidateMessages extends React.Component {
     renderMessages() {
         return this.props.messages.map((message, index) => {
             return (
-                <Message key={index} message={message} candidate={this.props.candidate} user={this.props.user} />
+                <Message key={index} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} />
             );
         });
     }
@@ -276,7 +278,8 @@ CandidateMessages.propTypes = {
     isReady: PropTypes.bool,
     messages: PropTypes.array,
     candidate: PropTypes.object,
-    viewMore: PropTypes.func
+    viewMore: PropTypes.func,
+    users: PropTypes.array
 };
 
 export default withTracker((props) => {

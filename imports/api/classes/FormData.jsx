@@ -5,6 +5,7 @@ class FormData {
     constructor(obj) {
         this.id = obj._id;
         this.applicantId = obj.applicantId;
+        this.applicantName = obj.applicantName;
         this.name = obj.name;
         this.createdAt = obj.createdAt;
         this.data = obj.data;
@@ -23,7 +24,7 @@ class FormData {
     }
 
     getApplicant() {
-        return;
+        return this.applicantName;
     }
 
 }
