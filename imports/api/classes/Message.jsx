@@ -15,10 +15,11 @@ class Message {
         this.text = obj.text;
         this.to = obj.to;
         this.type = obj.type;
-        this.attachments = [];
+        this.attachments = obj.attachments;
         this.retired = obj.retired;
         this.createdAt = obj.createdAt;
         this.max = obj.max;
+        this.imgUrl = obj.imgUrl;
     }
 
     getDateTime() {

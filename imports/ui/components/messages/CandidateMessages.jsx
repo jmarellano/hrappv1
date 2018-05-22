@@ -177,7 +177,7 @@ class CandidateMessages extends React.Component {
     renderMessages() {
         return this.props.messages.map((message, index) => {
             return (
-                <Message key={index} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} />
+                <Message key={index} Message={this.props.Message} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} />
             );
         });
     }

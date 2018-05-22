@@ -58,7 +58,8 @@ class Section extends Component {
                     user: this.props.user,
                     users: this.props.users,
                     settings: this.props.settings,
-                    Candidate: this.props.Client.Candidate
+                    Candidate: this.props.Client.Candidate,
+                    Message: this.props.Client.Message
                 };
             case ROUTES.DRIVE:
                 return {

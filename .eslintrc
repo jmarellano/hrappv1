@@ -49,6 +49,7 @@
         "FileReader": true,
         "MediaUploader": true,
         "Morris": true,
-        "MongoInternals": true
+        "MongoInternals": true,
+        "Audio": true
     }
 }

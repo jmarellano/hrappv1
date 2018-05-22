@@ -35,7 +35,7 @@ class Candidates extends React.Component {
                                 <b>
                                     {candidate.getContact()}
                                     <span className="pull-right">
-                                        {!candidate.isRead() && <i data-tip="New" className="message--new fa fa-comment ml-1" aria-hidden="true" />}
+                                        {!candidate.isRead() && <i data-tip="New" className="text-primary-custom fa fa-comment ml-1" aria-hidden="true" />}
                                         {candidate.isReply() && <i data-tip="Replied" className="fa fa-reply ml-1" aria-hidden="true" />}
                                         <i className="fa fa-list-alt ml-1" data-tip data-for={"stats" + index} aria-hidden="true" />
                                         <i className="fa fa-info-circle ml-1" data-tip={`Claimed by: ${candidate.getClaimer()}`} aria-hidden="true" />

@@ -6,7 +6,6 @@ import { CandidatesDB } from '../../../api/candidates';
 import { SEARCH } from '../../../api/classes/Const';
 import Candidates from './Candidates';
 import CandidatesContent from './CandidatesContent';
-import Notification from './Notification';
 import Notif from '../../../api/classes/Notif';
 import Candidate from '../../../api/classes/Candidate';
 import PropTypes from 'prop-types';
@@ -14,7 +13,14 @@ import PropTypes from 'prop-types';
 class Messages extends React.Component {
     constructor(props) {
         super(props);
-        let display = [SEARCH.CATEGORIES, SEARCH.NAME, SEARCH.EMAIL, SEARCH.NUMBER, SEARCH.CLAIMER, SEARCH.ASSIGNED];
+        let display = [
+            SEARCH.CATEGORIES,
+            SEARCH.NAME,
+            SEARCH.EMAIL,
+            SEARCH.NUMBER,
+            SEARCH.CLAIMER,
+            SEARCH.ASSIGNED
+        ];
         this.state = {
             display,
             displayOptions: [
@@ -35,6 +41,27 @@ class Messages extends React.Component {
                         { value: SEARCH.UNCLAIMED, label: 'Unclaim' },
                     ]
                 },
+                {
+                    label: 'ALL STATS', value: SEARCH.ALL, options: [
+                        { value: SEARCH.resume, label: 'resume' },
+                        { value: SEARCH.portfolio, label: 'portfolio' },
+                        { value: SEARCH.disc, label: 'disc' },
+                        { value: SEARCH.values, label: 'values' },
+                        { value: SEARCH.iq, label: 'iq' },
+                        { value: SEARCH.TEST_METEOR, label: 'TEST_METEOR' },
+                        { value: SEARCH.TEST_LIVE, label: 'TEST_LIVE' },
+                        { value: SEARCH.TEST_WRITING, label: 'TEST_WRITING' },
+                        { value: SEARCH.VIDEO, label: 'VIDEO' },
+                        { value: SEARCH.INTERVIEW, label: 'INTERVIEW' },
+                        { value: SEARCH.MANAGER, label: 'MANAGER' },
+                        { value: SEARCH.TEST_IMAGE, label: 'TEST_IMAGE' },
+                        { value: SEARCH.TEST_CREATIVE, label: 'TEST_CREATIVE' },
+                        { value: SEARCH.TEST_WEBFLOW, label: 'TEST_WEBFLOW' },
+                        { value: SEARCH.TEST_MOCK, label: 'TEST_MOCK' },
+                        { value: SEARCH.TEST_SIMULATION, label: 'TEST_SIMULATION' },
+                        { value: SEARCH.others, label: 'others' },
+                    ]
+                }
             ],
             search: '',
             searchCandidate: {
@@ -77,6 +104,7 @@ class Messages extends React.Component {
     }
     selectCandidate(candidate) {
         this.setState({ candidate: this.props.candidates.filter((item) => candidate.id === item.id)[0] });
+        this.props.Message.read(candidate.id);
     }
     render() {
         return (
@@ -97,7 +125,7 @@ class Messages extends React.Component {
                             candidates={this.props.candidates} />
                     </div>
                     <div className="col-md-9">
-                        {this.state.candidate && <CandidatesContent {...this.props} candidate={this.state.candidate} Candidate={this.props.Candidate} />}
+                        {this.state.candidate && <CandidatesContent {...this.props} candidate={this.state.candidate} Candidate={this.props.Candidate} Message={this.props.Message} />}
                     </div>
                     {/* <div className="col-md-2 p-0 m-0">
                         <Notification {...this.props} />
@@ -110,7 +138,8 @@ class Messages extends React.Component {
 
 Messages.propTypes = {
     candidates: PropTypes.array,
-    Candidate: PropTypes.object
+    Candidate: PropTypes.object,
+    Message: PropTypes.object
 };
 
 export default withTracker(() => {

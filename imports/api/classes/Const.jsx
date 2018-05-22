@@ -81,7 +81,24 @@ export const SEARCH = {
     ASSIGNED: 7,
     FOLLOWING: 8,
     CLAIMED: 9,
-    UNCLAIMED: 10
+    UNCLAIMED: 10,
+    resume: 'resume',
+    portfolio: 'portfolio',
+    disc: 'disc',
+    values: 'values',
+    iq: 'iq',
+    TEST_METEOR: 'TEST_METEOR',
+    TEST_LIVE: 'TEST_LIVE',
+    TEST_WRITING: 'TEST_WRITING',
+    VIDEO: 'VIDEO',
+    INTERVIEW: 'INTERVIEW',
+    MANAGER: 'MANAGER',
+    TEST_IMAGE: 'TEST_IMAGE',
+    TEST_CREATIVE: 'TEST_CREATIVE',
+    TEST_WEBFLOW: 'TEST_WEBFLOW',
+    TEST_MOCK: 'TEST_MOCK',
+    TEST_SIMULATION: 'TEST_SIMULATION',
+    others: 'others',
 };
 
 export const VALUE = {

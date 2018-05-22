@@ -4,6 +4,7 @@ import { CategoriesDB } from '../../../api/categories';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
+import ReactTooltip from 'react-tooltip';
 
 import CategoryClass from '../../../api/classes/Category';
 
@@ -256,6 +257,7 @@ class Stats extends Component {
                         </div>
                     </form>
                 </Modal>
+                <ReactTooltip />
             </a>
         );
     }

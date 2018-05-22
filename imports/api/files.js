@@ -30,10 +30,7 @@ let PSTFiles = new FilesCollection({
     permissions: '0774',
     parentDirPermissions: '0774',
     allowClientCode: true,
-    storagePath: PATH.UPLOAD,
-    onBeforeUpload: function (file) {
-        return /pst/i.test(file.extension);
-    }
+    storagePath: PATH.UPLOAD
 });
 if (Meteor.isServer) {
     EmailFiles.allowClient();

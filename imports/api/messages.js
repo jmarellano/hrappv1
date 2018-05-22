@@ -1,27 +1,158 @@
 import { Meteor } from 'meteor/meteor';
-import { ROLES, isPermitted, MESSAGES_TYPE, MESSAGES_STATUS } from './classes/Const';
+import { ROLES, isPermitted, MESSAGES_TYPE, MESSAGES_STATUS, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
-import { CandidateCreate } from './candidates';
+import { CandidateCreate, CandidatesDB } from './candidates';
+import { EmailFiles } from './files';
+import { LinkPreview } from './link-preview';
 import Util from './classes/Utilities';
 import moment from 'moment';
 import POP3Client from 'poplib';
+import { simpleParser } from 'mailparser';
 
 export const MessagesAddSender = 'messages_add_sender';
 export const MessagesRemoveSender = 'messages_remove_sender';
 export const MessagesAddListener = 'messages_add_listener';
 export const MessagesSend = 'messages_send';
 export const MessagesSave = 'messages_save';
+export const MessagesRemove = 'messages_remove';
+export const MessagesRead = 'messages_read';
 export const ValidMessages = 'messages_pub';
+export const MessagesIncomingPub = 'messages_incoming_pub';
+
 let databaseName = Meteor.settings.public.collections.messages || 'messages';
 export const MessagesDB = new Mongo.Collection(Meteor.settings.public.collections.messages || 'messages', { idGeneration: 'MONGO' });
+export const IncomingDB = new Mongo.Collection(Meteor.settings.public.collections.incoming || 'incoming_logs', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
+    import Future from 'fibers/future';
+    import Fiber from 'fibers';
     import nodemailer from 'nodemailer';
+    import Imap from 'imap';
     import SMTPConnection from 'nodemailer/lib/smtp-connection';
+    functions[MessagesRemove] = function (id) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            let user = Meteor.user();
+            if (user && isPermitted(user.profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
+                return MessagesDB.update({ _id: id }, { $set: { retired: VALUE.TRUE } });
+            }
+            throw new Meteor.Error(403, 'Not authorized');
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[MessagesRead] = function (id) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            return CandidatesDB.update({ _id: id }, { $set: { 'lastMessage.read': VALUE.TRUE } });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
     functions[MessagesAddListener] = function (credit, id = this.userId) {
         if (credit.imap_host) {
-            // TODO imap
-            console.log("failed", credit);
+            let imap = new Imap({
+                user: credit.user,
+                password: credit.password,
+                host: credit.imap_host,
+                port: credit.imap_port,
+                tls: true
+            });
+            imap.once('error', Meteor.bindEnvironment((err) => {
+                console.error(`Connection for ${credit.user}: ${err}`);
+                Meteor.users.update({
+                    _id: id,
+                    'profile.emails': credit
+                }, { $set: { 'profile.emails.$.status': 'disconnected' } });
+            }));
+            imap.once('end', Meteor.bindEnvironment(() => {
+                console.error(`Connection for ${credit.user} ended`);
+            }));
+            imap.once('ready', Meteor.bindEnvironment(() => {
+                console.error(`Connection for ${credit.user} resumed`);
+                imap.openBox('INBOX', false, Meteor.bindEnvironment((err, box) => {
+                    if (err) {
+                        Meteor.users.update({
+                            _id: id,
+                            'profile.emails': credit
+                        }, { $set: { 'profile.emails.$.status': 'disconnected' } });
+                        throw err;
+                    }
+                    Meteor.setInterval(() => {
+                        imap.search(['UNSEEN', ['SINCE', moment().format('MMMM DD, YYYY')]], Meteor.bindEnvironment((err, results) => {
+                            if (err)
+                                console.error(`Connection for ${credit.user}: ${err}`);
+                            if (results.length) {
+                                let f = imap.fetch(results, { markSeen: true, bodies: '' });
+                                f.on('message', Meteor.bindEnvironment((msg, seqno) => {
+                                    msg.on('body', Meteor.bindEnvironment((stream, info) => {
+                                        simpleParser(stream, Meteor.bindEnvironment((err, mail) => {
+                                            let messageId = Util.hash(`${mail.date}${mail.to.value}${mail.subject}${mail.text}${credit.user}`);
+                                            let attachments = [];
+                                            if (mail.attachments) {
+                                                mail.attachments.forEach(function (attachment) {
+                                                    let future = new Future();
+                                                    Fiber(function () {
+                                                        EmailFiles.write(attachment.content, {
+                                                            fileName: attachment.filename
+                                                        }, Meteor.bindEnvironment(function (error, fileRef) {
+                                                            if (error) {
+                                                                throw error;
+                                                            } else {
+                                                                console.log(fileRef.name + ' is successfully saved to FS. _id: ' + fileRef._id);
+                                                                Meteor.defer(() => {
+                                                                    Meteor.call(LinkPreview, EmailFiles.link(fileRef), messageId);
+                                                                });
+                                                                future.return(fileRef);
+                                                            }
+                                                        }), true);
+                                                    }).run();
+                                                    if (bool = future.wait())
+                                                        attachments.push(bool);
+                                                });
+                                            }
+                                            mail.to.value.forEach((obj) => {
+                                                functions[MessagesSave].call(this, {
+                                                    createdAt: moment(mail.date).valueOf(),
+                                                    read: false,
+                                                    contact: obj.address,
+                                                    from: obj.address,
+                                                    to: credit.user,
+                                                    cc: mail.cc ? mail.cc.value.join(',') : '',
+                                                    bcc: mail.bcc ? mail.bcc.value.join(',') : '',
+                                                    text: mail.text,
+                                                    subject: mail.subject,
+                                                    html: mail.textAsHtml,
+                                                    attachments,
+                                                    type: MESSAGES_TYPE.EMAIL,
+                                                    status: MESSAGES_STATUS.RECEIVED,
+                                                    messageId
+                                                }, false);
+                                                functions[CandidateCreate].call(this, obj.address, {
+                                                    createdAt: moment(mail.date).valueOf(),
+                                                    read: false,
+                                                    from: obj.address,
+                                                    to: credit.user,
+                                                    text: mail.text,
+                                                    subject: mail.subject,
+                                                }, true);
+                                            });
+                                        }));
+                                    }));
+                                }));
+                                f.once('error', function (err) {
+                                    console.log('Fetch error: ' + err);
+                                });
+                            }
+                        }));
+                    }, 9000);
+                }));
+            }));
+            imap.connect();
         } else if (credit.pop_host) {
             let count = 1;
             let connection = new POP3Client(credit.pop_port, credit.pop_host, {
@@ -29,10 +160,14 @@ if (Meteor.isServer) {
                 enabletls: (credit.pop_port === '995'),
                 debug: false
             });
-            connection.on('error', function (err) {
+            connection.on('error', Meteor.bindEnvironment((err) => {
                 if (err.errno === 111) console.error(`Connection for ${credit.user}: Unable to connect to server`);
                 else console.error(`Connection for ${credit.user}: ${err}`);
-            });
+                Meteor.users.update({
+                    _id: id,
+                    'profile.emails': credit
+                }, { $set: { 'profile.emails.$.status': 'disconnected' } });
+            }));
             connection.on('connect', function () {
                 connection.login(credit.user, credit.password);
             });
@@ -57,9 +192,6 @@ if (Meteor.isServer) {
                 } else {
                     console.log("LIST success with " + msgcount + " element(s)");
                     connection.retr(count);
-                    // for (let i = 1; i <= msgcount; i++) {
-                    //     //Meteor.setTimeout(() => { connection.retr(i); }, 1000);
-                    // }
                 }
             }));
             connection.on('retr', Meteor.bindEnvironment((status, msgnumber, data, rawdata) => {
@@ -235,19 +367,19 @@ if (Meteor.isServer) {
             if (outgoing)
                 return msgId;
             if (data.type === MESSAGES_TYPE.EMAIL)
-                icon = '/images/e-mail-10.png';
+                icon = '/img/e-mail-10.png';
             if (data.type === MESSAGES_TYPE.SMS)
-                icon = '/images/sms-256.png';
+                icon = '/img/sms-256.png';
             if (data.type === MESSAGES_TYPE.SKYPE)
-                icon = '/images/Skype.png';
+                icon = '/img/Skype.png';
             if (data.type === MESSAGES_TYPE.WA)
-                icon = '/images/Whatsapp.png';
-            // IncomingDB.insert({
-            //     title: `Received a message from ${candidate.json.name ? candidate.json.name : data.eadd}`,
-            //     message: data.info.text,
-            //     timestamp: data.createdAt,
-            //     options: {icon},
-            // });
+                icon = '/img/Whatsapp.png';
+            IncomingDB.insert({
+                title: `Received a message from ${data.contact}`,
+                message: data.text,
+                timestamp: data.createdAt,
+                options: { icon },
+            });
             return msgId;
         } catch (err) {
             console.error(err);
@@ -255,10 +387,16 @@ if (Meteor.isServer) {
         }
     };
     Meteor.publish(ValidMessages, function (contact, limit) {
-        console.log("todo subscribinf");
         try {
-            let count = MessagesDB.find({ contact }, { sort: { createdAt: -1 } }).count();
-            let cursor = MessagesDB.find({ contact }, { sort: { createdAt: -1 }, limit });
+            let count = null,
+                cursor = null;
+            if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
+                count = MessagesDB.find({ contact }, { sort: { createdAt: -1 } }).count();
+                cursor = MessagesDB.find({ contact }, { sort: { createdAt: -1 }, limit });
+            } else {
+                count = MessagesDB.find({ contact, $or: [{ retired: { $exists: false } }, { retired: VALUE.FALSE }] }, { sort: { createdAt: -1 } }).count();
+                cursor = MessagesDB.find({ contact, $or: [{ retired: { $exists: false } }, { retired: VALUE.FALSE }] }, { sort: { createdAt: -1 }, limit });
+            }
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;
                 return doc;
@@ -268,5 +406,14 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
         this.ready();
+    });
+    Meteor.publish(MessagesIncomingPub, function (datetime) {
+        this.unblock();
+        try {
+            return IncomingDB.find({ timestamp: { $gt: datetime } }, { sort: { timestamp: 1 } });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
     });
 }

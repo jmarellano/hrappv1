@@ -1,5 +1,6 @@
 import moment from 'moment';
 import PhoneNumber from 'awesome-phonenumber';
+import md5 from 'md5';
 
 class Utilities {
     constructor() {
@@ -55,6 +56,32 @@ class Utilities {
                 countryCode: PhoneNumber.getCountryCodeForRegionCode(phone.getRegionCode()),
             };
         return { isValid: false };
+    }
+    notifyClient(subject, message, options = {}, callback) {
+        import Notify from 'notifyjs';
+        function notifyClick() {
+            window.open(options.onClick, '_blank');
+        }
+        if (options.onClick)
+            options.notifyClick = notifyClick;
+        if (Notification.permission === "granted") {
+            let myNotification = new Notify(subject, { body: message, ...options });
+            myNotification.show();
+            setTimeout(myNotification.close.bind(myNotification), 10000);
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    let myNotification = new Notify(subject, { body: message, ...options });
+                    myNotification.show();
+                    setTimeout(myNotification.close.bind(myNotification), 10000);
+                }
+            });
+        }
+        if (callback)
+            callback();
+    }
+    hash(string) {
+        return md5(string);
     }
 }
 

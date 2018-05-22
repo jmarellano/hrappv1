@@ -10,6 +10,7 @@ import FormMain from '../forms/FormMain';
 import Category from '../categories/Category';
 import Record from '../statistics/Record';
 import Global from '../settings/Global';
+import PST from '../messages/PST';
 
 class LeftNav extends Component {
     constructor(props) {
@@ -65,14 +66,15 @@ class LeftNav extends Component {
                     <HeaderNav key={2} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_TEAMS}>
                         <a className="nav-link" data-tip="Teams" href="#" onClick={this.routeTeams}><i className="fa fa-2x fa-users" /></a>
                     </HeaderNav>
-                    {/* TODO import PST */}
+                    <HeaderNav key={3} type="navbar">
+                        <PST {...this.props} Message={this.Client.Message} />
+                    </HeaderNav>
                     <HeaderNav key={4} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_STATISTICS}>
                         <a className="nav-link" data-tip="Statistics" href="#" onClick={this.routeStatistics}><i className="fa fa-2x fa-bar-chart" /></a>
                     </HeaderNav>
                     <HeaderNav key={5} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
                         <Record {...this.props} Statistics={this.Client.Statistics} />
                     </HeaderNav>
-                    {/* TODO import Date */}
                     <HeaderNav key={7} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>
                         <FormMain {...this.props} Form={this.Client.Form} />
                     </HeaderNav>

@@ -1,0 +1,23 @@
+.link-preview-wrapper{
+    width: 100%;
+    height: 50px;
+    border-radius: 10px;
+}
+.link-preview-title{
+    position: absolute;
+    bottom: 10px;
+}
+.link-preview-tint{
+    position:absolute;
+    left:15px;
+    width: calc(100% - 30px);
+    height: 50px;
+    top:0;
+    bottom:8px;
+    background: rgba(0,0,0, 0.3);
+    border-radius: 10px
+}
+.link-preview-wrapper:hover > .link-preview-tint{
+    background: rgba(0,0,0, 0.1);
+    transition: 0.2s ease-in-out;
+}

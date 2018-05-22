@@ -25,7 +25,6 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
             check(user, String);
-            console.log('test', user);
             if (follow)
                 return CandidatesDB.update({ _id: id }, { $push: { 'followers': { id: user, typing: false } } });
             else
@@ -101,9 +100,11 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(data, Object);
-            return CandidatesDB.update({ contact }, {
-                $set: data
+            let temp = {};
+            Object.keys(data).forEach((item) => {
+                temp[item] = parseInt(data[item]);
             });
+            return CandidatesDB.update({ contact }, { $set: temp });
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -178,6 +179,42 @@ if (Meteor.isServer) {
                 or.push({ claimed: this.userId });
             if (candidate.filter.indexOf(SEARCH.FOLLOWING) > -1)
                 or.push({ 'followers.id': this.userId });
+
+            if (candidate.filter.indexOf(SEARCH.resume) > -1)
+                query['resume'] = { $gte: 1 };
+            if (candidate.filter.indexOf(SEARCH.portfolio) > -1)
+                query['portfolio'] = { $gte: 5 };
+            if (candidate.filter.indexOf(SEARCH.disc) > -1)
+                query['disc'] = { $gte: 5 };
+            if (candidate.filter.indexOf(SEARCH.values) > -1)
+                query['values'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.iq) > -1)
+                query['iq'] = { $gte: 110 };
+            if (candidate.filter.indexOf(SEARCH.TEST_METEOR) > -1)
+                query['TEST_METEOR'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_LIVE) > -1)
+                query['TEST_LIVE'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_WRITING) > -1)
+                query['TEST_WRITING'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.VIDEO) > -1)
+                query['VIDEO'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.INTERVIEW) > -1)
+                query['INTERVIEW'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.MANAGER) > -1)
+                query['MANAGER'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_IMAGE) > -1)
+                query['TEST_IMAGE'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_CREATIVE) > -1)
+                query['TEST_CREATIVE'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_WEBFLOW) > -1)
+                query['TEST_WEBFLOW'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_MOCK) > -1)
+                query['TEST_MOCK'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.TEST_SIMULATION) > -1)
+                query['TEST_SIMULATION'] = { $gte: 10 };
+            if (candidate.filter.indexOf(SEARCH.others) > -1)
+                query['others'] = { $gte: 10 };
+
             if (or.length)
                 query['$or'] = or;
             let count = CandidatesDB.find(query, { sort: { createdAt: -1 } }).count();

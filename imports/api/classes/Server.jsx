@@ -26,7 +26,8 @@ export default class Server {
                 return true;
         });
         console.log('Creating Indexes...');
-        MessagesDB._ensureIndex({ contact: 1 });
+        // MessagesDB._ensureIndex({ contact: 1 });
+        // MessagesDB._ensureIndex({ messageId: 1 });
     }
 
     addSender(id, email, connection) {
