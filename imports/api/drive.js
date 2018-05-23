@@ -8,19 +8,17 @@ export const DriveInsertPermission = 'drive_insert_permission';
 export const DriveRemoveFile = 'drive_remove_file';
 
 if (Meteor.isServer) {
-    import Drive from './classes/Drive';
-    Drive.init();
     functions[DriveGetFiles] = function (data) {
-        return Drive.getFiles(data);
+        return server.getDrive().getFiles(data);
     }
     functions[DriveGetToken] = function () {
-        return Drive.getToken();
+        return server.getDrive().getToken();
     }
     functions[DriveInsertPermission] = function (file, value, type, role) {
         try {
             check(this.userId, String);
             check(file, Object);
-            return Drive.insertPermission(file, value, type, role);
+            return server.getDrive().insertPermission(file, value, type, role);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -32,7 +30,7 @@ if (Meteor.isServer) {
             check(id, String);
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.MANAGE_FILES))
-                return Drive.removeFile(id, undo);
+                return server.getDrive().removeFile(id, undo);
             throw new Meteor.Error(403, 'Unauthorized!');
         } catch (err) {
             console.error(err);

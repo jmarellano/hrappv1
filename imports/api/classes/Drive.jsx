@@ -1,5 +1,4 @@
 import { google } from 'googleapis';
-import Future from 'fibers/future';
 import HTTP from 'meteor/http';
 
 class Drive {
@@ -25,7 +24,7 @@ class Drive {
         this.drive = google.drive({ version: 'v3', auth: this.jwt });
     }
     getToken() {
-        let future = new Future();
+        let future = server.createFuture();
         if (this.jwt) {
             this.jwt.authorize(Meteor.bindEnvironment(function (err, tokens) {
                 if (err) {
@@ -39,7 +38,7 @@ class Drive {
         return false;
     }
     getFiles(options = {}) {
-        let future = new Future();
+        let future = server.createFuture();
         let retval = {};
         let query = {
             q: options.q || '',
@@ -59,7 +58,7 @@ class Drive {
         return future.wait();
     }
     removeFile(id, undo = false) {
-        let myFuture = new Future();
+        let myFuture = server.createFuture();
         let options = {
             headers: {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
@@ -86,7 +85,7 @@ class Drive {
         if (value !== null) {
             body.emailAddress = value;
         }
-        let future = new Future();
+        let future = server.createFuture();
         this.drive.permissions.create(params, function () {
             future.return(true);
         });
@@ -94,4 +93,4 @@ class Drive {
     }
 }
 
-export default Drive = new Drive();
+export default new Drive();

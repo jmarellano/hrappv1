@@ -3,7 +3,7 @@ import { ROLES, isPermitted, VALUE, SEARCH } from './classes/Const';
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import Util from './classes/Utilities';
-import moment from 'moment';
+import CandidateManager from './classes/CandidateManager';
 
 export const ValidCandidates = 'candidates_valid';
 export const CandidateCreate = 'candidates_create';
@@ -20,15 +20,12 @@ let databaseName = Meteor.settings.public.collections.candidates || 'candidates'
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
-    functions[CandidatesFollower] = function (id, user, follow = false) {
+    functions[CandidatesFollower] = function (id, user, follow) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
             check(user, String);
-            if (follow)
-                return CandidatesDB.update({ _id: id }, { $push: { 'followers': { id: user, typing: false } } });
-            else
-                return CandidatesDB.update({ _id: id }, { $pull: { 'followers': { id: user } } });
+            return CandidateManager.updateCandidateFollowers(id, user, follow);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -39,11 +36,7 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
             check(user, String);
-            return CandidatesDB.update({ _id: id }, {
-                $set: {
-                    'claimed': user
-                }
-            });
+            return CandidateManager.claimCandidate(id, user);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -53,11 +46,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
-            return CandidatesDB.update({ _id: id }, {
-                $set: {
-                    'claimed': this.userId
-                }
-            });
+            return CandidateManager.claimCandidate(id);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -67,11 +56,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
-            return CandidatesDB.update({ _id: id }, {
-                $unset: {
-                    'claimed': ''
-                }
-            });
+            return CandidateManager.claimCandidate(id, '');
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -81,16 +66,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(data, Object);
-            return CandidatesDB.update({ contact: data.contact }, {
-                $set: {
-                    'name': data.name,
-                    'category': data.category,
-                    'address': data.address,
-                    'zip': data.zip,
-                    'email': data.email,
-                    'number': data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : ''
-                }
-            });
+            return CandidateManager.updateCandidateInfo(data.contact, data);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -100,11 +76,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(data, Object);
-            let temp = {};
-            Object.keys(data).forEach((item) => {
-                temp[item] = parseInt(data[item]);
-            });
-            return CandidatesDB.update({ contact }, { $set: temp });
+            return CandidateManager.updateCandidateStats(contact, data);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -114,20 +86,8 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(contact, String);
-            let candidate = CandidatesDB.findOne({ contact });
-            if (candidate)
-                return CandidatesDB.update({ contact }, {
-                    $set: {
-                        lastMessage
-                    }
-                });
-            else
-                return CandidatesDB.insert({
-                    contact,
-                    createdAt: moment().valueOf(),
-                    retired: VALUE.FALSE,
-                    lastMessage
-                });
+            let candidate = new CandidateManager({ contact, lastMessage });
+            candidate.flush();
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -138,12 +98,8 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(email, String);
             let user = Meteor.user();
-            if (user && isPermitted(user.profile.role, ROLES.MANAGE_FORMS)) {
-                let candidate = CandidatesDB.findOne({ $or: [{ contact: email }, { email }] });
-                if (candidate)
-                    return candidate._id._str;
-                throw new Meteor.Error('BAD', 'No candidate associated in this email');
-            }
+            if (user && isPermitted(user.profile.role, ROLES.MANAGE_FORMS))
+                return CandidateManager.getId(email);
             throw new Meteor.Error(403, 'Not authorized');
         } catch (err) {
             console.error(err);

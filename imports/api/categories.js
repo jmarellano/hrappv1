@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { ROLES, isPermitted } from './classes/Const';
-import { CandidatesDB } from './candidates';
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
+import CategoryManager from './classes/CategoryManager';
 
 export const CategoriesAdd = 'categories_add';
 export const CategoriesRemove = 'categories_remove';
@@ -16,7 +16,8 @@ if (Meteor.isServer) {
             check(data, Object);
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.VIEW_CATEGORIES)) {
-                CategoriesDB.insert(data);
+                let category = new CategoryManager(data);
+                category.flush();
                 return ('New category added');
             }
             throw new Meteor.Error(403, 'Not authorized');
@@ -30,15 +31,9 @@ if (Meteor.isServer) {
             categoryId = new Mongo.ObjectID(categoryId);
             check(this.userId, String);
             check(categoryId, Meteor.Collection.ObjectID);
-            if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_CATEGORIES)) {
-                let categories = CategoriesDB.findOne({ _id: categoryId });
-                if (categories) {
-                    CandidatesDB.update({ category: categories.category }, { $set: { category: "" } }, { multi: true });
-                    CategoriesDB.remove({ _id: categoryId });
-                    return ('Category Removed.');
-                }
-                return null;
-            } else
+            if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_CATEGORIES))
+                return CategoryManager.removeCategory(categoryId);
+            else
                 throw new Meteor.Error(403, 'Not authorized');
         } catch (err) {
             console.error(err);

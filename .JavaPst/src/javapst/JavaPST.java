@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import com.mongodb.client.model.UpdateOptions;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.io.InputStream;
 import java.io.FileOutputStream;
@@ -87,14 +88,24 @@ public class JavaPST {
             while (email != null) {
                 printDepth();
                 System.out.println("Importing: "+email.getInternetMessageId());
+                Date date = email.getMessageDeliveryTime();
                 String created = email.getMessageDeliveryTime().toString();
-                Date timestamp=null;
+                Date createdAt=null;
+                String createdAtString = "";
+                Long createdAtTimestamp = 0L;
                 try{
-                    timestamp = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy").parse(created);
+                    createdAt = new SimpleDateFormat("yyyyMMddHHmm",Locale.ENGLISH).parse(created);
                 }catch(Exception err){
-                    System.out.println("Error:"+err.getMessage());
+                    SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
+                    try{
+                        createdAt = formatter.parse(created);
+                    }catch(Exception err2){
+                        System.out.println("Error Date: "+email.getDescriptorNodeId()+ " Error:" + err2);  
+                    }
                 }
-                String createdAt = String.valueOf(timestamp.getTime());
+                createdAtTimestamp = createdAt.getTime() / 1000;
+                if((int)(Math.log10(createdAtTimestamp)+1) < 11)
+                    createdAtTimestamp = createdAtTimestamp * 1000;
                 boolean read = email.isRead();
                 String contact = "";
                 String from = "";
@@ -117,7 +128,7 @@ public class JavaPST {
                 String text = email.getBody();
                 String subject = email.getSubject();
                 email = (PSTMessage)folder.getNextChild();
-                Document doc = new Document("createdAt", createdAt)
+                Document doc = new Document("createdAt", createdAtTimestamp)
                     .append("read", read)
                     .append("contact", contact)
                     .append("from", from)
@@ -130,7 +141,7 @@ public class JavaPST {
                     .append("type", 1)
                     .append("status", status)
                     .append("attachments", Arrays.asList());
-                Document subDoc = new Document("createdAt", createdAt)
+                Document subDoc = new Document("createdAt", createdAtTimestamp)
                     .append("read", read)
                     .append("contact", contact)
                     .append("from", from)

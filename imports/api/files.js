@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { FilesCollection } from 'meteor/ostrio:files';
+import ClamAv from './classes/ClamAv';
 import path from 'path';
-//import { ScanFile } from './scanner';
 
-let separator = (process.env.OS && process.env.OS === 'Windows_NT') ? '\\' : '/';
+let isWindows = (process.env.OS && process.env.OS === 'Windows_NT');
+let separator = isWindows ? '\\' : '/';
 let basepath = path.resolve('.').split(separator + '.meteor')[0] + separator;
 PATH = {
     BASE: basepath,
@@ -20,7 +21,11 @@ let EmailFiles = new FilesCollection({
     parentDirPermissions: '0774',
     allowClientCode: true,
     storagePath: PATH.UPLOAD,
-    onAfterUpload: function () {
+    onAfterUpload: function (fileRef) {
+        if (!isWindows)
+            new ClamAv().scanFile(EmailFiles.link(fileRef), (data) => {
+                console.log(data);
+            })
         return true;
     }
 });

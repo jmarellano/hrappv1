@@ -33,6 +33,11 @@ class PST extends Component {
         this.setState({ pst: !this.state.pst });
     }
 
+    import(file) {
+        if (!this.props.user.importing)
+            this.props.Message.import(file);
+    }
+
     handleUpload(e) {
         if (e.currentTarget.files && e.currentTarget.files[0]) {
             let file = e.currentTarget.files[0];
@@ -45,17 +50,17 @@ class PST extends Component {
                     if (err)
                         Bert.alert(err.reason, 'danger', 'growl-top-right');
                     else
-                        Bert.alert('PST file uploaded!', 'success', 'growl-top-right');
-                    console.log(fileRef);
-                    this.setState({ uploading: false });
+                        Bert.alert('PST file uploaded! Importing started...', 'success', 'growl-top-right');
+                    this.import(PSTFiles.link(fileRef));
+                    this.setState({ uploading: false, pst: false });
                 },
                 onAbort: () => {
                     Bert.alert('Upload aborted!', 'danger', 'growl-top-right');
-                    this.setState({ uploading: false });
+                    this.setState({ uploading: false, pst: false });
                 },
                 onError: (err) => {
                     Bert.alert(err.reason, 'danger', 'growl-top-right');
-                    this.setState({ uploading: false });
+                    this.setState({ uploading: false, pst: false });
                 },
                 onProgress: (progress) => {
                     this.setState({ uploadProgress: progress });
@@ -74,8 +79,8 @@ class PST extends Component {
     render() {
         return (
             <div>
-                <a className="nav-link" href="#" data-tip="Import PST" onClick={this.toggleModal}>
-                    <i className="fa fa-2x fa-upload" />
+                <a className="nav-link" href="#" data-tip="Import PST" onClick={this.toggleModal} disabled={this.props.user.importing}>
+                    {!this.props.user.importing ? <i className="fa fa-2x fa-upload" /> : <i className="fa fa-2x fa-spin fa-spinner" />}
                 </a>
                 <Modal isOpen={this.state.pst} contentLabel="SettingsModal" style={this.styleSet}>
                     <div className="panel panel-primary">
@@ -94,7 +99,7 @@ class PST extends Component {
                             {!this.state.uploading &&
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">PST FILE</label>
-                                    <input type="file" className="form-control-file" id="exampleInputFile" aria-describedby="fileHelp" onChange={this.handleUpload.bind(this)} />
+                                    <input type="file" className="form-control-file" id="exampleInputFile" aria-describedby="fileHelp" onChange={this.handleUpload.bind(this)} disabled={this.props.user.importing} />
                                     <small id="fileHelp" className="form-text text-muted">Upload here the PST File...</small>
                                 </div>
                             }

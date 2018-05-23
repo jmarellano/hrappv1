@@ -1,10 +1,58 @@
 import { Accounts } from 'meteor/accounts-base';
-import { MessagesDB } from '../messages';
+import Future from 'fibers/future';
+import Fiber from 'fibers';
+import nodemailer from 'nodemailer';
+import Imap from 'imap';
+import webshot from 'webshot';
+import Drive from './Drive';
+import clamscan from 'clamscan';
 
 export default class Server {
     constructor() {
         this.messageSender = [];
         this.messageListener = [];
+    }
+
+    createFuture() {
+        return new Future();
+    }
+
+    createImap(data) {
+        return Imap(data);
+    }
+
+    getFiber(data) {
+        return Fiber(data);
+    }
+
+    getNodemailer() {
+        return nodemailer;
+    }
+
+    getClamscan(options) {
+        return clamscan(options);
+    }
+
+    getWebshot(link, filename, options, callback) {
+        return webshot(link, filename, options, callback);
+    }
+
+    getDrive() {
+        Drive.init();
+        return Drive;
+    }
+
+    addSender(id, email, connection) {
+        this.messageSender.push({ id, email, connection });
+    }
+
+    removeSender(id, email) {
+        let connections = this.messageSender.filter((e) => {
+            return ![{ id, email }].some(function (s) {
+                return s.id === e.id && s.email === e.email;
+            });
+        });
+        this.messageSender = connections;
     }
 
     run() {
@@ -25,21 +73,6 @@ export default class Server {
             else
                 return true;
         });
-        console.log('Creating Indexes...');
-        // MessagesDB._ensureIndex({ contact: 1 });
-        // MessagesDB._ensureIndex({ messageId: 1 });
     }
 
-    addSender(id, email, connection) {
-        this.messageSender.push({ id, email, connection });
-    }
-
-    removeSender(id, email) {
-        let connections = this.messageSender.filter((e) => {
-            return ![{ id, email }].some(function (s) {
-                return s.id === e.id && s.email === e.email;
-            });
-        });
-        this.messageSender = connections;
-    }
 }

@@ -7,8 +7,6 @@ export const ValidUsers = 'users_valid';
 export const UsersRegister = 'users_register';
 export const UsersSendVerificationLink = 'users_sendVerificationLink';
 export const UsersResetLink = 'users_resetLink';
-// export const UsersSave = 'users_save';
-// export const UsersRemove = 'users_remove';
 export const UsersAddEmail = 'users_add_email';
 export const UsersRemoveEmail = 'users_remove_email';
 export const UsersDefaultEmail = 'users_default_email';
@@ -19,14 +17,7 @@ export const UsersChangeRole = 'users_change_role';
 export const UsersRetire = 'users_retire';
 export const UsersRemove = 'users_remove';
 
-// export const UsersIsPermitted = 'users_isPermitted';
-// export const UsersToggleMute = 'users_toggleMute';
-// export const UsersFirstLogin = 'users_first';
-// export const UsersPubValid = 'users_valid';
-// export const UsersPubStaffs = 'users_staffs';
-
 if (Meteor.isServer) {
-    let Future = require('fibers/future');
     functions[UsersRegister] = function (data) {
         try {
             check(data, Object);
@@ -61,7 +52,7 @@ if (Meteor.isServer) {
                 text(user, url) {
                     let emailAddress = user.emails[0].address;
                     let urlWithoutHash = url.replace('#/', '');
-                    return emailBody = `To verify your email address (${emailAddress}) 
+                    return `To verify your email address (${emailAddress}) 
                 visit the following link:\n\n${urlWithoutHash}\n\n If you did not request this verification, 
                 please ignore this email. If you feel something is wrong, 
                 please contact our support team: ${emailInfo.info.supportEmail}.`;
@@ -80,7 +71,7 @@ if (Meteor.isServer) {
             check(data.email, String);
             let user = Accounts.findUserByEmail(data.email),
                 emailInfo = Meteor.settings.config.email,
-                myFuture = new Future();
+                myFuture = server.createFuture();
             if (typeof user !== 'undefined') {
                 Accounts.emailTemplates.from = emailInfo.info.from;
                 Accounts.emailTemplates.siteName = emailInfo.info.siteName;

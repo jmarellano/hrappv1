@@ -50,6 +50,7 @@
         "MediaUploader": true,
         "Morris": true,
         "MongoInternals": true,
-        "Audio": true
+        "Audio": true,
+        "Buffer": true
     }
 }

@@ -19,9 +19,10 @@ class User {
         this.default_timezone = obj.profile.default_timezone;
         this.default_email = obj.profile.default_email;
         this.mute = obj.profile.mute;
-        this.createdAt = obj.profile.createdAt; // TODO
+        this.createdAt = obj.profile.createdAt;
         this.firstName = obj.profile.first;
         this.lastName = obj.profile.last;
+        this.importing = obj.profile.importing;
     }
 
     getPrimaryEmail() {

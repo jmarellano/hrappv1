@@ -3,7 +3,7 @@ import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
-import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead } from '../messages';
+import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 
@@ -213,6 +213,9 @@ class Message {
     }
     read(data) {
         Meteor.call(MessagesRead, data);
+    }
+    import(file) {
+        Meteor.call(MessagesImport, file);
     }
 }
 
