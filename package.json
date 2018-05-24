@@ -12,6 +12,7 @@
     "buffer-concat": "^1.0.0",
     "clamscan": "^0.8.4",
     "exenv": "^1.2.2",
+    "ext-name": "^5.0.0",
     "fibers": "^2.0.2",
     "googleapis": "^27.0.0",
     "imap": "^0.8.19",
@@ -34,6 +35,7 @@
     "react-select": "^2.0.0-beta.3",
     "react-tooltip": "^3.5.1",
     "simplesmtp": "^0.3.35",
+    "twilio": "^3.6.1",
     "webshot": "^0.18.0"
   }
 }

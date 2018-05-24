@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
-import { ROLES, isPermitted, MESSAGES_TYPE, MESSAGES_STATUS, VALUE } from './classes/Const';
+import { ROLES, isPermitted, MESSAGES_TYPE, MESSAGES_STATUS } from './classes/Const';
 import { check } from 'meteor/check';
-import { CandidateCreate } from './candidates';
+import { CandidateCreate, CandidatesDB } from './candidates';
 import { EmailFiles } from './files';
 import { LinkPreview } from './link-preview';
 import { simpleParser } from 'mailparser';
@@ -124,9 +124,10 @@ if (Meteor.isServer) {
                                                         attachments.push(bool);
                                                 });
                                             }
+                                            let msgTime = moment(mail.date).valueOf();
                                             mail.to.value.forEach((obj) => {
                                                 functions[MessagesSave].call(this, {
-                                                    createdAt: moment(mail.date).valueOf(),
+                                                    createdAt: msgTime,
                                                     read: false,
                                                     contact: obj.address,
                                                     from: obj.address,
@@ -135,19 +136,24 @@ if (Meteor.isServer) {
                                                     bcc: mail.bcc ? mail.bcc.value.join(',') : '',
                                                     text: mail.text,
                                                     subject: mail.subject,
-                                                    html: mail.textAsHtml,
+                                                    html: mail.html,
                                                     attachments,
                                                     type: MESSAGES_TYPE.EMAIL,
                                                     status: MESSAGES_STATUS.RECEIVED,
                                                     messageId
                                                 }, false);
-                                                functions[CandidateCreate].call(this, obj.address, {
-                                                    createdAt: moment(mail.date).valueOf(),
-                                                    read: false,
-                                                    from: obj.address,
-                                                    to: credit.user,
-                                                    text: mail.text,
-                                                    subject: mail.subject,
+                                                functions[CandidateCreate].call(this, {
+                                                    contact: obj.address,
+                                                    email: obj.address,
+                                                    createdAt: msgTime,
+                                                    lastMessage: {
+                                                        createdAt: msgTime,
+                                                        read: false,
+                                                        from: obj.address,
+                                                        to: credit.user,
+                                                        text: mail.text,
+                                                        subject: mail.subject
+                                                    }
                                                 }, true);
                                             });
                                         }));
@@ -284,80 +290,149 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(data, Object);
-            let smtpConfig = {
-                host: data.sender.smtp_host,
-                port: data.sender.smtp_port,
-                secure: (data.sender.smtp_port === '465'),
-                auth: {
-                    user: data.sender.user,
-                    pass: data.sender.password,
-                },
-                tls: {
-                    rejectUnauthorized: false
-                },
-                ignoreTLS: true
-            };
-            let transporter = server.getNodemailer().createTransport(smtpConfig);
-            let arrFiles = [];
-            for (let i = 0; i < data.files.length; i++) {
-                arrFiles.push(data.files[i]);
-            }
-            let mailOptions = {
-                from: data.sender.user,
-                to: data.contact,
-                cc: data.cc,
-                bcc: data.bcc,
-                subject: data.subject,
-                text: data.text,
-                html: data.html,
-                attachments: arrFiles,
-            };
-            let toArr = data.contact.split(",");
-            let msgArr = [];
-            toArr.forEach((eadd) => {
+            if (data.type === MESSAGES_TYPE.EMAIL) {
+                let smtpConfig = {
+                    host: data.sender.smtp_host,
+                    port: data.sender.smtp_port,
+                    secure: (data.sender.smtp_port === '465'),
+                    auth: {
+                        user: data.sender.user,
+                        pass: data.sender.password,
+                    },
+                    tls: {
+                        rejectUnauthorized: false
+                    },
+                    ignoreTLS: true
+                };
+                let transporter = server.getNodemailer().createTransport(smtpConfig);
+                let arrFiles = [];
+                for (let i = 0; i < data.files.length; i++) {
+                    arrFiles.push(data.files[i]);
+                }
+                let mailOptions = {
+                    from: data.sender.user,
+                    to: data.contact,
+                    cc: data.cc,
+                    bcc: data.bcc,
+                    subject: data.subject,
+                    text: data.text,
+                    html: data.html,
+                    attachments: arrFiles,
+                };
+                let toArr = data.contact.split(",");
+                let msgArr = [];
+                toArr.forEach((eadd) => {
+                    let msgTime = moment().valueOf();
+                    msgArr.push(functions[MessagesSave].call(this, {
+                        createdAt: msgTime,
+                        read: true,
+                        contact: eadd,
+                        from: data.sender.user,
+                        to: eadd,
+                        cc: data.cc,
+                        bcc: data.bcc,
+                        text: data.text,
+                        subject: data.subject,
+                        html: data.html,
+                        attachments: arrFiles,
+                        type: MESSAGES_TYPE.EMAIL,
+                        status: MESSAGES_STATUS.SENDING
+                    }, true));
+                    functions[CandidateCreate].call(this, {
+                        contact: eadd,
+                        email: eadd,
+                        createdAt: msgTime,
+                        lastMessage: {
+                            createdAt: msgTime,
+                            read: true,
+                            from: data.sender.user,
+                            to: eadd,
+                            text: data.text,
+                            subject: data.subject
+                        }
+                    }, true);
+                });
+                transporter.sendMail(mailOptions, Meteor.bindEnvironment((error, infoObj) => {
+                    if (error && error !== null) {
+                        console.error(`Error sending EMAIL with '${data.sender.user}'(EMAIL):`, error);
+                        MessagesDB.update({ _id: { $in: msgArr } }, {
+                            $set: {
+                                status: MESSAGES_STATUS.FAILED,
+                            }
+                        });
+                    } else {
+                        infoObj.accepted.forEach((toInd) => {
+                            MessagesDB.update({ _id: msgArr[toArr.indexOf(toInd)] }, {
+                                $set: {
+                                    status: MESSAGES_STATUS.SENT
+                                }
+                            });
+                        });
+                    }
+                }));
+            } else if (data.type === MESSAGES_TYPE.SMS) {
+                let accountSid = Meteor.settings.twilioCreds.accountSid;
+                let authToken = Meteor.settings.twilioCreds.authToken;
+                let client = server.createTwilio(accountSid, authToken);
+                let contact = null,
+                    from = null;
+                if (!Util.numberValidator(data.contact).isValid)
+                    throw new Meteor.Error('BAD', 'Phone number invalid!');
+                contact = Util.numberValidator(data.contact).e164Format;
+                from = Util.numberValidator(data.sender).e164Format;
+                let obj = {
+                    body: data.text,
+                    to: contact,
+                    from,
+                };
+                if (data.files.length)
+                    obj.mediaUrl = EmailFiles.link(data.files[0]);
                 let msgTime = moment().valueOf();
-                msgArr.push(functions[MessagesSave].call(this, {
+                let msg = functions[MessagesSave].call(this, {
                     createdAt: msgTime,
                     read: true,
-                    contact: eadd,
-                    from: data.sender.user,
-                    to: eadd,
+                    contact,
+                    from: data.sender,
+                    to: contact,
                     cc: data.cc,
                     bcc: data.bcc,
                     text: data.text,
                     subject: data.subject,
                     html: data.html,
-                    attachments: arrFiles,
-                    type: MESSAGES_TYPE.EMAIL,
+                    attachments: data.files,
+                    type: MESSAGES_TYPE.SMS,
                     status: MESSAGES_STATUS.SENDING
-                }, true));
-                functions[CandidateCreate].call(this, eadd, {
-                    createdAt: msgTime,
-                    read: true,
-                    from: data.sender.user,
-                    to: eadd,
-                    text: data.text,
-                    subject: data.subject,
                 }, true);
-            });
-            transporter.sendMail(mailOptions, Meteor.bindEnvironment((error, infoObj) => {
-                if (error && error !== null) {
-                    console.error(`Error sending EMAIL with '${data.sender.user}'(EMAIL):`, error);
-                    MessagesDB.update({ _id: { $in: msgArr } }, {
-                        $set: {
-                            status: MESSAGES_STATUS.FAILED,
-                        }
-                    });
-                } else {
-                    infoObj.accepted.forEach((toInd) => {
-                        MessagesDB.update({ _id: msgArr[toArr.indexOf(toInd)] }, {
+                functions[CandidateCreate].call(this, {
+                    contact,
+                    number: contact,
+                    createdAt: msgTime,
+                    lastMessage: {
+                        createdAt: msgTime,
+                        read: true,
+                        from,
+                        to: contact,
+                        text: data.text,
+                        subject: data.subject
+                    }
+                }, true);
+                client.messages.create(obj, Meteor.bindEnvironment((err) => {
+                    if (err) {
+                        console.error(`Error sending SMS with '${from}'(SMS):`, err);
+                        MessagesDB.update({ _id: msg }, {
+                            $set: {
+                                status: MESSAGES_STATUS.FAILED,
+                            }
+                        });
+                    } else {
+                        MessagesDB.update({ _id: msg }, {
                             $set: {
                                 status: MESSAGES_STATUS.SENT
                             }
                         });
-                    });
-                }
-            }));
+                    }
+                }));
+            }
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -396,12 +471,13 @@ if (Meteor.isServer) {
         try {
             let count = null,
                 cursor = null;
+            let candidate = CandidatesDB.findOne({ contact });
             if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
-                count = MessagesDB.find({ contact }, { sort: { createdAt: -1 } }).count();
-                cursor = MessagesDB.find({ contact }, { sort: { createdAt: -1 }, limit });
+                count = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }] }, { sort: { createdAt: -1 } }).count();
+                cursor = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }] }, { sort: { createdAt: -1 }, limit });
             } else {
-                count = MessagesDB.find({ contact, $or: [{ retired: { $exists: false } }, { retired: VALUE.FALSE }] }, { sort: { createdAt: -1 } }).count();
-                cursor = MessagesDB.find({ contact, $or: [{ retired: { $exists: false } }, { retired: VALUE.FALSE }] }, { sort: { createdAt: -1 }, limit });
+                count = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }], retired: { $exists: false } }, { sort: { createdAt: -1 } }).count();
+                cursor = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }], retired: { $exists: false } }, { sort: { createdAt: -1 }, limit });
             }
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;

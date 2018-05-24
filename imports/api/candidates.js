@@ -82,11 +82,10 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidateCreate] = function (contact, lastMessage) {
+    functions[CandidateCreate] = function (obj) {
         try {
-            check(this.userId, String);
-            check(contact, String);
-            let candidate = new CandidateManager({ contact, lastMessage });
+            check(obj, Object);
+            let candidate = new CandidateManager(obj);
             candidate.flush();
         } catch (err) {
             console.error(err);

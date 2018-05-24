@@ -112,6 +112,14 @@ class MessageBox extends React.Component {
         });
     }
 
+    renderCredSMS() {
+        return Meteor.settings.public.twilioNumbers.map((number, index) => {
+            return (
+                <option key={index} value={number}>{number}</option>
+            );
+        });
+    }
+
     renderFiles() {
         return this.state.files.map((item, index) => {
             return (
@@ -135,8 +143,9 @@ class MessageBox extends React.Component {
         if (this.state.sender > -1) {
             let type = parseInt(this.state.type);
             this.setState({ processing: true });
+            let data = {};
             if (type === MESSAGES_TYPE.EMAIL)
-                this.props.Message.sendMessage({
+                data = {
                     contact: this.state.contact,
                     subject: this.state.subject,
                     bcc: this.state.bcc,
@@ -146,26 +155,39 @@ class MessageBox extends React.Component {
                     html: this.state.text,
                     files: this.state.files,
                     type
-                }, (err) => {
-                    if (err)
-                        Bert.alert(err.reason, 'danger', 'growl-top-right');
-                    else {
-                        this.setState({
-                            contact: '',
-                            subject: '',
-                            bcc: '',
-                            cc: '',
-                            sender: this.props.user.default_email || -1,
-                            text: '',
-                            files: [],
-                            uploading: false
-                        });
-                        Bert.alert('Message created', 'success', 'growl-top-right');
-                    }
-                    this.setState({ processing: false });
-                });
-            else if (parseInt(this.state.type) === MESSAGES_TYPE.SMS)
-                null;
+                };
+            else if (type === MESSAGES_TYPE.SMS)
+                data = {
+                    contact: this.state.contact,
+                    subject: '',
+                    bcc: '',
+                    cc: '',
+                    sender: this.state.sender,
+                    text: this.quillRef.getText(0),
+                    html: '',
+                    files: this.state.files,
+                    type
+                };
+            this.props.Message.sendMessage(data, (err) => {
+                if (err)
+                    Bert.alert(err.reason, 'danger', 'growl-top-right');
+                else {
+                    this.setState({
+                        contact: '',
+                        subject: '',
+                        bcc: '',
+                        cc: '',
+                        sender: this.props.user.default_email || -1,
+                        text: '',
+                        files: [],
+                        uploading: false,
+                        type: MESSAGES_TYPE.EMAIL,
+                        messageModal: false
+                    });
+                    Bert.alert('Message created', 'success', 'growl-top-right');
+                }
+                this.setState({ processing: false });
+            });
         }
     }
 
@@ -228,7 +250,15 @@ class MessageBox extends React.Component {
                                         </select>
                                     </div>
                                 }
-
+                                {
+                                    type === MESSAGES_TYPE.SMS &&
+                                    <div className="col-md-6 mt-1">
+                                        <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
+                                            <option value={{}}>Select Number</option>
+                                            {this.renderCredSMS()}
+                                        </select>
+                                    </div>
+                                }
                             </div>
                             <div className="row p-3 m-0 mb-4">
                                 <ReactQuill ref={(el) => { this.reactQuillRef = el }} style={{ width: '100%', height: '220px' }} value={this.state.text} onChange={this.handleChange} />

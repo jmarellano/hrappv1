@@ -1,5 +1,6 @@
 import { VALUE } from './Const';
 import { CandidatesDB } from '../candidates';
+import Util from './Utilities';
 import moment from 'moment';
 
 export default class CandidateManager {
@@ -13,16 +14,37 @@ export default class CandidateManager {
         };
         if (obj.contact)
             this.json.contact = obj.contact;
+        if (obj.number)
+            this.json.number = obj.number;
+        if (obj.email)
+            this.json.email = obj.email;
     }
     parseCandidate(obj) {
         this.json = obj;
     }
     flush() {
-        if (this.json.contact) {
-            if (CandidatesDB.update(this.json.contact, this.json)) {
+        if (this.json.number)
+            if (
+                CandidatesDB.update({ number: this.json.number }, {
+                    $set: {
+                        retired: this.json.retired,
+                        lastMessage: this.json.lastMessage
+                    }
+                })
+            ) {
                 return;
             }
-        }
+        if (this.json.email)
+            if (
+                CandidatesDB.update({ email: this.json.email }, {
+                    $set: {
+                        retired: this.json.retired,
+                        lastMessage: this.json.lastMessage
+                    }
+                })
+            ) {
+                return;
+            }
         return (this.json.contact = CandidatesDB.insert(this.json));
     }
     static updateCandidateInfo(contact, data) {

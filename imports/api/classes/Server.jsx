@@ -6,6 +6,8 @@ import Imap from 'imap';
 import webshot from 'webshot';
 import Drive from './Drive';
 import clamscan from 'clamscan';
+import twilio from 'twilio';
+import { MessagesAddListener } from '../messages';
 
 export default class Server {
     constructor() {
@@ -15,6 +17,10 @@ export default class Server {
 
     createFuture() {
         return new Future();
+    }
+
+    createTwilio(sid, token) {
+        return new twilio(sid, token);
     }
 
     createImap(data) {
@@ -44,6 +50,17 @@ export default class Server {
 
     addSender(id, email, connection) {
         this.messageSender.push({ id, email, connection });
+    }
+
+    initListener() {
+        console.log('Running listener for emails...');
+        Meteor.users.find({ retired: { $exists: false } }).fetch().forEach((user) => {
+            if (user.profile.emails)
+                user.profile.emails.forEach((credit) => {
+                    if (credit.status === 'connected')
+                        Meteor.call(MessagesAddListener, credit, user._id);
+                });
+        });
     }
 
     removeSender(id, email) {

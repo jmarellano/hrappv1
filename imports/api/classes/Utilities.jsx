@@ -85,4 +85,4 @@ class Utilities {
     }
 }
 
-export default Utilities = new Utilities();
+export default new Utilities();

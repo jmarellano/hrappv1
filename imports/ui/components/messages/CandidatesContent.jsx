@@ -78,7 +78,7 @@ CandidatesContent.propTypes = {
 export default withTracker((props) => {
     let candidate = CandidatesDB.findOne({ contact: props.candidate.contact });
     return {
-        messages: MessagesDB.find({}, { sort: { createdAt: -1 } }).fetch().map((item) => new MessageClass(item)),
+        messages: MessagesDB.find({}, { sort: { createdAt: -1 } }).fetch().map((item, index) => new MessageClass(item, index)),
         candidate: candidate ? new CandidateClass(CandidatesDB.findOne({ contact: props.candidate.contact })) : null
     };
 

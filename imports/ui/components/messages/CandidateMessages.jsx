@@ -113,6 +113,14 @@ class CandidateMessages extends React.Component {
         });
     }
 
+    renderCredSMS() {
+        return Meteor.settings.public.twilioNumbers.map((number, index) => {
+            return (
+                <option key={index} value={number}>{number}</option>
+            );
+        });
+    }
+
     renderFiles() {
         return this.state.files.map((item, index) => {
             return (
@@ -136,9 +144,15 @@ class CandidateMessages extends React.Component {
         if (this.state.sender > -1) {
             let type = parseInt(this.state.type);
             this.setState({ processing: true });
-            if (type === MESSAGES_TYPE.EMAIL)
-                this.props.Message.sendMessage({
-                    contact: this.state.contact,
+            let data = {};
+            if (type === MESSAGES_TYPE.EMAIL) {
+                if (!this.props.candidate.email) {
+                    Bert.alert('No email address associated with this candidate', 'danger', 'growl-top-right');
+                    this.setState({ processing: false });
+                    return null;
+                }
+                data = {
+                    contact: this.props.candidate.email,
                     subject: this.state.subject,
                     bcc: this.state.bcc,
                     cc: this.state.cc,
@@ -147,26 +161,46 @@ class CandidateMessages extends React.Component {
                     html: this.state.text,
                     files: this.state.files,
                     type
-                }, (err) => {
-                    if (err)
-                        Bert.alert(err.reason, 'danger', 'growl-top-right');
-                    else {
-                        this.setState({
-                            contact: '',
-                            subject: '',
-                            bcc: '',
-                            cc: '',
-                            sender: this.props.user.default_email || -1,
-                            text: '',
-                            files: [],
-                            uploading: false
-                        });
-                        Bert.alert('Message created', 'success', 'growl-top-right');
-                    }
+                };
+            }
+            else if (type === MESSAGES_TYPE.SMS) {
+                if (!this.props.candidate.number) {
+                    Bert.alert('No phone number associated with this candidate', 'danger', 'growl-top-right');
                     this.setState({ processing: false });
-                });
-            else if (parseInt(this.state.type) === MESSAGES_TYPE.SMS)
-                null;
+                    return null;
+                }
+                data = {
+                    contact: this.props.candidate.number,
+                    subject: '',
+                    bcc: '',
+                    cc: '',
+                    sender: this.state.sender,
+                    text: this.quillRef.getText(0),
+                    html: '',
+                    files: this.state.files,
+                    type
+                };
+            }
+            this.props.Message.sendMessage(data, (err) => {
+                if (err)
+                    Bert.alert(err.reason, 'danger', 'growl-top-right');
+                else {
+                    this.setState({
+                        contact: '',
+                        subject: '',
+                        bcc: '',
+                        cc: '',
+                        sender: this.props.user.default_email || -1,
+                        text: '',
+                        files: [],
+                        uploading: false,
+                        type: MESSAGES_TYPE.EMAIL,
+                        processing: false
+                    });
+                    Bert.alert('Message created', 'success', 'growl-top-right');
+                }
+                this.setState({ processing: false });
+            });
         }
     }
 
@@ -212,6 +246,15 @@ class CandidateMessages extends React.Component {
                                             <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
                                                 <option value={{}}>Select Email</option>
                                                 {this.renderEmails()}
+                                            </select>
+                                        </div>
+                                    }
+                                    {
+                                        type === MESSAGES_TYPE.SMS &&
+                                        <div className="col-md-6 mt-1">
+                                            <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
+                                                <option value={{}}>Select Number</option>
+                                                {this.renderCredSMS()}
                                             </select>
                                         </div>
                                     }

@@ -6,12 +6,13 @@ import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Modal from '../extras/Modal';
 import Link from '../extras/Link';
+import ReactTooltip from 'react-tooltip';
 
 class Message extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            toggle: false,
+            toggle: props.message.index === 0,
             confirmation: false
         };
         this.styleSet = {
@@ -31,6 +32,9 @@ class Message extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.toggleConfirmation = this.toggleConfirmation.bind(this);
         this.remove = this.remove.bind(this);
+    }
+    componentDidMount() {
+        window.iframely && window.iframely.load();
     }
     remove(callback) {
         this.props.Message.remove(this.props.message.id, (err) => {
@@ -58,6 +62,9 @@ class Message extends React.Component {
             );
         });
     }
+    createMarkup() {
+        return { __html: this.props.message.html.length ? this.props.message.html : this.props.message.text };
+    }
     render() {
         let message = this.props.message,
             type = 'Unknown';
@@ -81,7 +88,13 @@ class Message extends React.Component {
                             {type}
                         </small>
                         <small className="pull-right">
-                            {message.getDateTime()}
+                            {
+                                message.status === MESSAGES_STATUS.FAILED &&
+                                <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" />
+                            }
+                            {
+                                message.getDateTime()
+                            }
                             {
                                 isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) &&
                                 message.retired !== VALUE.TRUE &&
@@ -89,9 +102,10 @@ class Message extends React.Component {
                             }
                             {
                                 message.retired === VALUE.TRUE &&
-                                <span className="badge badge-secondary text-light ml-1">removed</span>
+                                <span className="badge badge-secondary text-light ml-1" data-tip="Removing Message" >removed</span>
                             }
                         </small>
+                        <ReactTooltip />
                     </div>
                 </div>
                 <div className="card">
@@ -121,7 +135,7 @@ class Message extends React.Component {
                                 </div>
                             </div>
                             <p className="card-text">
-                                {message.text}
+                                {message.type === MESSAGES_TYPE.EMAIL ? <div dangerouslySetInnerHTML={this.createMarkup()}></div> : message.text}
                             </p>
                             {this.renderAttachment()}
                         </div>

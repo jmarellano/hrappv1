@@ -2,7 +2,7 @@ import moment from 'moment';
 
 class Message {
 
-    constructor(obj) {
+    constructor(obj, index) {
         this.id = obj._id;
         this.bcc = obj.bcc;
         this.cc = obj.cc;
@@ -20,6 +20,7 @@ class Message {
         this.createdAt = obj.createdAt;
         this.max = obj.max;
         this.imgUrl = obj.imgUrl;
+        this.index = index;
     }
 
     getDateTime() {
