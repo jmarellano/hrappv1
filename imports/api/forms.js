@@ -6,7 +6,6 @@ import { check } from 'meteor/check';
 //import { IncomingDB } from './messages';
 import Util from './classes/Utilities';
 import FormManager from './classes/FormManager';
-import moment from 'moment';
 //import Notification from './Classes/Notification';
 
 export const ValidForms = 'forms_valid';

@@ -1,11 +1,11 @@
 import { VALUE } from './Const';
 import { CandidatesDB } from '../candidates';
 import Util from './Utilities';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export default class CandidateManager {
     constructor(obj = {}) {
-        const createdAt = obj.createdAt || moment().valueOf();
+        const createdAt = obj.createdAt || moment().utc().valueOf();
         this.json = {
             createdAt,
             contact: obj.contact || '',

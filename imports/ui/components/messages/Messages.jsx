@@ -146,6 +146,6 @@ export default withTracker(() => {
     Meteor.subscribe(NotifPub);
     return {
         notifications: NotificationsDB.find({}, { sort: { 'status': -1, 'createdAt': -1 } }).fetch().map((item) => new Notif(item)),
-        candidates: CandidatesDB.find().fetch().map((item) => new Candidate(item))
+        candidates: CandidatesDB.find({}, { sort: { 'lastMessage.createdAt': -1 } }).fetch().map((item) => new Candidate(item))
     };
 })(Messages);

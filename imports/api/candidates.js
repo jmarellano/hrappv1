@@ -172,8 +172,8 @@ if (Meteor.isServer) {
 
             if (or.length)
                 query['$or'] = or;
-            let count = CandidatesDB.find(query, { sort: { createdAt: -1 } }).count();
-            let cursor = CandidatesDB.find(query, { sort: { createdAt: -1 }, limit: candidate.limit });
+            let count = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 } }).count();
+            let cursor = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 }, limit: candidate.limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;
                 return doc;

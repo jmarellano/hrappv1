@@ -3,7 +3,7 @@ export const LinkPreview = 'link-preview';
 import { EmailFiles } from './files';
 import { MessagesDB } from './messages';
 import path from 'path';
-import moment from 'moment';
+import moment from 'moment-timezone';
 let separator = (process.env.OS && process.env.OS === 'Windows_NT') ? '\\' : '/';
 let basepath = path.resolve('.').split(separator + '.meteor')[0] + separator;
 
@@ -19,7 +19,7 @@ if (Meteor.isServer) {
     functions[LinkPreview] = function (link, id) {
         try {
             this.unblock();
-            let time = moment().valueOf();
+            let time = moment().utc().valueOf();
             server.getWebshot(link, PATH.UPLOAD + id + time + '.png', { shotSize: { width: 150, height: 50 }, streamType: 'png', phantomConfig: { 'ignore-ssl-errors': 'true' } }, (err) => {
                 if (err) {
                     console.log('method[%s]: %s.', LinkPreview, err.message);

@@ -1,6 +1,9 @@
 .bg-secondary-custom{
     background-color: $secondary !important;
 }
+.bg-warning-custom{
+    background-color: lighten($yellow, 40%) !important;
+}
 .bg-primary-custom{
     background-color: $purple !important;
 }

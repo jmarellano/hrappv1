@@ -5,7 +5,7 @@ import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 class Record extends Component {
     constructor(props) {

@@ -2,6 +2,7 @@ import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { MESSAGES_TYPE, MESSAGES_STATUS, isPermitted, ROLES, VALUE } from '../../../api/classes/Const';
 import { EmailFiles } from '../../../api/files';
+import { Menu } from 'react-data-menu';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Modal from '../extras/Modal';
@@ -13,7 +14,10 @@ class Message extends React.Component {
         super(props);
         this.state = {
             toggle: props.message.index === 0,
-            confirmation: false
+            confirmation: false,
+            menu: {
+
+            }
         };
         this.styleSet = {
             overlay: {
@@ -67,13 +71,18 @@ class Message extends React.Component {
     }
     render() {
         let message = this.props.message,
-            type = 'Unknown';
+            type = 'Unknown',
+            background = 'card-header ';
         if (MESSAGES_TYPE.EMAIL === message.type)
             type = 'EMAIL';
         if (MESSAGES_TYPE.SMS === message.type)
             type = 'SMS';
         if (MESSAGES_TYPE.SKYPE === message.type)
             type = 'SKYPE';
+        if (MESSAGES_STATUS.SENT === message.status)
+            background += 'bg-light';
+        if (MESSAGES_STATUS.RECEIVED === message.status)
+            background += 'bg-warning-custom';
         let emails = this.props.users.filter((user) => {
             let email = user.connectedEmails.filter((e) => e.user === message.from);
             if (email.length)
@@ -109,7 +118,7 @@ class Message extends React.Component {
                     </div>
                 </div>
                 <div className="card">
-                    <h6 className="card-header" onClick={this.toggle}>
+                    <h6 className={background} onClick={this.toggle}>
                         {message.subject.length ? message.subject : message.text}
                         <span className="pull-right">
                             {this.state.toggle && <i className="fa fa-chevron-circle-down" />}
@@ -125,7 +134,7 @@ class Message extends React.Component {
                                     <b>
                                         {message.status === MESSAGES_STATUS.RECEIVED && this.props.candidate.getDisplayName()} &nbsp;
                                         {message.status === MESSAGES_STATUS.SENT && this.props.user.checkSender(message.from, message.type) && 'me'}
-                                        {message.status === MESSAGES_STATUS.SENT && !this.props.user.checkSender(message.from, message.type) && emails.length && emails[0].username}
+                                        {message.status === MESSAGES_STATUS.SENT && !this.props.user.checkSender(message.from, message.type) && emails.length > 0 && emails[0].username}
                                         &nbsp;
                                     </b>
                                     <small>via {message.from}</small>
@@ -134,9 +143,9 @@ class Message extends React.Component {
                                     To: {message.to}
                                 </div>
                             </div>
-                            <p className="card-text">
+                            <div className="card-text">
                                 {message.type === MESSAGES_TYPE.EMAIL ? <div dangerouslySetInnerHTML={this.createMarkup()}></div> : message.text}
-                            </p>
+                            </div>
                             {this.renderAttachment()}
                         </div>
                     }

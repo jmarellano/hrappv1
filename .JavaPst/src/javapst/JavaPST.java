@@ -89,23 +89,6 @@ public class JavaPST {
                 printDepth();
                 System.out.println("Importing: "+email.getInternetMessageId());
                 Date date = email.getMessageDeliveryTime();
-                String created = email.getMessageDeliveryTime().toString();
-                Date createdAt=null;
-                String createdAtString = "";
-                Long createdAtTimestamp = 0L;
-                try{
-                    createdAt = new SimpleDateFormat("yyyyMMddHHmm",Locale.ENGLISH).parse(created);
-                }catch(Exception err){
-                    SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd hh:mm:ss z yyyy");
-                    try{
-                        createdAt = formatter.parse(created);
-                    }catch(Exception err2){
-                        System.out.println("Error Date: "+email.getDescriptorNodeId()+ " Error:" + err2);  
-                    }
-                }
-                createdAtTimestamp = createdAt.getTime() / 1000;
-                if((int)(Math.log10(createdAtTimestamp)+1) < 11)
-                    createdAtTimestamp = createdAtTimestamp * 1000;
                 boolean read = email.isRead();
                 String contact = "";
                 String from = "";
@@ -128,7 +111,7 @@ public class JavaPST {
                 String text = email.getBody();
                 String subject = email.getSubject();
                 email = (PSTMessage)folder.getNextChild();
-                Document doc = new Document("createdAt", createdAtTimestamp)
+                Document doc = new Document("createdAt", date.getTime())
                     .append("read", read)
                     .append("contact", contact)
                     .append("from", from)
@@ -141,7 +124,7 @@ public class JavaPST {
                     .append("type", 1)
                     .append("status", status)
                     .append("attachments", Arrays.asList());
-                Document subDoc = new Document("createdAt", createdAtTimestamp)
+                Document subDoc = new Document("createdAt", date.getTime())
                     .append("read", read)
                     .append("contact", contact)
                     .append("from", from)

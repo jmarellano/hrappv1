@@ -7,7 +7,7 @@ import { EmailFiles } from './files';
 import { LinkPreview } from './link-preview';
 import { simpleParser } from 'mailparser';
 import Util from './classes/Utilities';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import POP3Client from 'poplib';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import MessageManager from './classes/MessageManager';
@@ -91,7 +91,7 @@ if (Meteor.isServer) {
                         throw err;
                     }
                     Meteor.setInterval(() => {
-                        imap.search(['UNSEEN', ['SINCE', moment().format('MMMM DD, YYYY')]], Meteor.bindEnvironment((error, results) => {
+                        imap.search(['UNSEEN', ['SINCE', moment().utc().format('MMMM DD, YYYY')]], Meteor.bindEnvironment((error, results) => {
                             if (error)
                                 console.error(`Connection for ${credit.user}: ${error}`);
                             if (results.length) {
@@ -124,8 +124,8 @@ if (Meteor.isServer) {
                                                         attachments.push(bool);
                                                 });
                                             }
-                                            let msgTime = moment(mail.date).valueOf();
-                                            mail.to.value.forEach((obj) => {
+                                            let msgTime = moment(mail.date).utc().valueOf();
+                                            mail.from.value.forEach((obj) => {
                                                 functions[MessagesSave].call(this, {
                                                     createdAt: msgTime,
                                                     read: false,
@@ -291,6 +291,7 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(data, Object);
             if (data.type === MESSAGES_TYPE.EMAIL) {
+                let messageId = Util.hash(`${moment().utc().valueOf()}${data.contact}${data.subject}${data.text}${data.sender.user}`);
                 let smtpConfig = {
                     host: data.sender.smtp_host,
                     port: data.sender.smtp_port,
@@ -322,7 +323,7 @@ if (Meteor.isServer) {
                 let toArr = data.contact.split(",");
                 let msgArr = [];
                 toArr.forEach((eadd) => {
-                    let msgTime = moment().valueOf();
+                    let msgTime = moment().utc().valueOf();
                     msgArr.push(functions[MessagesSave].call(this, {
                         createdAt: msgTime,
                         read: true,
@@ -336,7 +337,8 @@ if (Meteor.isServer) {
                         html: data.html,
                         attachments: arrFiles,
                         type: MESSAGES_TYPE.EMAIL,
-                        status: MESSAGES_STATUS.SENDING
+                        status: MESSAGES_STATUS.SENDING,
+                        messageId
                     }, true));
                     functions[CandidateCreate].call(this, {
                         contact: eadd,
@@ -371,6 +373,8 @@ if (Meteor.isServer) {
                     }
                 }));
             } else if (data.type === MESSAGES_TYPE.SMS) {
+                let msgTime = moment().utc().valueOf();
+                let messageId = Util.hash(`${msgTime}${data.contact}${data.subject}${data.text}${data.sender}`);
                 let accountSid = Meteor.settings.twilioCreds.accountSid;
                 let authToken = Meteor.settings.twilioCreds.authToken;
                 let client = server.createTwilio(accountSid, authToken);
@@ -387,7 +391,6 @@ if (Meteor.isServer) {
                 };
                 if (data.files.length)
                     obj.mediaUrl = EmailFiles.link(data.files[0]);
-                let msgTime = moment().valueOf();
                 let msg = functions[MessagesSave].call(this, {
                     createdAt: msgTime,
                     read: true,
@@ -401,7 +404,8 @@ if (Meteor.isServer) {
                     html: data.html,
                     attachments: data.files,
                     type: MESSAGES_TYPE.SMS,
-                    status: MESSAGES_STATUS.SENDING
+                    status: MESSAGES_STATUS.SENDING,
+                    messageId
                 }, true);
                 functions[CandidateCreate].call(this, {
                     contact,
@@ -472,12 +476,17 @@ if (Meteor.isServer) {
             let count = null,
                 cursor = null;
             let candidate = CandidatesDB.findOne({ contact });
+            let or = [{ contact: candidate.contact }];
+            if (candidate.email)
+                or.push({ contact: candidate.email });
+            if (candidate.number)
+                or.push({ contact: candidate.number });
             if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
-                count = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }] }, { sort: { createdAt: -1 } }).count();
-                cursor = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }] }, { sort: { createdAt: -1 }, limit });
+                count = MessagesDB.find({ $or: or }, { sort: { createdAt: -1 } }).count();
+                cursor = MessagesDB.find({ $or: or }, { sort: { createdAt: -1 }, limit });
             } else {
-                count = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }], retired: { $exists: false } }, { sort: { createdAt: -1 } }).count();
-                cursor = MessagesDB.find({ $or: [{ contact: candidate.contact }, { contact: candidate.email }, { contact: candidate.number }], retired: { $exists: false } }, { sort: { createdAt: -1 }, limit });
+                count = MessagesDB.find({ $or: or, retired: { $exists: false } }, { sort: { createdAt: -1 } }).count();
+                cursor = MessagesDB.find({ $or: or, retired: { $exists: false } }, { sort: { createdAt: -1 }, limit });
             }
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;

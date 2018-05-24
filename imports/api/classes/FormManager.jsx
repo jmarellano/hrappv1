@@ -7,7 +7,7 @@ export default class FormManager {
     constructor(obj = {}) {
         this.json = {
             name: obj.name || {},
-            dateModified: obj.dateModified || moment().valueOf(),
+            dateModified: obj.dateModified || moment().utc().valueOf(),
             headers: obj.headers || [],
             template: obj.template || [],
             progress: obj.progress || [],
@@ -30,7 +30,7 @@ export default class FormManager {
         FormsDB.update({ _id: new Mongo.ObjectID(id) }, {
             '$set': {
                 'name': data.name,
-                'dateModified': moment().valueOf()
+                'dateModified': moment().utc().valueOf()
             },
             '$push': {
                 'template': data.template
@@ -67,7 +67,7 @@ export default class FormManager {
             'form_id': new Mongo.ObjectID(data._id),
             'data': data.obj,
             'version': data.version,
-            'createdAt': moment().valueOf(),
+            'createdAt': moment().utc().valueOf(),
             'applicantId': applicantId,
             'applicantName': dup.name || dup.email || dup.contact,
             'removed': VALUE.FALSE
@@ -82,7 +82,7 @@ export default class FormManager {
                         progress: {
                             member: null,
                             message: 'A data is added to this form.',
-                            dateAdded: moment().valueOf()
+                            dateAdded: moment().utc().valueOf()
                         }
                     }
                 });

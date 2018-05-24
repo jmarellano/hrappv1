@@ -8,7 +8,7 @@ import Future from 'fibers/future';
 import extName from 'ext-name';
 import urlUtil from 'url';
 import path from 'path';
-import moment from 'moment';
+import moment from 'moment-timezone';
 Picker.middleware(bodyParser.urlencoded({ extended: false }));
 Picker.middleware(bodyParser.json());
 

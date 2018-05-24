@@ -118,11 +118,11 @@ export default class SettingManager {
             let date = '';
             if (criteria != '$category') {
                 if (criteria.criteria == '$month')
-                    date = moment(new Date(`${item._id.id.month} 1, ${item._id.id.year} 00:00:00`)).format('MM (MMM), YYYY');
+                    date = moment(new Date(`${item._id.id.month} 1, ${item._id.id.year} 00:00:00`)).utc().format('MM (MMM), YYYY');
                 else if (criteria.criteria == '$year')
                     date = item._id.id.year;
                 else
-                    date = moment(new Date(`${item._id.id.month} ${item._id.id.day}, ${item._id.id.year} 00:00:00`)).format('DD-MMM-YYYY');
+                    date = moment(new Date(`${item._id.id.month} ${item._id.id.day}, ${item._id.id.year} 00:00:00`)).utc().format('DD-MMM-YYYY');
             }
             if (!retval[date]) {
                 retval[date] = { [item._id.id.category]: item.total };

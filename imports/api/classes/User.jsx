@@ -1,7 +1,7 @@
 import React from 'react';
 import { ROLES, MESSAGES_TYPE } from './Const';
 import Avatar, { getRandomColor } from '../../ui/components/extras/Avatar';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 class User {
 

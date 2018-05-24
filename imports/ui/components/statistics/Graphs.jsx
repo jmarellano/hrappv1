@@ -5,7 +5,7 @@ import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Select from 'react-select';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 class Graphs extends Component {
     constructor(props) {

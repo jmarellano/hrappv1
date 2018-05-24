@@ -7,7 +7,7 @@ import Util from '../../../api/classes/Utilities';
 import { MessagesIncomingPub, IncomingDB } from '../../../api/messages';
 import Timezone from '../timezone/Timezone';
 import MessageBox from '../messages/MessageBox';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 class RightNav extends Component {
     constructor(props) {

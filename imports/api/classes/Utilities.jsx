@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import PhoneNumber from 'awesome-phonenumber';
 import md5 from 'md5';
 

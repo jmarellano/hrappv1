@@ -3,11 +3,13 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ValidUsers } from '../../api/users';
+import { SettingsDB, SettingsPub } from '../../api/settings';
 
 import Client from '../../api/classes/Client';
 import User from '../../api/classes/User';
 import Section from './Section';
-import { SettingsDB, SettingsPub } from '../../api/settings';
+import PropTypes from 'prop-types';
+import moment from 'moment-timezone';
 
 class Main extends Component {
     constructor(props) {
@@ -16,12 +18,21 @@ class Main extends Component {
         this.Client = new Client();
     }
 
+    componentDidUpdate(prevProps) {
+        if ((this.props.user !== prevProps.user) && this.props.user)
+            moment.tz.setDefault(this.props.user.default_timezone || 'Asia/Manila');
+    }
+
     render() {
         return (
             <Section {...this.props} Client={this.Client} />
         );
     }
 }
+
+Main.propTypes = {
+    user: PropTypes.object
+};
 
 export default withTracker(props => {
     let isReady = Accounts.loginServicesConfigured(),

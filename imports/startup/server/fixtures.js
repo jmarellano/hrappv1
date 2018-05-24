@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES } from '../../api/classes/Const';
 import { SettingsDB } from '../../api/settings';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 Meteor.startup(() => {
     if (!Meteor.users.findOne()) {
