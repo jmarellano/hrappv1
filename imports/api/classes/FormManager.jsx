@@ -86,17 +86,6 @@ export default class FormManager {
                         }
                     }
                 });
-                // let notif = new Notification('A guest submitted data to <a href="/' + ROUTES.FORMS_DATA + '/' + data._id + '" target="_blank">' + fData.name + '</a> form');
-                // notif.flush();
-                // IncomingDB.insert({
-                //     title: 'Form submission',
-                //     message: 'A guest submitted data to ' + fData.name + ' form',
-                //     timestamp: moment().valueOf(),
-                //     options: {
-                //         icon: `http://maps.google.com/maps/api/staticmap?center=${data.location.latitude},${data.location.longitude}&zoom=8&markers=icon:|${data.location.latitude},${data.location.longitude}&path=color:0x0000FF80|weight:5|${data.location.latitude},${data.location.longitude}&size=80x80`,
-                //         onClick: `/${ROUTES.FORMS_DATA}/${data._id}`,
-                //     }
-                // });
             }
         });
         return ('Form saved.');

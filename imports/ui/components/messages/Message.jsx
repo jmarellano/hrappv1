@@ -2,7 +2,6 @@ import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { MESSAGES_TYPE, MESSAGES_STATUS, isPermitted, ROLES, VALUE } from '../../../api/classes/Const';
 import { EmailFiles } from '../../../api/files';
-import { Menu } from 'react-data-menu';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Modal from '../extras/Modal';
@@ -15,9 +14,12 @@ class Message extends React.Component {
         this.state = {
             toggle: props.message.index === 0,
             confirmation: false,
-            menu: {
-
-            }
+            height: 0,
+            menu: [{
+                title: 'Menu 1',
+                callback: null
+            }],
+            text: ''
         };
         this.styleSet = {
             overlay: {
@@ -36,9 +38,92 @@ class Message extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.toggleConfirmation = this.toggleConfirmation.bind(this);
         this.remove = this.remove.bind(this);
+        this.frame = null;
     }
     componentDidMount() {
-        window.iframely && window.iframely.load();
+        this.setFrame();
+    }
+    setFrame() {
+        const iframe = this.frame;
+        let self = this;
+        if (iframe) {
+            const document = iframe.contentDocument;
+            document.body.innerHTML = this.props.message.html.length ? this.props.message.html : this.props.message.text;
+            this.setState({ height: document.body.offsetHeight + 40 });
+            document.addEventListener('contextmenu', (event) => {
+                let text = this.getSelectionFrameText(this.props.message.id);
+                this.setState({ text });
+                if (text.length) {
+                    event.preventDefault();
+                    $('.custom-menu').finish().toggle(100).css({
+                        top: event.pageY + 'px',
+                        left: event.pageX + 'px'
+                    });
+                }
+            });
+            $(document).bind('mousedown', function (e) {
+                if (!$(e.target).parents('.custom-menu').length > 0) {
+                    $('.custom-menu').hide(100);
+                }
+            });
+            $('.custom-menu li').click(function () {
+                switch ($(this).attr('data-action')) {
+                    case 'name':
+                    case 'address':
+                    case 'number':
+                    case 'zip':
+                        self.addInfo($(this).attr('data-action'));
+                        break;
+                    default:
+                        self.addInfo($(this).attr('data-action'), true);
+                        break;
+                }
+                $('.custom-menu').hide(100);
+            });
+        }
+    }
+    addInfo(info, stats = false) {
+        let data = { id: this.props.candidate.id, info, value: this.state.text };
+        if (stats)
+            data.info = info + '_notes';
+        this.props.Candidate.addInfo(data, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                Bert.alert('Info updated', 'success', 'growl-top-right');
+        });
+    }
+    getSelectionFrameText(frameId) {
+        let frame = document.getElementById("frame-" + frameId);
+        let frameWindow = frame && frame.contentWindow;
+        let frameDocument = frameWindow && frameWindow.document;
+        if (frameDocument) {
+            if (frameDocument.getSelection) {
+                return String(frameDocument.getSelection());
+            }
+            else if (frameDocument.selection) {
+                return frameDocument.selection.createRange().text;
+            }
+            else if (frameWindow.getSelection) {
+                return String(frameWindow.getSelection());
+            }
+        }
+        return '';
+    }
+    getSelectionText() {
+        var text = '';
+        var activeEl = document.activeElement;
+        var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+        if (
+            (activeElTagName == 'textarea') || (activeElTagName == 'input' &&
+                /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
+            (typeof activeEl.selectionStart == 'number')
+        ) {
+            text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+        } else if (window.getSelection) {
+            text = window.getSelection().toString();
+        }
+        return text;
     }
     remove(callback) {
         this.props.Message.remove(this.props.message.id, (err) => {
@@ -51,7 +136,9 @@ class Message extends React.Component {
         });
     }
     toggle() {
-        this.setState({ toggle: !this.state.toggle });
+        this.setState({ toggle: !this.state.toggle }, () => {
+            this.setFrame();
+        });
     }
     toggleConfirmation() {
         this.setState({ confirmation: !this.state.confirmation });
@@ -144,7 +231,7 @@ class Message extends React.Component {
                                 </div>
                             </div>
                             <div className="card-text">
-                                {message.type === MESSAGES_TYPE.EMAIL ? <div dangerouslySetInnerHTML={this.createMarkup()}></div> : message.text}
+                                <iframe id={`frame-${this.props.message.id}`} ref={(e) => { this.frame = e; }} style={{ height: this.state.height }}></iframe>
                             </div>
                             {this.renderAttachment()}
                         </div>
@@ -176,6 +263,29 @@ class Message extends React.Component {
                         </div>
                     </form>
                 </Modal>
+                <ul className="custom-menu">
+                    <li data-action="name">Attach to Name</li>
+                    <li data-action="address">Attach to Address</li>
+                    <li data-action="number">Attach to Phone Number</li>
+                    <li data-action="zip">Attach to Zip Code</li>
+                    <li data-action="disc">Attach to DISC</li>
+                    <li data-action="values">Attach to VALUES</li>
+                    <li data-action="iq">Attach to IQ</li>
+                    <li data-action="resume">Attach to RESUME</li>
+                    <li data-action="portfolio">Attach to PORTFOLIO</li>
+                    <li data-action="TEST_METEOR">Attach to TEST_METEOR</li>
+                    <li data-action="TEST_LIVE">Attach to TEST_LIVE</li>
+                    <li data-action="TEST_WRITING">Attach to TEST_WRITING</li>
+                    <li data-action="VIDEO">Attach to VIDEO</li>
+                    <li data-action="INTERVIEW">Attach to INTERVIEW</li>
+                    <li data-action="MANAGER">Attach to MANAGER</li>
+                    <li data-action="TEST_IMAGE">Attach to TEST_IMAGE</li>
+                    <li data-action="TEST_CREATIVE">Attach to TEST_CREATIVE</li>
+                    <li data-action="TEST_WEBFLOW">Attach to TEST_WEBFLOW</li>
+                    <li data-action="TEST_MOCK">Attach to TEST_MOCK</li>
+                    <li data-action="TEST_SIMULATION">Attach to TEST_SIMULATION</li>
+                    <li data-action="others">Attach to OTHERS</li>
+                </ul>
             </div>
         );
     }
@@ -186,7 +296,8 @@ Message.propTypes = {
     candidate: PropTypes.object,
     user: PropTypes.object,
     users: PropTypes.array,
-    Message: PropTypes.object
+    Message: PropTypes.object,
+    Candidate: PropTypes.object
 };
 
 export default withTracker(() => {

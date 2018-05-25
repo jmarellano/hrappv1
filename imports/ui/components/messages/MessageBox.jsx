@@ -6,6 +6,7 @@ import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
+import TemplateMain from '../templates/TemplateMain';
 
 class MessageBox extends React.Component {
     constructor(props) {
@@ -41,6 +42,7 @@ class MessageBox extends React.Component {
         this.sendMessage = this.sendMessage.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.template = this.template.bind(this);
         this.quillRef = null;
         this.reactQuillRef = null;
     }
@@ -58,6 +60,17 @@ class MessageBox extends React.Component {
     attachQuillRefs() {
         if (!this.reactQuillRef || typeof this.reactQuillRef.getEditor !== 'function') return;
         this.quillRef = this.reactQuillRef.getEditor();
+    }
+
+    template(value) {
+        String.prototype.replaceAll = function (search, replacement) {
+            let target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+        let staff = this.props.user.username;
+        value = value.replaceAll("{{staff_name}}", staff);
+        value = value.replaceAll("{{current_date}}", new Date().toDateString());
+        this.setState({ text: value });
     }
 
     uploadFile(event) {
@@ -286,7 +299,10 @@ class MessageBox extends React.Component {
                                         <option value={MESSAGES_TYPE.SMS}>SMS</option>
                                     </select>
                                 </div>
-                                <div className="col-md-8">
+                                <div className="col-md-2">
+                                    <TemplateMain {...this.props} Message={this.props.Message} setTemplate={this.template} />
+                                </div>
+                                <div className="col-md-6">
                                     Files:
                                     {this.renderFiles()}
                                 </div>

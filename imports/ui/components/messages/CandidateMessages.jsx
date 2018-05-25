@@ -7,6 +7,7 @@ import Button from '../extras/Button';
 import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import Message from './Message';
+import TemplateMain from '../templates/TemplateMain';
 
 class CandidateMessages extends React.Component {
     constructor(props) {
@@ -42,6 +43,7 @@ class CandidateMessages extends React.Component {
         this.sendMessage = this.sendMessage.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.template = this.template.bind(this);
         this.quillRef = null;
         this.reactQuillRef = null;
     }
@@ -54,6 +56,21 @@ class CandidateMessages extends React.Component {
 
     componentDidUpdate() {
         this.attachQuillRefs();
+    }
+
+    template(value) {
+        String.prototype.replaceAll = function (search, replacement) {
+            let target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+        let staff = this.props.user.username;
+        let name = (this.props.candidate && this.props.candidate.name) ? this.props.candidate.name : '';
+        let category = (this.props.candidate && this.props.candidate.category) ? this.props.candidate.category : '';
+        value = value.replaceAll("{{staff_name}}", staff);
+        value = value.replaceAll("{{current_date}}", new Date().toDateString());
+        value = value.replaceAll("{{applicant_name}}", name);
+        value = value.replaceAll("{{application_position}}", category);
+        this.setState({ text: value });
     }
 
     attachQuillRefs() {
@@ -211,7 +228,7 @@ class CandidateMessages extends React.Component {
     renderMessages() {
         return this.props.messages.map((message, index) => {
             return (
-                <Message key={index} Message={this.props.Message} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} />
+                <Message key={index} Candidate={this.props.Candidate} Message={this.props.Message} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} />
             );
         });
     }
@@ -285,7 +302,10 @@ class CandidateMessages extends React.Component {
                                             <option value={MESSAGES_TYPE.SMS}>SMS</option>
                                         </select>
                                     </div>
-                                    <div className="col-md-7">
+                                    <div className="col-md-2">
+                                        <TemplateMain {...this.props} Message={this.props.Message} setTemplate={this.template} />
+                                    </div>
+                                    <div className="col-md-5">
                                         Files:
                                         {this.renderFiles()}
                                     </div>
@@ -322,7 +342,8 @@ CandidateMessages.propTypes = {
     messages: PropTypes.array,
     candidate: PropTypes.object,
     viewMore: PropTypes.func,
-    users: PropTypes.array
+    users: PropTypes.array,
+    Candidate: PropTypes.object
 };
 
 export default withTracker((props) => {

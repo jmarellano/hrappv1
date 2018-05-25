@@ -16,6 +16,7 @@ export const ROUTES = {
     FORMS_DATA: 'forms-data',
     FORMS_NOT_FOUND: 'forms-not-found',
     TEMPLATES_CREATOR: 'templates-creator',
+    TEMPLATES_NOT_FOUND: 'templates-not-found',
     STATISTICS: 'statistics',
     FILES: 'files'
 };

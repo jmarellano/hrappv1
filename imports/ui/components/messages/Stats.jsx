@@ -1,6 +1,7 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
 import { CategoriesDB } from '../../../api/categories';
+import { EmailFiles } from '../../../api/files';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
@@ -53,6 +54,10 @@ class Stats extends Component {
             TEST_MOCK_Care: props.selectedCandidate.TEST_MOCK_Care,
             TEST_SIMULATION: props.selectedCandidate.TEST_SIMULATION,
             others: props.selectedCandidate.others,
+            notes: false,
+            selectedStat: '',
+            notesValue: '',
+            uploading: false
         };
         this.styleSet = {
             overlay: {
@@ -60,7 +65,7 @@ class Stats extends Component {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
             },
             content: {
-                maxWidth: '330px',
+                maxWidth: '430px',
                 width: 'auto',
                 height: 'auto',
                 maxHeight: '520px',
@@ -69,7 +74,23 @@ class Stats extends Component {
                 overflowX: 'none'
             }
         };
+        this.styleSetSmall = {
+            overlay: {
+                zIndex: '8888',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            },
+            content: {
+                maxWidth: '430px',
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '220px',
+                margin: '1% auto',
+                padding: '0px',
+                overflowX: 'none'
+            }
+        };
         this.save = this.save.bind(this);
+        this.saveNotes = this.saveNotes.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
     }
@@ -119,6 +140,39 @@ class Stats extends Component {
             });
     }
 
+    handleUpload(stats, id, e) {
+        if (e.currentTarget.files && e.currentTarget.files[0]) {
+            let file = e.currentTarget.files[0];
+            EmailFiles.insert({
+                file,
+                onStart: () => {
+                    this.setState({ uploading: true });
+                },
+                onUploaded: (err, fileRef) => {
+                    if (err)
+                        Bert.alert(err.reason, 'danger', 'growl-top-right');
+                    else
+                        Bert.alert('File uploaded!', 'success', 'growl-top-right');
+                    this.props.Candidate.addFileStats(id, stats + '_file', EmailFiles.link(fileRef), (error) => {
+                        if (error)
+                            Bert.alert(err.reason, 'danger', 'growl-top-right');
+                    });
+                    this.setState({ uploading: false });
+                },
+                onAbort: () => {
+                    Bert.alert('Upload aborted!', 'danger', 'growl-top-right');
+                    this.setState({ uploading: false, pst: false });
+                },
+                onError: (err) => {
+                    Bert.alert(err.reason, 'danger', 'growl-top-right');
+                    this.setState({ uploading: false, pst: false });
+                },
+                onProgress: (progress) => {
+                    this.setState({ uploadProgress: progress });
+                }
+            });
+        }
+    }
 
     save(e) {
         e.preventDefault();
@@ -126,12 +180,29 @@ class Stats extends Component {
         let states = this.state;
         delete states['processing'];
         delete states['stats'];
+        delete states['notes'];
+        delete states['selectedStat'];
+        delete states['notesValue'];
+        delete states['uploading'];
         this.props.Candidate.changeStats(states, this.props.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
                 Bert.alert('Candidate Stats changed!', 'success', 'growl-top-right');
             this.setState({ stats: false, processing: false });
+        });
+    }
+
+    saveNotes(e) {
+        e.preventDefault();
+        this.setState({ processing: true });
+        let data = { id: this.props.selectedCandidate.id, info: this.state.selectedStat + '_notes', value: this.state.notesValue };
+        this.props.Candidate.addInfo(data, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                Bert.alert('Info updated', 'success', 'growl-top-right');
+            this.setState({ processing: false });
         });
     }
 
@@ -205,6 +276,27 @@ class Stats extends Component {
                 <div key={index} className="form-group row">
                     <label className={`col-sm-8 control-label mt-2 ${item.sub && 'text-right'}`} htmlFor={item.name}>
                         {!item.sub && <i className="fa fa-circle" />} {item.name}
+                        {
+                            !item.sub &&
+                            <span className="pull-right">
+                                {
+                                    this.props.selectedCandidate[item.name + '_file'] ?
+                                        <a href={this.props.selectedCandidate[item.name + '_file']} target="_blank" className="mr-1">FILE</a> :
+                                        <label className="btn btn-sm mr-1 mt-2 text-center" type="button">
+                                            {(!this.state.uploading) ? <i className="fa fa-paperclip" /> : <i className="fa fa-circle-o-notch fa-spin" />}
+                                            <input type="file"
+                                                ref={(e) => {
+                                                    this.attach = e
+                                                }}
+                                                style={{ display: "none" }}
+                                                className="hidden"
+                                                disabled={this.state.uploading}
+                                                onChange={this.handleUpload.bind(this, item.name, this.props.selectedCandidate.id)} />
+                                        </label>
+                                }
+                                <button className="btn btn-sm btn-default mr-1" onClick={this.toggleNotes.bind(this, item.name)}>Edit Notes</button>
+                            </span>
+                        }
                     </label>
                     <div className="col-sm-4">
                         <input type="number" min="0" step="1" className="form-control" name={item.name} value={this.state[item.name]} onChange={this.handleInputChange} required />
@@ -212,6 +304,10 @@ class Stats extends Component {
                 </div>
             );
         });
+    }
+
+    toggleNotes(name) {
+        this.setState({ notes: !this.state.notes, selectedStat: name, notesValue: this.props.selectedCandidate[name + '_notes'] });
     }
 
     render() {
@@ -246,6 +342,32 @@ class Stats extends Component {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div className="panel-footer p-2">
+                            <hr />
+                            <div className="container">
+                                <div className="pull-right mb-2">
+                                    <Button type="submit" className="form-control btn btn-success" processing={this.state.processing}>Save</Button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </Modal>
+                <Modal isOpen={this.state.notes} contentLabel="NotesModal" style={this.styleSetSmall}>
+                    <form className="panel panel-primary" onSubmit={this.saveNotes}>
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Notes
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.toggleNotes.bind(this, this.state.selectedStat)}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="panel-body p-2">
+                            <textarea className="form-control" name="notesValue" value={this.state.notesValue} onChange={this.handleInputChange} />
                         </div>
                         <div className="panel-footer p-2">
                             <hr />

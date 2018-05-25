@@ -16,6 +16,17 @@ export default NotFound = (props) => {
                     </button>
                 </div>
             );
+        case 'TemplatesNotFound':
+            return (
+                <div className='text-center'>
+                    <h1>Oops!</h1>
+                    <h2>Template Not Found</h2>
+                    <h6>The template you are looking for might have been removed or unavailable.</h6>
+                    <button className='btn btn-primary' onClick={redirect}>
+                        <i className='fa fa-home' aria-hidden='true' /> Take Me Home
+                    </button>
+                </div>
+            );
         default:
             return (
                 <div className='text-center'>

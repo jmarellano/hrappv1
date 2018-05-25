@@ -3,8 +3,8 @@ import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
-import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport } from '../messages';
-import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower } from '../candidates';
+import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
+import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 
 export default class Client {
@@ -217,6 +217,21 @@ class Message {
     import(file) {
         Meteor.call(MessagesImport, file);
     }
+    saveTemplate(data, callback) {
+        Meteor.call(MessagesSaveTemplate, data.id, data.name, data.template, (err, result) => {
+            callback(err, result);
+        });
+    }
+    getTemplate(id, callback) {
+        Meteor.call(MessagesGetTemplate, id, (err, result) => {
+            callback(err, result);
+        });
+    }
+    deleteTemplate(id, callback) {
+        Meteor.call(MessagesDeleteTemplate, id, (err, result) => {
+            callback(err, result);
+        });
+    }
 }
 
 class Candidate {
@@ -268,6 +283,18 @@ class Candidate {
 
     addFollower(data, callback) {
         Meteor.call(CandidatesFollower, data.id, data.user, true, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    addInfo(data, callback) {
+        Meteor.call(CandidatesAddInfo, data.id, data.info, data.value, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    addFileStats(id, stats, url, callback) {
+        Meteor.call(CandidatesAddFileStats, id, stats, url, (err, result) => {
             callback(err, result);
         });
     }

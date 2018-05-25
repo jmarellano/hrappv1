@@ -42,3 +42,10 @@ label[type='button']{
 .vh{
     height: calc(100vh - 55px);
 }
+iframe{
+    width: 100%;
+    border:none;
+}
+textarea{
+    resize: none;
+}

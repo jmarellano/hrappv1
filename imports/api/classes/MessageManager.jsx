@@ -1,7 +1,9 @@
-import { MessagesDB } from '../messages';
+import { Mongo } from 'meteor/mongo';
+import { MessagesDB, TemplatesDB } from '../messages';
 import { CandidatesDB } from '../candidates';
 import { VALUE } from './Const';
 import child_process from 'child_process';
+import moment from 'moment';
 
 export default class MessageManager {
     constructor(obj = {}) {
@@ -53,5 +55,24 @@ export default class MessageManager {
 
     static read(id) {
         return CandidatesDB.update({ _id: id }, { $set: { 'lastMessage.read': VALUE.TRUE } });
+    }
+
+    static templateUpdate(id, name, template) {
+        id = id !== '' ? new Mongo.ObjectID(id) : id;
+        TemplatesDB.update({ _id: id }, {
+            '$set': {
+                'name': name,
+                'template': template,
+                'dateModified': moment().utc().valueOf()
+            }
+        }, { upsert: true });
+        return TemplatesDB.findOne({}, { sort: { dateModified: -1 } })._id._str;
+    }
+    static templateFetch(id) {
+        id = id !== '' ? new Mongo.ObjectID(id) : id;
+        return TemplatesDB.findOne({ _id: id });
+    }
+    static templateRemove(data) {
+        return TemplatesDB.update({ _id: data.id }, { $set: { retired: VALUE.TRUE } });
     }
 }

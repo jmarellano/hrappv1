@@ -14,7 +14,8 @@ export const CandidatesClaim = 'candidates_claim';
 export const CandidatesUnclaim = 'candidates_unclaim';
 export const CandidatesTransferClaim = 'candidates_transfer';
 export const CandidatesFollower = 'candidates_follower';
-
+export const CandidatesAddInfo = 'candidates_add_info';
+export const CandidatesAddFileStats = 'candidates_add_file_stats';
 
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
@@ -67,6 +68,30 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(data, Object);
             return CandidateManager.updateCandidateInfo(data.contact, data);
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[CandidatesAddInfo] = function (contact, info, value) {
+        try {
+            check(this.userId, String);
+            check(contact, Mongo.ObjectID);
+            check(info, String);
+            check(value, String);
+            return CandidateManager.updateCandidateSelectedInfo(contact, info, value);
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[CandidatesAddFileStats] = function (contact, info, value) {
+        try {
+            check(this.userId, String);
+            check(contact, Mongo.ObjectID);
+            check(info, String);
+            check(value, String);
+            return CandidateManager.updateCandidateSelectedInfo(contact, info, value);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

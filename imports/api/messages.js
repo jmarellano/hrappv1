@@ -12,6 +12,7 @@ import POP3Client from 'poplib';
 import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import MessageManager from './classes/MessageManager';
 
+export const ValidTemplates = 'templates_valid';
 export const MessagesAddSender = 'messages_add_sender';
 export const MessagesRemoveSender = 'messages_remove_sender';
 export const MessagesAddListener = 'messages_add_listener';
@@ -22,12 +23,51 @@ export const MessagesRead = 'messages_read';
 export const ValidMessages = 'messages_pub';
 export const MessagesIncomingPub = 'messages_incoming_pub';
 export const MessagesImport = 'messages_import';
+export const MessagesSaveTemplate = 'messages_templates_save';
+export const MessagesGetTemplate = 'messages_templates_get';
+export const MessagesDeleteTemplate = 'messages_templates_delete';
 
 let databaseName = Meteor.settings.public.collections.messages || 'messages';
-export const MessagesDB = new Mongo.Collection(Meteor.settings.public.collections.messages || 'messages', { idGeneration: 'MONGO' });
+let databaseName2 = Meteor.settings.public.collections.templates || 'templates';
+export const TemplatesDB = new Mongo.Collection(databaseName2, { idGeneration: 'MONGO' });
+export const MessagesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
 export const IncomingDB = new Mongo.Collection(Meteor.settings.public.collections.incoming || 'incoming_logs', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
+    functions[MessagesSaveTemplate] = function (id, name, template) {
+        try {
+            check(this.userId, String);
+            check(name, String);
+            check(template, String);
+            let user = Meteor.user();
+            if (user && isPermitted(user.profile.role, ROLES.ADMIN)) {
+                return MessageManager.templateUpdate(id, name, template);
+            }
+            throw new Meteor.Error(403, "Not authorized");
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[MessagesDeleteTemplate] = function (id) {
+        try {
+            check(this.userId, String);
+            return MessageManager.templateRemove(id);
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[MessagesGetTemplate] = function (id) {
+        try {
+            check(this.userId, String);
+            check(id, String);
+            return MessageManager.templateFetch(id);
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
     functions[MessagesImport] = function (file) {
         try {
             check(this.userId, String);
@@ -489,6 +529,24 @@ if (Meteor.isServer) {
                 cursor = MessagesDB.find({ $or: or, retired: { $exists: false } }, { sort: { createdAt: -1 }, limit });
             }
             Util.setupHandler(this, databaseName, cursor, (doc) => {
+                doc.max = count;
+                return doc;
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
+    Meteor.publish(ValidTemplates, function (key, limit) {
+        let cursor = null;
+        let query = { retired: { $exists: false } };
+        if (key && key.length)
+            query['name'] = { $regex: key, $options: 'i' };
+        try {
+            let count = TemplatesDB.find(query, { sort: { name: 1 } }).count();
+            cursor = TemplatesDB.find(query, { sort: { name: 1 }, limit });
+            Util.setupHandler(this, databaseName2, cursor, (doc) => {
                 doc.max = count;
                 return doc;
             });

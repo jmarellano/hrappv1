@@ -59,6 +59,13 @@ export default class CandidateManager {
             }
         });
     }
+    static updateCandidateSelectedInfo(contact, info, value) {
+        let set = {};
+        set[info] = value;
+        return CandidatesDB.update({ _id: contact }, {
+            $set: set
+        });
+    }
     static updateCandidateStats(contact, data) {
         let temp = {};
         Object.keys(data).forEach((item) => {

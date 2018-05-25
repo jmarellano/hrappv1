@@ -10,6 +10,7 @@ import ResetPassword from './auth/ResetPassword';
 
 import Messages from './messages/Messages';
 import Drive from './drive/Drive';
+import TemplateCreator from './templates/TemplateCreator';
 import FormCreator from './forms/FormCreator';
 import FormViewer from './forms/FormViewer';
 import FormData from './forms/FormData';
@@ -49,6 +50,7 @@ class Section extends Component {
                 };
             case ROUTES.MESSAGES:
             case ROUTES.TEAMS:
+            case ROUTES.TEMPLATES_CREATOR:
                 return {
                     history: this.props.history,
                     location: this.props.location,
@@ -152,6 +154,7 @@ class Section extends Component {
                 case ROUTES.STATISTICS:
                 case ROUTES.REQUESTS:
                 case ROUTES.REQUESTS_ADMIN:
+                case ROUTES.TEMPLATES_CREATOR:
                     if (!this.props.user) {
                         this.props.history.replace(ROUTES.LOGIN);
                         continueRender = false;
@@ -189,6 +192,7 @@ class Section extends Component {
                             continueRender = false;
                         break;
                     case ROUTES.REQUESTS_ADMIN:
+                    case ROUTES.TEMPLATES_CREATOR:
                         if (!(isPermitted(this.props.user.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER)))
                             continueRender = false;
                         break;
@@ -222,6 +226,8 @@ class Section extends Component {
                             <Drive key={component + '_2'} {...this.filteredProps()} />,
                             <RightNav key={component + '_3'} {...this.filteredProps()} />
                         ]);
+                    case ROUTES.TEMPLATES_CREATOR:
+                        return (<TemplateCreator key={component} {...this.filteredProps()} />);
                     case ROUTES.FORMS_CREATOR:
                         return (<FormCreator key={component} {...this.filteredProps()} />);
                     case ROUTES.FORMS_VIEWER:
@@ -230,6 +236,8 @@ class Section extends Component {
                         return (<FormData key={component} {...this.filteredProps()} />);
                     case ROUTES.FORMS_NOT_FOUND:
                         return (<NotFound type='FormsNotFound' key={component} {...this.filteredProps()} />);
+                    case ROUTES.TEMPLATES_NOT_FOUND:
+                        return (<NotFound type='TemplatesNotFound' key={component} {...this.filteredProps()} />);
                     case ROUTES.EMAILS:
                         return ([
                             <Header key={component + '_0'} {...this.filteredProps()} />,

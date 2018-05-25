@@ -78,8 +78,7 @@ if (Meteor.isServer) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
-    }
-        ;
+    };
     Meteor.publish(ValidForms, function (key, limit) {
         let cursor = null;
         let query = { retired: { $exists: false } };
