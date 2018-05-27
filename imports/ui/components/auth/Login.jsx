@@ -50,9 +50,9 @@ class Login extends Component {
                 if (err.reason === 'Verify email account first!')
                     this.setState({ status: err.reason });
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
+                this.setState({ processing: false });
             } else
                 this.props.history.replace('');
-            this.setState({ processing: false });
         });
     }
 
@@ -101,7 +101,7 @@ class Login extends Component {
                             status !== "" &&
                             <div className="alert alert-warning" role="alert">
                                 {sending ?
-                                    <i className="fa fa-spin fa-circle-o-notch" /> :
+                                    <div><i className="fa fa-spin fa-circle-o-notch" /> Sending Link...</div> :
                                     <a href="#" onClick={this.sendLink}>Send Verification Link</a>
                                 }
                             </div>

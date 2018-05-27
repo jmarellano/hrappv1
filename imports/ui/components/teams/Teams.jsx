@@ -52,7 +52,7 @@ class Teams extends React.Component {
     }
 
     selectRole(user, e) {
-        let selectedRole = e.target.value;
+        let selectedRole = parseInt(e.target.value);
         let selectedRoleString = '';
         if (selectedRole === ROLES.ADMIN)
             selectedRoleString = 'Admin';

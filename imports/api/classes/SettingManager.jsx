@@ -1,5 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { SettingsDB, PostingDB } from '../settings';
+import moment from 'moment-timezone';
 
 export default class SettingManager {
     constructor(obj = {}) {

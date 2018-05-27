@@ -49,8 +49,8 @@ if (Meteor.isServer) {
                 subject() {
                     return `[${Meteor.settings.public.config.title}] Verify Your Email Address`;
                 },
-                text(user, url) {
-                    let emailAddress = user.emails[0].address;
+                text(userObj, url) {
+                    let emailAddress = userObj.emails[0].address;
                     let urlWithoutHash = url.replace('#/', '');
                     return `To verify your email address (${emailAddress}) 
                 visit the following link:\n\n${urlWithoutHash}\n\n If you did not request this verification, 
@@ -78,7 +78,7 @@ if (Meteor.isServer) {
                 Accounts.emailTemplates.resetPassword.subject = function () {
                     return `[${Meteor.settings.public.config.title}] Reset Password Link`;
                 };
-                Accounts.emailTemplates.resetPassword.text = Accounts.emailTemplates.resetPassword.html = function (user, url) {
+                Accounts.emailTemplates.resetPassword.text = Accounts.emailTemplates.resetPassword.html = function (userObj, url) {
                     return `Reset Password link for [${Meteor.settings.public.config.title}]: ` + url.replace('/#/reset-password', '/reset');
                 };
                 Accounts.sendResetPasswordEmail(user._id, data.email);

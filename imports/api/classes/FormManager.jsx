@@ -2,6 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import { FormsDB, FormsDDB } from '../forms';
 import { CandidatesDB } from '../candidates';
 import { VALUE } from './Const';
+import moment from 'moment-timezone';
 
 export default class FormManager {
     constructor(obj = {}) {

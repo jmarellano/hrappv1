@@ -22,7 +22,7 @@ export const ROUTES = {
 };
 
 let ROLES_ = {
-    NONE: -1,
+    NONE: 0,
     VIEW_MESSAGES: 0x1 << 0,
     VIEW_CATEGORIES: 0x1 << 1,
     VIEW_TEAMS: 0x1 << 2,

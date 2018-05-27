@@ -19,6 +19,7 @@ class Header extends Component {
     }
 
     render() {
+        console.log('headernav');
         return (
             <nav className="navbar navbar-expand-lg bg-nav bg-primary-custom p-0 pl-3 pr-3">
                 <a className="navbar-brand" href={ROUTES.MESSAGES}>

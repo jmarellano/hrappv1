@@ -117,12 +117,12 @@ class Emails extends Component {
         e.preventDefault();
         let credit = this.state.credit;
         this.setState({ processing: true });
-        this.props.Account.removeEmail(credit, this.state.user.id, (err) => {
+        this.props.Account.removeEmail(credit, this.state.member, (err) => {
             if (err) {
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
                 this.setState({ processing: false });
             } else
-                this.props.Message.removeSender({ credit, id: this.state.user.id }, (error) => {
+                this.props.Message.removeSender({ credit, id: this.state.member }, (error) => {
                     if (error)
                         Bert.alert(error.reason, 'danger', 'growl-top-right');
                     else {
@@ -188,8 +188,9 @@ class Emails extends Component {
 
     render() {
         let credit = this.state.credit;
-        let user = this.props.users.filter((userObj) => { return userObj.id === this.state.user.id })[0];
-        if (!user.connectedEmails) {
+        let user = this.props.users.filter((userObj) => { return userObj.id === this.state.member })[0];
+        if (!user) {
+            user = {};
             user.connectedEmails = [];
         }
         return (
@@ -202,7 +203,7 @@ class Emails extends Component {
                         </button>
                         <div className="col-md-4">
                             {
-                                (user.role === ROLES.ADMIN || user.role === ROLES.SUPERUSER) &&
+                                (this.props.user.role === ROLES.ADMIN || this.props.user.role === ROLES.SUPERUSER) &&
                                 <select value={this.state.member} name="member" onChange={this.handleChangeInput} className="form-control mb-2">
                                     <option disabled>Select Agent</option>
                                     {this.renderValidUsers()}

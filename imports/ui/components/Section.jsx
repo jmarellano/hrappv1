@@ -140,10 +140,8 @@ class Section extends Component {
                 case ROUTES.FORGOT_PASSWORD:
                 case ROUTES.RESET_PASSWORD:
                 case ROUTES.VERIFY:
-                    if (this.props.user) {
+                    if (this.props.user)
                         this.props.history.replace('/');
-                        continueRender = false;
-                    }
                     break;
                 case ROUTES.MESSAGES:
                 case ROUTES.DRIVE:

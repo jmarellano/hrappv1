@@ -17,7 +17,6 @@ if (Meteor.isServer) {
             };
             return NotificationsDB.find(key, option);
         } catch (err) {
-            console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
     });

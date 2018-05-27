@@ -54,6 +54,7 @@ class LeftNav extends Component {
     }
 
     render() {
+        console.log('leftnav');
         return (
             <div className="left-nav pull-left bg-secondary">
                 <ul className="navbar-nav ml-auto text-center">

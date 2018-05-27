@@ -107,6 +107,7 @@ class Messages extends React.Component {
         this.props.Message.read(candidate.id);
     }
     render() {
+        console.log('messages');
         return (
             <div id="messages" className="pull-left main">
                 <div className="row m-0 p-0">
