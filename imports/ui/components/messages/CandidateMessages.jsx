@@ -316,7 +316,7 @@ class CandidateMessages extends React.Component {
                     <hr />
                 </form>
                 <div className={`col-sm-12 ${this.state.reply ? 'open-reply' : 'close-reply'}`}>
-                    {this.props.isReady && this.renderMessages()}
+                    {this.renderMessages()}
                     {
                         !this.props.isReady &&
                         <div className="text-center">

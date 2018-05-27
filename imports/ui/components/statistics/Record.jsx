@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CategoriesDB } from '../../../api/categories';
+import { ValidCategories, CategoriesDB } from '../../../api/categories';
 import { withTracker } from 'meteor/react-meteor-data';
 import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
@@ -138,6 +138,7 @@ Record.propTypes = {
 };
 
 export default withTracker(() => {
+    Meteor.subscribe(ValidCategories);
     return {
         categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => new CategoryClass(item)),
     };

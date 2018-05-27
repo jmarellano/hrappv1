@@ -81,7 +81,7 @@ export default class CandidateManager {
         else
             return CandidatesDB.update({ _id: id }, { $pull: { 'followers': { id: user } } });
     }
-    static claimCandidate(id, user = this.userId) {
+    static claimCandidate(id, user) {
         if (user === '')
             return CandidatesDB.update({ _id: id }, {
                 $unset: {

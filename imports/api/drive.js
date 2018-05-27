@@ -30,7 +30,7 @@ if (Meteor.isServer) {
             check(id, String);
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.MANAGE_FILES))
-                return server.getDrive().removeFile(id, undo);
+                return server.getDrive().removeFile(id, this.userId, undo);
             throw new Meteor.Error(403, 'Unauthorized!');
         } catch (err) {
             console.error(err);

@@ -44,7 +44,7 @@ export default class FormManager {
     }
     static getHeaders(id, version) {
         let form = FormsDB.findOne({ _id: new Mongo.ObjectID(id) });
-        return { headers: (form && form.headers) ? form.headers[version] : [], max: Object.keys(form.headers).length };
+        return { headers: (form && form.headers) ? form.headers[version] : [], max: (form && form.headers) ? Object.keys(form.headers).length : 0 };
     }
     static removeForm(id) {
         return FormsDB.update({ _id: id }, { $set: { retired: VALUE.TRUE } });

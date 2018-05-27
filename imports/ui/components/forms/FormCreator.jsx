@@ -126,7 +126,9 @@ class FormCreator extends React.Component {
                                     Form Description: <br />
                                     <textarea id="form-description" rows="3" />
                                     <input type="text" id="form-submit" defaultValue="Submit" /><br />
-                                    <input type="submit" value="Save" />
+                                    <button type="submit" className={this.state.processing ? 'btn disabled' : 'btn btn-primary'}>
+                                        {this.state.processing ? <i className="fa fa-spin fa-circle-o-notch" /> : 'Save'}
+                                    </button>
                                 </div>
                             </div>
                         </div>

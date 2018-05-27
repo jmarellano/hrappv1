@@ -75,7 +75,7 @@ class DriveList extends React.Component {
                     Bert.alert(err.reason, 'danger', 'growl-top-right');
                 else
                     Bert.alert('File Undo Trashed', 'success', 'growl-top-right');
-                this.props.getFiles();
+                this.props.getFiles(false, true);
             });
         });
     }
@@ -86,7 +86,7 @@ class DriveList extends React.Component {
             else
                 Bert.alert('File removed', 'success', 'growl-top-right');
             callback();
-            this.props.getFiles();
+            this.props.getFiles(false, true);
             this.setState({ trash: false });
         });
     }

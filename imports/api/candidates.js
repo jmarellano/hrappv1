@@ -16,6 +16,7 @@ export const CandidatesTransferClaim = 'candidates_transfer';
 export const CandidatesFollower = 'candidates_follower';
 export const CandidatesAddInfo = 'candidates_add_info';
 export const CandidatesAddFileStats = 'candidates_add_file_stats';
+export const MessagesUnreadCountPub = 'candidates_messages_read';
 
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
@@ -47,7 +48,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
-            return CandidateManager.claimCandidate(id);
+            return CandidateManager.claimCandidate(id, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -161,7 +162,7 @@ if (Meteor.isServer) {
                 or.push({ 'followers.id': this.userId });
 
             if (candidate.filter.indexOf(SEARCH.resume) > -1)
-                query['resume'] = { $gte: 1 };
+                query['resume'] = { $gte: 5 };
             if (candidate.filter.indexOf(SEARCH.portfolio) > -1)
                 query['portfolio'] = { $gte: 5 };
             if (candidate.filter.indexOf(SEARCH.disc) > -1)
@@ -208,5 +209,10 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
         this.ready();
+    });
+    Meteor.publish(MessagesUnreadCountPub, function () {
+        Counts.publish(this, MessagesUnreadCountPub, CandidatesDB.find({ retired: VALUE.FALSE, 'lastMessage.read': false }));
+        Counts.publish(this, MessagesUnreadCountPub + '_claimed', CandidatesDB.find({ retired: VALUE.FALSE, 'lastMessage.read': false, claimed: { $exists: true } }));
+        Counts.publish(this, MessagesUnreadCountPub + '_unclaimed', CandidatesDB.find({ retired: VALUE.FALSE, 'lastMessage.read': false, claimed: { $exists: false } }));
     });
 }

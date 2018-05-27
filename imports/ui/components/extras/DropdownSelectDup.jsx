@@ -78,7 +78,7 @@ class DropdownSelect extends React.Component {
                 <a href='#' className={'list-group-item list-group-item-action'} key={index} onClick={() => {
                     this.change([option.value], !checked);
                 }}>
-                    <input type='checkbox' checked={checked} readOnly /> {option.label}
+                    <input type='checkbox' checked={checked} readOnly /> {option.element || option.label}
                 </a>
             );
         });

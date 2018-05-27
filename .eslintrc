@@ -51,6 +51,7 @@
         "Morris": true,
         "MongoInternals": true,
         "Audio": true,
-        "Buffer": true
+        "Buffer": true,
+        "Counts": true
     }
 }

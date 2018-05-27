@@ -1,6 +1,7 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
 import { ROUTES, ROLES, isPermitted } from '../../../api/classes/Const';
+import { MessagesUnreadCountPub } from '../../../api/candidates';
 import PropTypes from 'prop-types';
 import HeaderNav from './HeaderNav';
 import ReactTooltip from 'react-tooltip';
@@ -23,7 +24,6 @@ class LeftNav extends Component {
         this.routeStatistics = this.routeStatistics.bind(this);
         this.routeDrive = this.routeDrive.bind(this);
         this.routeEmails = this.routeEmails.bind(this);
-        this.routeRequests = this.routeRequests.bind(this);
     }
 
     routeMessages() {
@@ -46,20 +46,15 @@ class LeftNav extends Component {
         this.props.history.replace(ROUTES.EMAILS);
     }
 
-    routeRequests() {
-        if (isPermitted(this.props.user.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER))
-            this.props.history.replace(ROUTES.REQUESTS_ADMIN);
-        else
-            this.props.history.replace(ROUTES.REQUESTS);
-    }
-
     render() {
-        console.log('leftnav');
         return (
             <div className="left-nav pull-left bg-secondary">
                 <ul className="navbar-nav ml-auto text-center">
                     <HeaderNav key={0} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_MESSAGES}>
-                        <a className="nav-link" data-tip="Messages" href="#" onClick={this.routeMessages}><i className="fa fa-2x fa-envelope" /></a>
+                        <a className="nav-link count-notif-wrapper" data-tip="Messages" href="#" onClick={this.routeMessages}>
+                            <i className="fa fa-2x fa-envelope" />
+                            {this.props.unread ? <span className="count-notif">{this.props.unread}</span> : null}
+                        </a>
                     </HeaderNav>
                     <HeaderNav key={1} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_CATEGORIES}>
                         <Category {...this.props} Category={this.Client.Category} />
@@ -88,9 +83,6 @@ class LeftNav extends Component {
                     <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
                         <Global {...this.props} Settings={this.Client.Settings} />
                     </HeaderNav>
-                    {/* <HeaderNav key={11} type="navbar">
-                        <a className="nav-link" data-tip="View Requests" href="#" onClick={this.routeRequests}><i className="fa fa-2x fa-bullhorn" /></a>
-                    </HeaderNav> */}
                 </ul>
                 <ReactTooltip />
             </div>
@@ -100,9 +92,13 @@ class LeftNav extends Component {
 
 LeftNav.propTypes = {
     user: PropTypes.object,
-    history: PropTypes.object
+    history: PropTypes.object,
+    unread: PropTypes.number
 };
 
 export default withTracker(() => {
-    return {};
+    Meteor.subscribe(MessagesUnreadCountPub);
+    return {
+        unread: Counts.get(MessagesUnreadCountPub)
+    };
 })(LeftNav);

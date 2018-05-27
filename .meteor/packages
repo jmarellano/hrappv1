@@ -27,3 +27,4 @@ meteorhacks:aggregate
 meteorhacks:picker
 http
 meteorhacks:kadira@2.30.2
+tmeasday:publish-counts

@@ -24,8 +24,8 @@ export default class MessageManager {
         }
         return (this.json._id = MessagesDB.insert(this.json));
     }
-    static import(file) {
-        Meteor.users.update({ _id: this.userId }, { $set: { 'profile.importing': VALUE.TRUE } });
+    static import(file, userId) {
+        Meteor.users.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
         let spawn = child_process.spawn;
         const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file]);
         ls.stdout.on('data', (data) => {
@@ -36,15 +36,15 @@ export default class MessageManager {
         });
         ls.on('close', Meteor.bindEnvironment(() => {
             console.log(`close`);
-            Meteor.users.update({ _id: this.userId }, { $set: { 'profile.importing': VALUE.FALSE } });
+            Meteor.users.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
         }));
         ls.on('end', Meteor.bindEnvironment(() => {
             console.log(`end`);
-            Meteor.users.update({ _id: this.userId }, { $set: { 'profile.importing': VALUE.FALSE } });
+            Meteor.users.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
         }));
         ls.on('exit', Meteor.bindEnvironment(() => {
             console.log(`exit`);
-            Meteor.users.update({ _id: this.userId }, { $set: { 'profile.importing': VALUE.FALSE } });
+            Meteor.users.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
         }));
         return true;
     }

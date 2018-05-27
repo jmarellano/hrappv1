@@ -25,13 +25,13 @@ export default class SettingManager {
     static save(data) {
         return SettingsDB.update({}, data, { upsert: true });
     }
-    static record(data) {
+    static record(data, userId) {
         return PostingDB.insert({
             timestamp: data.timestamp,
             site: data.site,
             url: data.link,
             category: new Mongo.ObjectID(data.category),
-            postedBy: this.userId
+            postedBy: userId
         });
     }
     static getPostingStat(opt) {
@@ -132,9 +132,9 @@ export default class SettingManager {
             }
         });
         let temp = [];
-        for (key in retval) {
+        Object.keys(retval).forEach((key) => {
             temp.push({ date: key, ...retval[key] });
-        }
+        });
         return temp;
     }
 }

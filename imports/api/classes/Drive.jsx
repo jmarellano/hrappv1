@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import HTTP from 'meteor/http';
+import { HTTP } from 'meteor/http';
 
 class Drive {
     constructor() {
@@ -57,13 +57,14 @@ class Drive {
         });
         return future.wait();
     }
-    removeFile(id, undo = false) {
+    removeFile(id, userId, undo = false) {
+        this.getToken();
         let myFuture = server.createFuture();
         let options = {
             headers: {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
             },
-            data: { 'properties': { 'trashedBy': undo ? null : this.userId }, 'trashed': !undo }
+            data: { 'properties': { 'trashedBy': undo ? null : userId }, 'trashed': !undo }
         };
         HTTP.call('PATCH', 'https://www.googleapis.com/drive/v3/files/' + id, options, function (err, res) {
             if (err && err !== null)

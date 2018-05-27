@@ -1,2 +1,0 @@
-com.pff.PSTConversationIndex
-com.pff.PSTConversationIndex$ResponseLevel

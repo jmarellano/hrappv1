@@ -75,7 +75,7 @@ class Drive extends React.Component {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
-                this.setState({ files: fileList.concat(data.files), pageToken: data.pageToken || '' });
+                this.setState({ files: err ? data.files : fileList.concat(data.files), pageToken: data.pageToken || '' });
             this.setState({ processing: false });
         })
     }

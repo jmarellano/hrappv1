@@ -33,7 +33,7 @@ public class JavaPST {
     }
     public JavaPST(String[] args) throws Exception{
         try {
-            PSTFile pstFile = new PSTFile("C:\\Users\\merge\\Desktop\\sid@txtmeQuick.com - Sid.pst");
+            PSTFile pstFile = new PSTFile(args[0]);
             MongoClient mongoClient = new MongoClient("138.68.55.0", Integer.parseInt("9001"));
             MongoDatabase database = mongoClient.getDatabase("hrapp");
             MongoCollection<Document> messages = database.getCollection("messages");
@@ -123,7 +123,8 @@ public class JavaPST {
                     .append("subject", subject)
                     .append("type", 1)
                     .append("status", status)
-                    .append("attachments", Arrays.asList());
+                    .append("attachments", Arrays.asList())
+                    .append("messageId", email.getInternetMessageId());
                 Document subDoc = new Document("createdAt", date.getTime())
                     .append("read", read)
                     .append("contact", contact)

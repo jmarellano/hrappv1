@@ -81,7 +81,6 @@ class Teams extends React.Component {
                 Bert.alert('Member retired!', 'success', 'growl-top-right');
             this.getRetiredUsers();
             this.setState({ retire: false });
-            //this.props.Candidate.unClaim(this.state.user.id); // TODO
         });
     }
 

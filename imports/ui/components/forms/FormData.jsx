@@ -11,9 +11,8 @@ class FormData extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
+            name: '',
             template: {},
-            active_candidates: [],
             remove: false,
             formDataId: null,
             headers: [],
@@ -31,7 +30,7 @@ class FormData extends Component {
     }
 
     componentDidMount() {
-        this.props.Form.getHeaders(this.props.id, this.state.version.toString(), (err, data) => { //TODO version
+        this.props.Form.getHeaders(this.props.id, this.state.version.toString(), (err, data) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
@@ -78,7 +77,6 @@ class FormData extends Component {
 }
 FormData.propTypes = {
     data: PropTypes.array,
-    active_candidate: PropTypes.array.isRequired,
     loading: PropTypes.bool,
     Form: PropTypes.object,
     id: PropTypes.string
@@ -91,7 +89,6 @@ export default withTracker((props) => {
     });
     return {
         data: FormsDDB.find({}, { sort: { createdAt: -1 } }).fetch().map((formData) => new FormDataClass(formData)),
-        active_candidate: [], //Candidates.find({}, {sort: {name: 1 } }).fetch(), // TODO
         id: match.params.data
     };
 })(FormData);

@@ -16,7 +16,7 @@ if (Meteor.isServer) {
         this.unblock();
         try {
             check(this.userId, String);
-            return SettingManager.record(data);
+            return SettingManager.record(data, this.userId);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');
         }

@@ -246,13 +246,15 @@ class Emails extends Component {
                                                 className={status}>{account.status}</td>
                                             <td column="Action">
                                                 <div>
-                                                    <button className={`btn ${user.default_email === index ? 'btn-default' : 'btn-warning'} mr-1`}
-                                                        disabled={user.default_email === index}
-                                                        onClick={this.setDefault.bind(this, index)}>Set
-                                                        Default
-                                                    </button>
-                                                    <button className="btn btn-danger mr-1" onClick={this.setRemove.bind(this, account)}>Remove
-                                                    </button>
+                                                    {
+                                                        this.props.user.id === this.state.member &&
+                                                        <button className={`btn ${user.default_email === index ? 'btn-default' : 'btn-warning'} mr-1`}
+                                                            disabled={user.default_email === index}
+                                                            onClick={this.setDefault.bind(this, index)}>Set
+                                                            Default
+                                                        </button>
+                                                    }
+                                                    <button className="btn btn-danger mr-1" onClick={this.setRemove.bind(this, account)}>Remove</button>
                                                 </div>
                                             </td>
                                         </tr>

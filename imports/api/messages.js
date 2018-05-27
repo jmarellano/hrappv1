@@ -3,6 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { ROLES, isPermitted, MESSAGES_TYPE, MESSAGES_STATUS } from './classes/Const';
 import { check } from 'meteor/check';
 import { CandidateCreate, CandidatesDB } from './candidates';
+import { SettingsDB } from './settings';
 import { EmailFiles } from './files';
 import { LinkPreview } from './link-preview';
 import { simpleParser } from 'mailparser';
@@ -72,7 +73,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(file, String);
-            return MessageManager.import(file);
+            return MessageManager.import(file, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -204,7 +205,7 @@ if (Meteor.isServer) {
                                 });
                             }
                         }));
-                    }, 9000);
+                    }, SettingsDB.findOne().emailGetInterval);
                 }));
             }));
             imap.connect();
@@ -517,11 +518,12 @@ if (Meteor.isServer) {
                 cursor = null;
             let candidate = CandidatesDB.findOne({ contact });
             let or = [{ contact: candidate.contact }];
+            let user = Meteor.user();
             if (candidate.email)
                 or.push({ contact: candidate.email });
             if (candidate.number)
                 or.push({ contact: candidate.number });
-            if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
+            if (user && isPermitted(user.profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
                 count = MessagesDB.find({ $or: or }, { sort: { createdAt: -1 } }).count();
                 cursor = MessagesDB.find({ $or: or }, { sort: { createdAt: -1 }, limit });
             } else {
