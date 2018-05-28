@@ -4,7 +4,7 @@ import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } 
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
-import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats } from '../candidates';
+import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 
 export default class Client {
@@ -142,7 +142,7 @@ class Form {
         });
     }
     getForm(data, callback) {
-        Meteor.call(GetForm, data.id, (err, result) => {
+        Meteor.call(GetForm, data.id, data.applicant, (err, result) => {
             callback(err, result);
         });
     }
@@ -295,6 +295,12 @@ class Candidate {
 
     addFileStats(id, stats, url, callback) {
         Meteor.call(CandidatesAddFileStats, id, stats, url, (err, result) => {
+            callback(err, result);
+        });
+    }
+
+    removeFileStats(data, callback) {
+        Meteor.call(CandidatesRemoveFileStats, data.id, data.info, (err, result) => {
             callback(err, result);
         });
     }

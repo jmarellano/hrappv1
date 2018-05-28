@@ -90,8 +90,38 @@ class DriveList extends React.Component {
             this.setState({ trash: false });
         });
     }
+    browse(id) {
+        this.props.browse(id);
+    }
     renderFiles() {
         return this.props.files.map((file, index) => {
+            if (file.mimeType === 'application/vnd.google-apps.folder')
+                return (
+                    <tr key={index}>
+                        <td><img src={file.iconLink} /></td>
+                        <th scope="row">{file.name}</th>
+                        <td>{file.trashed ? 'Yes' : ''}</td>
+                        <td>{file.modifiedTime ? Util.formatDate(file.modifiedTime) : '-'}</td>
+                        <td>N/A</td>
+                        <td>
+                            {
+                                !file.trashed &&
+                                <button className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`} onClick={this.trash.bind(this, file)}>
+                                    <i className="fa fa-trash" /> Trash
+                            </button>
+                            }
+                            {
+                                file.trashed &&
+                                <Button className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`} data={file} onClick={this.undoTrash.bind(this, file, true)}>
+                                    <i className="fa fa-undo" /> Undo Trash
+                            </Button>
+                            }
+                            <button className={`btn btn-sm m-1 ${file.trashed ? 'btn-secondary disabled' : 'btn-success'}`} onClick={this.browse.bind(this, file.id)}>
+                                <i className="fa fa-folder-open" /> Browse
+                            </button>
+                        </td>
+                    </tr>
+                );
             return (
                 <tr key={index}>
                     <td><img src={file.iconLink} /></td>
@@ -129,7 +159,12 @@ class DriveList extends React.Component {
                 <table className="table">
                     <thead className="thead-light">
                         <tr>
-                            <th scope="col"></th>
+                            <th scope="col">
+                                {
+                                    this.props.parent !== 'root' && (this.props.user.role === ROLES.ADMIN || this.props.user.role === ROLES.SUPERUSER) ?
+                                        <button className="btn btn-sm btn-success" onClick={this.browse.bind(this, 'root')}>Back</button> : null
+                                }
+                            </th>
                             <th scope="col">Name</th>
                             <th scope="col">Trashed</th>
                             <th scope="col">Last Modified</th>
@@ -188,7 +223,9 @@ DriveList.propTypes = {
     Drive: PropTypes.object,
     files: PropTypes.array,
     user: PropTypes.object,
-    getFiles: PropTypes.func
+    getFiles: PropTypes.func,
+    browse: PropTypes.func,
+    parent: PropTypes.string
 };
 
 export default withTracker(() => {

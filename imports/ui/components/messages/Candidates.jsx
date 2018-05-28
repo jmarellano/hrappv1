@@ -6,8 +6,8 @@ import PropTypes from 'prop-types';
 import DropdownSelectDup from '../extras/DropdownSelectDup';
 import Button from '../extras/Button';
 import ReactTooltip from 'react-tooltip';
-
 import TooltipStats from './TooltipStats';
+
 class Candidates extends React.Component {
     constructor(props) {
         super(props);
@@ -73,10 +73,11 @@ class Candidates extends React.Component {
                             <div className="col-md-3 mt-1">
                                 <h5>Inbox</h5>
                             </div>
-                            <div className="col-md-9 p-0">
+                            <div className="col-md-9 p-0" data-tip data-for={"selected_options"}>
                                 <DropdownSelectDup name='filter' options={this.props.displayOptions} value={this.props.display} onChange={this.props.changeDisplay} className='no-highlight' />
                             </div>
                         </div>
+                        {this.props.tooltip}
                         <hr />
                     </div>
                     <div id="candidates-list" className="col-md-12">

@@ -66,10 +66,11 @@ class CandidateMessages extends React.Component {
         let staff = this.props.user.username;
         let name = (this.props.candidate && this.props.candidate.name) ? this.props.candidate.name : '';
         let category = (this.props.candidate && this.props.candidate.category) ? this.props.candidate.category : '';
-        value = value.replaceAll("{{staff_name}}", staff);
-        value = value.replaceAll("{{current_date}}", new Date().toDateString());
-        value = value.replaceAll("{{applicant_name}}", name);
-        value = value.replaceAll("{{application_position}}", category);
+        value = value.replaceAll('{{staff_name}}', staff);
+        value = value.replaceAll('{{current_date}}', new Date().toDateString());
+        value = value.replaceAll('{{applicant_name}}', name);
+        value = value.replaceAll('{{application_position}}', category);
+        this.quillRef.setText(value);
         this.setState({ text: value });
     }
 
@@ -228,7 +229,7 @@ class CandidateMessages extends React.Component {
     renderMessages() {
         return this.props.messages.map((message, index) => {
             return (
-                <Message key={index} Candidate={this.props.Candidate} Message={this.props.Message} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} />
+                <Message key={index} Candidate={this.props.Candidate} Message={this.props.Message} message={message} candidate={this.props.candidate} user={this.props.user} users={this.props.users} isReady={this.props.isReady} />
             );
         });
     }
@@ -316,12 +317,12 @@ class CandidateMessages extends React.Component {
                     <hr />
                 </form>
                 <div className={`col-sm-12 ${this.state.reply ? 'open-reply' : 'close-reply'}`}>
-                    {this.renderMessages()}
                     {
-                        !this.props.isReady &&
-                        <div className="text-center">
-                            <i className="fa fa-spin fa-circle-o-notch" /> Loading...
-                        </div>
+                        !this.props.isReady ?
+                            <div className="text-center">
+                                <i className="fa fa-spin fa-circle-o-notch" /> Loading...
+                            </div> :
+                            this.renderMessages()
                     }
                     {
                         this.props.isReady && this.props.messages.length && this.props.messages[0].max > this.props.messages.length &&

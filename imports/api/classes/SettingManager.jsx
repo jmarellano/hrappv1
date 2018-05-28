@@ -45,6 +45,8 @@ export default class SettingManager {
             query.timestamp = { $lte: opt.range.to, $gte: opt.range.from };
             if (opt.agentId !== '0')
                 query.postedBy = opt.agentId;
+            if (opt.agentId === '')
+                query.postedBy = { $exists: true };
             if (range < 32) {
                 criteria = {
                     category: '$category',
@@ -68,6 +70,7 @@ export default class SettingManager {
                 };
             }
         }
+
         let pipeline = [
             {
                 $match: query

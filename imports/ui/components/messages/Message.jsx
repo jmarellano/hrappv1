@@ -43,6 +43,23 @@ class Message extends React.Component {
     componentDidMount() {
         this.setFrame();
     }
+    componentDidUpdate() {
+        let self = this;
+        $('.custom-menu li').click(function () {
+            switch ($(this).attr('data-action')) {
+                case 'name':
+                case 'address':
+                case 'number':
+                case 'zip':
+                    self.addInfo($(this).attr('data-action'));
+                    break;
+                default:
+                    self.addInfo($(this).attr('data-action'), true);
+                    break;
+            }
+            $('.custom-menu').hide(100);
+        });
+    }
     setFrame() {
         const iframe = this.frame;
         let self = this;
@@ -89,8 +106,6 @@ class Message extends React.Component {
         this.props.Candidate.addInfo(data, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
-            else
-                Bert.alert('Info updated', 'success', 'growl-top-right');
         });
     }
     getSelectionFrameText(frameId) {
@@ -194,11 +209,11 @@ class Message extends React.Component {
                             {
                                 isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) &&
                                 message.retired !== VALUE.TRUE &&
-                                <i className="link fa fa-trash ml-1 text-danger" onClick={this.toggleConfirmation} />
+                                <i className="link fa fa-trash ml-1 text-danger" data-tip="Remove Message" onClick={this.toggleConfirmation} />
                             }
                             {
                                 message.retired === VALUE.TRUE &&
-                                <span className="badge badge-secondary text-light ml-1" data-tip="Removing Message" >removed</span>
+                                <span className="badge badge-secondary text-light ml-1" data-tip="Removed Message" >removed</span>
                             }
                         </small>
                         <ReactTooltip />
@@ -297,7 +312,8 @@ Message.propTypes = {
     user: PropTypes.object,
     users: PropTypes.array,
     Message: PropTypes.object,
-    Candidate: PropTypes.object
+    Candidate: PropTypes.object,
+    isReady: PropTypes.bool
 };
 
 export default withTracker(() => {

@@ -30,6 +30,10 @@ class FormData extends Component {
     }
 
     componentDidMount() {
+        this.getVersion();
+    }
+
+    getVersion() {
         this.props.Form.getHeaders(this.props.id, this.state.version.toString(), (err, data) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -43,7 +47,9 @@ class FormData extends Component {
     }
 
     changeVersion(e) {
-        this.setState({ version: e.target.value });
+        this.setState({ version: e.target.value }, () => {
+            this.getVersion();
+        });
     }
 
     viewMore() {

@@ -11,9 +11,10 @@ class Global extends Component {
         this.state = {
             settings: false,
             save: false,
-            interval: this.props.settings.emailGetInterval,
             country: this.props.settings.country,
-            processing: false
+            processing: false,
+            min: this.props.settings.emailGetInterval ? Math.floor((this.props.settings.emailGetInterval / 1000 / 60) << 0) : 0,
+            sec: this.props.settings.emailGetInterval ? Math.floor((this.props.settings.emailGetInterval / 1000) % 60) : 0
         };
         this.styleSet = {
             overlay: {
@@ -38,7 +39,7 @@ class Global extends Component {
     saveSettings(e) {
         e.preventDefault();
         this.setState({ processing: true });
-        this.props.Settings.save({ interval: this.state.interval, country: this.state.country }, (err) => {
+        this.props.Settings.save({ interval: ((this.state.min * 60) + (this.state.sec)) * 1000, country: this.state.country }, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
@@ -94,7 +95,20 @@ class Global extends Component {
                         <div className="panel-body p-2">
                             <form className="panel-body" onSubmit={this.saveSettings}>
                                 Email retrieve time interval:
-                                <input type="number" min="0" step="1" value={this.state.interval} name="interval" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Interval" required />
+                                <div className="row container mt-1 mb-1">
+                                    <div className="col-md-3">
+                                        Minutes:
+                                    </div>
+                                    <div className="col-md-3">
+                                        <input type="number" min="0" step="1" value={this.state.min} name="min" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Minutes" required />
+                                    </div>
+                                    <div className="col-md-3">
+                                        Seconds:
+                                    </div>
+                                    <div className="col-md-3">
+                                        <input type="number" min="0" step="1" value={this.state.sec} name="sec" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Seconds" required />
+                                    </div>
+                                </div>
                                 Country:
                                 <select value={this.state.country} name="country" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Country" required>
                                     <option value={null} disabled>Select Country</option>

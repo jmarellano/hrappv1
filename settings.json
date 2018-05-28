@@ -14,15 +14,6 @@
                 "mailbox_outgoing": "[Gmail]/Sent Mail"
             },
             {
-                "name": "GMail - POP3",
-                "pop_host": "pop.gmail.com",
-                "pop_port": "995",
-                "smtp_host": "smtp.gmail.com",
-                "smtp_port": "465",
-                "mailbox_incoming": "INBOX",
-                "mailbox_outgoing": "[Gmail]/Sent Mail"
-            },
-            {
                 "name": "TMQ",
                 "imap_host": "mail.txtmequick.com",
                 "imap_port": "993",

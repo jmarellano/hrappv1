@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { DRIVE } from '../../../api/classes/Const';
+import { DRIVE, ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
@@ -9,14 +9,18 @@ import '../extras/MediaUploader.js';
 class Drive extends React.Component {
     constructor(props) {
         super(props);
+        let q = props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ?
+            `trashed=false and mimeType = 'application/vnd.google-apps.folder'` :
+            `trashed=false and '${props.user.drive}' in parents`;
         this.state = {
+            parent: props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ? 'root' : props.user.drive,
             uploading: false,
             uploadProgress: 0,
             files: [],
-            q: 'trashed=false',
+            q,
             fields: 'nextPageToken, files',
             pageToken: '',
-            pageSize: 2,
+            pageSize: 20,
             display: [DRIVE.ALL, DRIVE.DOCUMENTS, DRIVE.PDF, DRIVE.SHEETS, DRIVE.FILES, DRIVE.AUDIO, DRIVE.IMAGES, DRIVE.VIDEOS],
             displayOptions: [
                 {
@@ -40,6 +44,7 @@ class Drive extends React.Component {
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.getFiles = this.getFiles.bind(this);
         this.viewMore = this.viewMore.bind(this);
+        this.browse = this.browse.bind(this);
     }
     componentDidMount() {
         this.getToken();
@@ -114,7 +119,10 @@ class Drive extends React.Component {
             q.push("trashed=true");
         else
             q.push("trashed=false");
+        q.push(`'${this.state.parent}' in parents`);
         let mime = mimetypes.length ? " and (" + mimetypes.join(" or ") + ")" : '';
+        if (this.state.parent === 'root')
+            mime = " and mimeType = 'application/vnd.google-apps.folder'";
         let search = this.state.search.length ? " and name contains '" + this.state.search.trim() + "'" : '';
         q = q.join(" and ") + mime + search;
         this.setState({ q }, () => {
@@ -141,7 +149,8 @@ class Drive extends React.Component {
                 let name = file.name;
                 let metadata = {
                     'Content-Length': file.size,
-                    'name': name
+                    'name': name,
+                    'parents': [self.props.user.drive]
                 };
                 let uploader = new MediaUploader({
                     file: file,
@@ -158,7 +167,7 @@ class Drive extends React.Component {
                                 Bert.alert(err.reason, 'danger', 'growl-top-right');
                             else {
                                 Bert.alert('File is successfully uploaded.', 'success', 'growl-top-right');
-                                self.getFiles();
+                                self.getQuery();
                             }
                             self.setState({ uploadProgress: 0, uploading: false });
                         });
@@ -175,6 +184,12 @@ class Drive extends React.Component {
             };
             reader.readAsArrayBuffer(e.currentTarget.files[0]);
         }
+    }
+
+    browse(id) {
+        this.setState({ parent: id }, () => {
+            this.getQuery();
+        });
     }
 
     render() {
@@ -232,7 +247,7 @@ class Drive extends React.Component {
                         this.state.processing ?
                             <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> :
                             <div>
-                                <DriveList files={this.state.files} user={this.props.user} Drive={this.props.Drive} getFiles={this.getFiles} />
+                                <DriveList files={this.state.files} user={this.props.user} Drive={this.props.Drive} getFiles={this.getFiles} browse={this.browse} parent={this.state.parent} />
                                 {this.state.pageToken && <button className="btn btn-default" onClick={this.viewMore}>View More</button>}
                             </div>
                     }

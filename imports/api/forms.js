@@ -21,11 +21,10 @@ export const FormsDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO
 export const FormsDDB = new Mongo.Collection(databaseName2, { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
-    functions[GetForm] = function (id) {
+    functions[GetForm] = function (id, applicant) {
         try {
-            check(this.userId, String);
             check(id, String);
-            return FormManager.getForm(id);
+            return FormManager.getForm(id, applicant);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

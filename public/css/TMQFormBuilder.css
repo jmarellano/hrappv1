@@ -74,6 +74,7 @@
     min-height:300px;
     padding:20px;
     margin-top:0;
+    margin-left: 10px;
 }
 #tmq-form-builder-center li {
     position:Relative;
@@ -340,4 +341,8 @@
 #ui-datepicker-div{
     padding:10px;
     background-color:#fafafa;
+}
+
+.rc-anchor{
+    width: 100%;
 }

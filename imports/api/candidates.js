@@ -16,6 +16,7 @@ export const CandidatesTransferClaim = 'candidates_transfer';
 export const CandidatesFollower = 'candidates_follower';
 export const CandidatesAddInfo = 'candidates_add_info';
 export const CandidatesAddFileStats = 'candidates_add_file_stats';
+export const CandidatesRemoveFileStats = 'candidates_remove_file_stats';
 export const MessagesUnreadCountPub = 'candidates_messages_read';
 
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
@@ -98,6 +99,17 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    functions[CandidatesRemoveFileStats] = function (contact, info) {
+        try {
+            check(this.userId, String);
+            check(contact, Mongo.ObjectID);
+            check(info, String);
+            return CandidateManager.updateCandidateSelectedRemoveFile(contact, info);
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
     functions[CandidatesStats] = function (data, contact) {
         try {
             check(this.userId, String);
@@ -135,6 +147,7 @@ if (Meteor.isServer) {
         try {
             let query = { 'retired': VALUE.FALSE };
             let or = [];
+            let or1 = [];
             let searchString = candidate.search;
             if (candidate.filter.indexOf(SEARCH.NAME) > -1)
                 or.push({ name: { $regex: searchString, $options: 'i' } });
@@ -151,15 +164,15 @@ if (Meteor.isServer) {
             if (!(or.length && searchString.length))
                 or = [];
             if (candidate.filter.indexOf(SEARCH.CLAIMED) > -1) {
-                or.push({ claimed: { $exists: true } });
-                or.push({ claimed: { $ne: null } });
+                or1.push({ claimed: { $exists: true } });
+                or1.push({ claimed: { $ne: null } });
             }
             if (candidate.filter.indexOf(SEARCH.UNCLAIMED) > -1)
-                or.push({ claimed: { $exists: false } });
+                or1.push({ claimed: { $exists: false } });
             if (candidate.filter.indexOf(SEARCH.ASSIGNED) > -1)
-                or.push({ claimed: this.userId });
+                or1.push({ claimed: this.userId });
             if (candidate.filter.indexOf(SEARCH.FOLLOWING) > -1)
-                or.push({ 'followers.id': this.userId });
+                or1.push({ 'followers.id': this.userId });
 
             if (candidate.filter.indexOf(SEARCH.resume) > -1)
                 query['resume'] = { $gte: 5 };
@@ -196,8 +209,12 @@ if (Meteor.isServer) {
             if (candidate.filter.indexOf(SEARCH.others) > -1)
                 query['others'] = { $gte: 10 };
 
-            if (or.length)
+            if (or.length && or1.length)
+                query['$and'] = [{ '$or': or }, { '$or': or1 }];
+            else if (or.length)
                 query['$or'] = or;
+            else if (or1.length)
+                query['$or'] = or1;
             let count = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 } }).count();
             let cursor = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 }, limit: candidate.limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {

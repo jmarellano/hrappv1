@@ -18,7 +18,8 @@ class FormCreator extends React.Component {
     }
     componentDidMount() {
         this.setState({ loading: true });
-        this.props.Form.getForm({ id: this.props.id }, (err, form) => {
+        this.props.Form.getForm({ id: this.props.id, applicant: null }, (err, form) => {
+            form = form.form;
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {

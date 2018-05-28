@@ -142,7 +142,7 @@ class Templates extends Component {
                                     </tbody>
                                 </table>
                                 <hr />
-                                <button onClick={this.routeCreator.bind(this, { id: 0 })} className="btn btn-primary ml-1 pull-right" type="button">
+                                <button onClick={this.routeCreator.bind(this, { _id: 0 })} className="btn btn-primary ml-1 pull-right" type="button">
                                     <i className="fa fa-plus" aria-hidden="true" /> New
                                 </button>
                                 {

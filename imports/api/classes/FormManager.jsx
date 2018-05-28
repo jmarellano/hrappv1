@@ -39,8 +39,10 @@ export default class FormManager {
         }, { upsert: true });
         return FormsDB.findOne({}, { sort: { dateModified: -1 } })._id._str;
     }
-    static getForm(id) {
-        return FormsDB.findOne({ _id: new Mongo.ObjectID(id) });
+    static getForm(id, applicant) {
+        if (applicant)
+            applicant = CandidatesDB.findOne({ _id: new Mongo.ObjectID(applicant) });
+        return { form: FormsDB.findOne({ _id: new Mongo.ObjectID(id) }), applicant };
     }
     static getHeaders(id, version) {
         let form = FormsDB.findOne({ _id: new Mongo.ObjectID(id) });

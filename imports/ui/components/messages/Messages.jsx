@@ -9,6 +9,8 @@ import CandidatesContent from './CandidatesContent';
 import Notif from '../../../api/classes/Notif';
 import Candidate from '../../../api/classes/Candidate';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
+import TooltipInbox from './TooltipInbox';
 
 class Messages extends React.Component {
     constructor(props) {
@@ -70,7 +72,12 @@ class Messages extends React.Component {
                 limit: 20
             },
             limit: 20,
-            candidate: null
+            candidate: null,
+            tooltip: (
+                <ReactTooltip id={"selected_options"} place="bottom" aria-haspopup="true" role="example">
+                    <TooltipInbox value={display} />
+                </ReactTooltip>
+            )
         };
         this.changeDisplay = this.changeDisplay.bind(this);
         this.changeSearch = this.changeSearch.bind(this);
@@ -87,8 +94,18 @@ class Messages extends React.Component {
         }
     }
     changeDisplay(display) {
-        this.setState({ display }, () => {
+        this.setState({
+            display,
+            tooltip: null
+        }, () => {
             this.searchCandidate();
+            this.setState({
+                tooltip: (
+                    <ReactTooltip id={"selected_options"} place="bottom" aria-haspopup="true" role="example">
+                        <TooltipInbox value={display} />
+                    </ReactTooltip>
+                )
+            });
         });
     }
     changeSearch(e) {
@@ -130,7 +147,8 @@ class Messages extends React.Component {
                             candidate={this.state.searchCandidate}
                             viewMore={this.viewMore}
                             selectCandidate={this.selectCandidate}
-                            candidates={this.props.candidates} />
+                            candidates={this.props.candidates}
+                            tooltip={this.state.tooltip} />
                     </div>
                     <div className="col-md-9">
                         {this.state.candidate && <CandidatesContent {...this.props} candidate={this.state.candidate} Candidate={this.props.Candidate} Message={this.props.Message} />}

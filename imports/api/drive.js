@@ -6,6 +6,7 @@ export const DriveGetFiles = 'drive_get_files';
 export const DriveGetToken = 'drive_get_token';
 export const DriveInsertPermission = 'drive_insert_permission';
 export const DriveRemoveFile = 'drive_remove_file';
+export const DriveAddFolder = 'drive_create_folder';
 
 if (Meteor.isServer) {
     functions[DriveGetFiles] = function (data) {
@@ -13,6 +14,9 @@ if (Meteor.isServer) {
     }
     functions[DriveGetToken] = function () {
         return server.getDrive().getToken();
+    }
+    functions[DriveAddFolder] = function (name) {
+        return server.getDrive().createFolder(name);
     }
     functions[DriveInsertPermission] = function (file, value, type, role) {
         try {

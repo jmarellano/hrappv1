@@ -23,6 +23,7 @@ class User {
         this.firstName = obj.profile.first;
         this.lastName = obj.profile.last;
         this.importing = obj.profile.importing;
+        this.drive = obj.profile.drive;
     }
 
     getPrimaryEmail() {

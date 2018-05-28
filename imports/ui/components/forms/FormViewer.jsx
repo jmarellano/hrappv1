@@ -17,7 +17,8 @@ class FormViewer extends React.Component {
             id: null,
             email: '',
             gettingId: false,
-            form: {}
+            form: {},
+            name: ''
         };
         this.formbuilder = null;
         this.form = null;
@@ -47,14 +48,15 @@ class FormViewer extends React.Component {
     componentDidMount() {
         let submit = function () { };
         this.setState({ loading: true });
-        this.props.Form.getForm({ id: this.props.id }, (err, form) => {
+        this.props.Form.getForm({ id: this.props.id, applicant: this.props.applicant }, (err, data) => {
+            let form = data.form;
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
                 this.formbuilder = new TMQFormBuilder(submit);
                 this.formbuilder.loadData(JSON.parse(form.template[form.template.length - 1]), true);
             }
-            this.setState({ loading: false, form });
+            this.setState({ loading: false, form, name: data.applicant ? data.applicant.name || data.applicant.contact : '' });
         });
     }
 
@@ -76,16 +78,11 @@ class FormViewer extends React.Component {
 
     saveForm(e) {
         e.preventDefault();
-        const match = matchPath(this.props.location.pathname, {
-            path: '/:component/:data/:applicant',
-            exact: false,
-            strict: false
-        });
-        if (!this.state.allowed && match) {
+        if (!this.state.allowed && this.props.applicant) {
             Bert.alert('ReCaptcha is not valid', 'danger', 'growl-top-right');
             return null;
         }
-        if (!match) {
+        if (!this.props.applicant) {
             Bert.alert('Submit form in this page is not valid', 'danger', 'growl-top-right');
             return null;
         }
@@ -101,7 +98,7 @@ class FormViewer extends React.Component {
             };
         }).get();
         let template = this.state.form;
-        this.props.Form.submit([null, match.params.component, match.params.data, match.params.applicant], this.location, array, template.template.length, (err) => {
+        this.props.Form.submit([null, ROUTES.FORMS_VIEWER, this.props.id, this.props.applicant], this.location, array, template.template.length, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
@@ -160,22 +157,48 @@ class FormViewer extends React.Component {
         return (
             <div className="container">
                 <form onSubmit={this.saveForm.bind(this)}>
-                    <div id="tmq-form-builder">
-                        <button className="btn btn-secondary pull-left" onClick={this.routeMessages}>
-                            <i className="fa fa-arrow-left " /> Go Home
-                        </button>
-                        {
-                            this.props.user && isPermitted(this.props.user.role, ROLES.STAFFS) ?
-                                <button type="button" className="btn btn-secondary pull-right mb-1"
-                                    onClick={this.toggleModal}>
-                                    <i className="fa fa-share-alt" /> Share
-                                </button> : null
-                        }
-                        <ul id="tmq-form-builder-center" className="text-center" />
-                        {
-                            this.props.location.pathname.split("/")[3] &&
-                            <ReCAPTCHA ref={(el) => { this.captcha = el; }} size="normal" sitekey="6LcLLCgUAAAAAG5U2RfKxQ9dBw0xWNVrGcSAFFm8" onChange={this.onChange.bind(this)} />
-                        }
+                    <div id="tmq-form-builder" className="row">
+                        <div className="col-md-12 p-3">
+                            <div id="tmq-form-builder-left">
+                                {
+                                    this.props.applicant ?
+                                        <div>
+                                            <h5>
+                                                Hi {this.state.name}!
+                                            </h5>
+                                            <p>
+                                                Please fill out the form and send it to use for evaluation
+                                            </p>
+                                        </div> :
+                                        <div>
+                                            <h3>
+                                                Hi {this.props.user ? this.props.user.username : 'Guest'}!
+                                            </h3>
+                                            <p>
+                                                {!this.props.user ? 'You dont have access for this form' : 'Please share this form to an applicant'}
+                                            </p>
+                                        </div>
+                                }
+                                <button className="btn btn-secondary pull-left" onClick={this.routeMessages}>
+                                    <i className="fa fa-arrow-left " /> Go Home
+                                </button>
+                                {
+                                    this.props.user && isPermitted(this.props.user.role, ROLES.STAFFS) ?
+                                        <button type="button" className="btn btn-secondary pull-right mb-1"
+                                            onClick={this.toggleModal}>
+                                            <i className="fa fa-share-alt" /> Share
+                                    </button> :
+                                        <button type="button" className="btn btn-default disabled pull-right mb-1">
+                                            <i className="fa fa-share-alt" /> Share
+                                    </button>
+                                }
+                                {
+                                    this.props.location.pathname.split("/")[3] &&
+                                    <ReCAPTCHA className="text-center" ref={(el) => { this.captcha = el; }} size="normal" sitekey="6LcLLCgUAAAAAG5U2RfKxQ9dBw0xWNVrGcSAFFm8" onChange={this.onChange.bind(this)} />
+                                }
+                            </div>
+                            <ul id="tmq-form-builder-center" className="text-center" />
+                        </div>
                     </div>
                 </form>
                 <Modal isOpen={this.state.share} contentLabel="FormShareModal" style={this.styleSet}>
@@ -220,8 +243,8 @@ FormViewer.propTypes = {
     location: PropTypes.object,
     Candidate: PropTypes.object,
     history: PropTypes.object,
-    user: PropTypes.object
-
+    user: PropTypes.object,
+    applicant: PropTypes.any
 };
 export default withTracker((props) => {
     const match = matchPath(props.location.pathname, {
@@ -229,15 +252,24 @@ export default withTracker((props) => {
         exact: false,
         strict: false
     });
+    const matchCandidate = matchPath(props.location.pathname, {
+        path: '/:component/:data/:applicant',
+        exact: false,
+        strict: false
+    });
     let path = '',
-        id = '';
+        id = '',
+        applicant = null;
     if (!match)
-        props.history.replace(ROUTES.FORMS_NOT_FOUND);
+        props.history.replace('/');
     else {
         path = match.params.data;
         id = (path !== '0') ? path : '';
     }
+    if (matchCandidate)
+        applicant = matchCandidate.params.applicant;
     return {
-        id
+        id,
+        applicant
     };
 })(FormViewer);

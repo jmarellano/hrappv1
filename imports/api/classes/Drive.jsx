@@ -7,6 +7,9 @@ class Drive {
     }
     init() {
         this.setJWT();
+        // this.getFiles().files.forEach((file) => {
+        //     this.deleteFile(file.id);
+        // });
     }
     setJWT() {
         this.jwt = new google.auth.JWT(
@@ -44,7 +47,7 @@ class Drive {
             q: options.q || '',
             fields: options.fields || 'nextPageToken, files',
             pageToken: options.pageToken || '',
-            pageSize: options.pageSize || 1
+            pageSize: options.pageSize || 20
         };
         this.drive.files.list(query, function (err, res) {
             if (err) {
@@ -73,6 +76,21 @@ class Drive {
         });
         return myFuture.wait();
     }
+    deleteFile(id) {
+        this.getToken();
+        let myFuture = server.createFuture();
+        let options = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            }
+        };
+        HTTP.call('DELETE', 'https://www.googleapis.com/drive/v3/files/' + id, options, function (err, res) {
+            if (err && err !== null)
+                myFuture.throw(new Meteor.Error(err.message));
+            myFuture.return(res);
+        });
+        return myFuture.wait();
+    }
     insertPermission(file, value, type, role) {
         let body = {
             'role': role,
@@ -91,6 +109,51 @@ class Drive {
             future.return(true);
         });
         return future.wait();
+    }
+    createFolder(name) {
+        this.getToken();
+        let myFuture = server.createFuture();
+        let options = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            data: {
+                'name': name,
+                'mimeType': 'application/vnd.google-apps.folder'
+            }
+        };
+        let search = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            params: {
+                'q': "name contains '" + name + "'",
+                'fields': 'files',
+                'pageSize': 1
+            }
+        };
+        let continueProcess = false;
+        HTTP.call('GET', 'https://www.googleapis.com/drive/v3/files/', search, function (err, res) {
+            let process = false;
+            if (err && err !== null) {
+                console.error(err);
+                myFuture.throw(new Meteor.Error(err.message));
+            }
+            if (!res.data.files[0])
+                process = true;
+            myFuture.return(process);
+        });
+        continueProcess = myFuture.wait();
+        myFuture = server.createFuture();
+        if (continueProcess)
+            HTTP.call('POST', 'https://www.googleapis.com/drive/v3/files/', options, function (error, response) {
+                if (error && error !== null) {
+                    console.error(error);
+                    myFuture.throw(new Meteor.Error(error.message));
+                }
+                myFuture.return(response.data);
+            });
+        return myFuture.wait();
     }
 }
 

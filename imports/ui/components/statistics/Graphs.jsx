@@ -13,7 +13,7 @@ class Graphs extends Component {
         this.state = {
             graphLoaded: false,
             loading: false,
-            id: props.user.id,
+            id: '',
             fromRange: moment().subtract(1, 'months').format('YYYY-MM-DD'),
             toRange: moment().format('YYYY-MM-DD'),
             jobType: '0'
@@ -129,7 +129,7 @@ class Graphs extends Component {
                                 name="form-field-name"
                                 value={this.state.id.value}
                                 onChange={this.handleAgentChange}
-                                options={this.activeUsers()}
+                                options={[{ value: '', label: 'All' }, ...this.activeUsers()]}
                             />
                         </div>
                     </div>
@@ -168,6 +168,6 @@ Graphs.propTypes = {
 
 export default withTracker(() => {
     return {
-        categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => new CategoryClass(item)),
+        categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => new CategoryClass(item))
     };
 })(Graphs);

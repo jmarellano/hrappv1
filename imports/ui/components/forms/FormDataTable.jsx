@@ -20,9 +20,10 @@ class FormDataTable extends Component {
 
     renderDataValues(data) {
         return this.props.headers.map((item, index) => {
+            let itemValue = data.data.filter((dataItem) => dataItem.label === item)[0];
             return (
                 <td key={index}>
-                    {data.data.filter((dataItem) => dataItem.label === item)[0].val}
+                    {itemValue ? data.data.filter((dataItem) => dataItem.label === item)[0].val : 'N/A'}
                 </td>
             );
         });

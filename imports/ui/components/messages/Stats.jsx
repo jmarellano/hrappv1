@@ -57,7 +57,8 @@ class Stats extends Component {
             notes: false,
             selectedStat: '',
             notesValue: '',
-            uploading: false
+            uploading: false,
+            confirmation: false
         };
         this.styleSet = {
             overlay: {
@@ -65,7 +66,7 @@ class Stats extends Component {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
             },
             content: {
-                maxWidth: '430px',
+                maxWidth: '530px',
                 width: 'auto',
                 height: 'auto',
                 maxHeight: '520px',
@@ -91,8 +92,10 @@ class Stats extends Component {
         };
         this.save = this.save.bind(this);
         this.saveNotes = this.saveNotes.bind(this);
+        this.removeFile = this.removeFile.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
+        this.toggleConfirmation = this.toggleConfirmation.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -184,6 +187,7 @@ class Stats extends Component {
         delete states['selectedStat'];
         delete states['notesValue'];
         delete states['uploading'];
+        delete states['confirmation'];
         this.props.Candidate.changeStats(states, this.props.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -224,6 +228,23 @@ class Stats extends Component {
             return (
                 <option key={index} value={category.category}>{category.category}</option>
             );
+        });
+    }
+
+    setRemovefile(stat) {
+        this.setState({ confirmation: true, selectedStat: stat });
+    }
+
+    removeFile(e) {
+        e.preventDefault();
+        this.setState({ processing: true });
+        let data = { id: this.props.selectedCandidate.id, info: this.state.selectedStat + '_file' };
+        this.props.Candidate.removeFileStats(data, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                Bert.alert('Info updated', 'success', 'growl-top-right');
+            this.setState({ processing: false, confirmation: false, stats: false });
         });
     }
 
@@ -281,7 +302,9 @@ class Stats extends Component {
                             <span className="pull-right">
                                 {
                                     this.props.selectedCandidate[item.name + '_file'] ?
-                                        <a href={this.props.selectedCandidate[item.name + '_file']} target="_blank" className="mr-1">FILE</a> :
+                                        <button type="button" className="btn btn-sm btn-default mr-1">
+                                            <a href={this.props.selectedCandidate[item.name + '_file']} target="_blank" className="mr-1">FILE</a>
+                                        </button> :
                                         <label className="btn btn-sm mr-1 mt-2 text-center" type="button">
                                             {(!this.state.uploading) ? <i className="fa fa-paperclip" /> : <i className="fa fa-circle-o-notch fa-spin" />}
                                             <input type="file"
@@ -294,7 +317,14 @@ class Stats extends Component {
                                                 onChange={this.handleUpload.bind(this, item.name, this.props.selectedCandidate.id)} />
                                         </label>
                                 }
-                                <button className="btn btn-sm btn-default mr-1" onClick={this.toggleNotes.bind(this, item.name)}>Edit Notes</button>
+                                {
+                                    this.props.selectedCandidate[item.name + '_file'] ?
+                                        <button type="button" className="btn btn-sm btn-danger mr-1" data-tip="Remove file" onClick={this.setRemovefile.bind(this, item.name)}>
+                                            <i className="fa fa-trash" />
+                                        </button> : null
+                                }
+                                <button type="button" className="btn btn-sm btn-default mr-1" onClick={this.toggleNotes.bind(this, item.name)}>Edit Notes</button>
+                                <ReactTooltip />
                             </span>
                         }
                     </label>
@@ -308,6 +338,10 @@ class Stats extends Component {
 
     toggleNotes(name) {
         this.setState({ notes: !this.state.notes, selectedStat: name, notesValue: this.props.selectedCandidate[name + '_notes'] });
+    }
+
+    toggleConfirmation() {
+        this.setState({ confirmation: !this.state.confirmation });
     }
 
     render() {
@@ -374,6 +408,32 @@ class Stats extends Component {
                             <div className="container">
                                 <div className="pull-right mb-2">
                                     <Button type="submit" className="form-control btn btn-success" processing={this.state.processing}>Save</Button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </Modal>
+                <Modal isOpen={this.state.confirmation} contentLabel="NotesModal" style={this.styleSetSmall}>
+                    <form className="panel panel-primary" onSubmit={this.removeFile}>
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Remove File
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.toggleConfirmation}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="panel-body p-2">
+                            You are about to remove a file. Continue?
+                        </div>
+                        <div className="panel-footer p-2">
+                            <hr />
+                            <div className="container">
+                                <div className="pull-right mb-2">
+                                    <Button type="submit" className="form-control btn btn-danger" processing={this.state.processing}>Remove</Button>
                                 </div>
                             </div>
                         </div>

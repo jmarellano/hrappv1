@@ -66,6 +66,13 @@ export default class CandidateManager {
             $set: set
         });
     }
+    static updateCandidateSelectedRemoveFile(contact, info) {
+        let set = {};
+        set[info] = '';
+        return CandidatesDB.update({ _id: contact }, {
+            $unset: set
+        });
+    }
     static updateCandidateStats(contact, data) {
         let temp = {};
         Object.keys(data).forEach((item) => {
