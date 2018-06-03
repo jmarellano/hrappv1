@@ -14,6 +14,7 @@
     "exenv": "^1.2.2",
     "ext-name": "^5.0.0",
     "fibers": "^2.0.2",
+    "fs-extra": "^6.0.1",
     "googleapis": "^27.0.0",
     "imap": "^0.8.19",
     "mailparser": "^2.2.0",

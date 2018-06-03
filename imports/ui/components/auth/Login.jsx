@@ -82,11 +82,11 @@ class Login extends Component {
     }
 
     redirectPass() {
-        this.props.history.replace(ROUTES.FORGOT_PASSWORD);
+        this.props.history.replace('../' + ROUTES.FORGOT_PASSWORD);
     }
 
     redirectRegister() {
-        this.props.history.replace(ROUTES.REGISTER);
+        this.props.history.replace('../' + ROUTES.REGISTER);
     }
 
     render() {

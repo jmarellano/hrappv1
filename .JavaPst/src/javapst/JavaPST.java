@@ -34,7 +34,7 @@ public class JavaPST {
     public JavaPST(String[] args) throws Exception{
         try {
             PSTFile pstFile = new PSTFile(args[0]);
-            MongoClient mongoClient = new MongoClient("127.0.0.1", Integer.parseInt("27017"));
+            MongoClient mongoClient = new MongoClient("127.0.0.1", Integer.parseInt("9001"));
             MongoDatabase database = mongoClient.getDatabase("hrapp");
             MongoCollection<Document> messages = database.getCollection("messages");
             MongoCollection<Document> candidates = database.getCollection("candidates");

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FilesCollection } from 'meteor/ostrio:files';
 import ClamAv from './classes/ClamAv';
+import fs from 'fs';
 
 let isWindows = (process.env.OS && process.env.OS === 'Windows_NT');
 let separator = (process.env.OS && process.env.OS === 'Windows_NT') ? '\\' : '/';
@@ -17,7 +18,10 @@ let EmailFiles = new FilesCollection({
     storagePath: PATH.UPLOAD,
     onAfterUpload: function (fileRef) {
         if (!isWindows)
-            new ClamAv().scanFile(EmailFiles.link(fileRef));
+            if (new ClamAv().scanFile(EmailFiles.link(fileRef)).isInfected) {
+                fs.move(fileRef.path, PATH.INFECTED + fileRef._id + fileRef.extensionWithDot);
+                EmailFiles.update({ _id: fileRef._id }, { $set: { _storagePath: PATH.INFECTED } });
+            }
         return true;
     }
 });

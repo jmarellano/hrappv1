@@ -141,6 +141,7 @@ class DriveList extends React.Component {
                         {
                             !file.trashed &&
                             <button
+                                disabled={!isPermitted(this.props.user.role, ROLES.MANAGE_FILES)}
                                 className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`}
                                 onClick={this.trash.bind(this, file)}>
                                 <i className="fa fa-trash" /> Trash
@@ -149,13 +150,17 @@ class DriveList extends React.Component {
                         {
                             file.trashed &&
                             <Button
+                                disabled={!isPermitted(this.props.user.role, ROLES.MANAGE_FILES)}
                                 className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`}
                                 data={file}
                                 onClick={this.undoTrash.bind(this, file, true)}>
                                 <i className="fa fa-undo" /> Undo Trash
                             </Button>
                         }
-                        <button className={`btn btn-sm m-1 ${!file.hasThumbnail ? 'btn-secondary disabled' : 'btn-success'}`} onClick={this.preview.bind(this, file)}>
+                        <button
+                            disabled={!file.hasThumbnail}
+                            className={`btn btn-sm m-1 ${!file.hasThumbnail ? 'btn-secondary disabled' : 'btn-success'}`}
+                            onClick={this.preview.bind(this, file)}>
                             <i className="fa fa-eye" /> Preview
                         </button>
                         <a href={file.webContentLink} target="_blank" className={`btn btn-sm m-1 ${!file.shared ? 'btn-secondary disabled' : 'btn-primary'}`}>
