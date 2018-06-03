@@ -56,10 +56,25 @@ class ResetPassword extends Component {
                     <div className="col-md-4 text-center mt-3">
                         <h1>Reset Password</h1>
                         <form className="mb-1" onSubmit={this.onSubmit}>
-                            <input className="form-control mb-1" type="password" value={this.state.password} name="password" placeholder="Password" onChange={this.handleChangeInput} required />
-                            <Button className="form-control btn btn-primary" type="submit" processing={this.state.processing}>Reset Password</Button>
+                            <input
+                                className="form-control mb-1"
+                                type="password"
+                                value={this.state.password}
+                                name="password"
+                                placeholder="Password"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <Button
+                                className="form-control btn btn-primary"
+                                type="submit"
+                                processing={this.state.processing}>
+                                Reset Password
+                            </Button>
                         </form>
-                        <a href="#" className="text-secondary" onClick={this.redirect}>Login</a>
+                        <a href="#" className="text-secondary" onClick={this.redirect}>
+                            Login
+                        </a>
                     </div>
                 </div>
             </div>

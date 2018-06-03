@@ -1,11 +1,12 @@
 import { Accounts } from 'meteor/accounts-base';
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
-import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile } from '../drive';
+import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
+import '../../ui/components/extras/MediaUploader.js';
 
 export default class Client {
     constructor() {
@@ -105,7 +106,10 @@ class Account {
 }
 
 class Drive {
-    constructor() { }
+    constructor() {
+        this.drive_uploading = null;
+        this.setProgress = null;
+    }
     getFiles(data, callback) {
         Meteor.call(DriveGetFiles, data, (err, result) => {
             callback(err, result);
@@ -125,6 +129,36 @@ class Drive {
         Meteor.call(DriveRemoveFile, data.id, undo, (err, result) => {
             callback(err, result);
         });
+    }
+    moveToFolder(fileId, folderId) {
+        Meteor.call(DriveMoveToFolder, fileId, folderId);
+    }
+    initiateUpload(data) {
+        let uploader = new MediaUploader({
+            file: data.file,
+            token: data.token,
+            metadata: data.metadata,
+            onError: data.onError,
+            onComplete: data.onComplete,
+            onProgress: (event) => {
+                let progress = (event.loaded / event.total * 100);
+                data.onProgress(progress);
+                this.updateUploading(progress);
+                if (this.setProgress)
+                    this.setProgress(progress);
+            },
+            params: {
+                convert: false,
+                ocr: false
+            }
+        });
+        uploader.upload();
+    }
+    updateUploading(progress) {
+        this.drive_uploading = progress;
+    }
+    setOnProgress(func) {
+        this.setProgress = func;
     }
 }
 
@@ -293,8 +327,8 @@ class Candidate {
         });
     }
 
-    addFileStats(id, stats, url, callback) {
-        Meteor.call(CandidatesAddFileStats, id, stats, url, (err, result) => {
+    addFileStats(data, callback) {
+        Meteor.call(CandidatesAddFileStats, data.id, data.info, data.value, (err, result) => {
             callback(err, result);
         });
     }

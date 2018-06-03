@@ -9,23 +9,6 @@ class Notifications extends React.Component {
         this.audio = null;
     }
 
-    componentWillUpdate(nextProps) {
-        // if (
-        //     nextProps.notifUnread.length !== this.props.notifUnread.length &&
-        //     nextProps.notifUnread.length > 0 &&
-        //     this.props.user.mute
-        // ) {
-        //     if (this.audio === null) {
-        //         this.audio = new Audio('/Woosh.mp3');
-        //         this.audio.play();
-        //         setTimeout(function () {
-        //             Meteor.call("notifications_setRead");
-        //         }, 3000);
-        //         this.audio = null;
-        //     }
-        // }
-    }
-
     renderNotif() {
         return this.props.notifications.map((notification, index) => {
             return (

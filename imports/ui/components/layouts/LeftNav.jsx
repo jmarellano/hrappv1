@@ -1,12 +1,11 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { ROUTES, ROLES, isPermitted } from '../../../api/classes/Const';
+import { ROUTES, ROLES } from '../../../api/classes/Const';
 import { MessagesUnreadCountPub } from '../../../api/candidates';
 import PropTypes from 'prop-types';
 import HeaderNav from './HeaderNav';
 import ReactTooltip from 'react-tooltip';
 
-import Client from '../../../api/classes/Client';
 import FormMain from '../forms/FormMain';
 import Category from '../categories/Category';
 import Record from '../statistics/Record';
@@ -18,7 +17,6 @@ class LeftNav extends Component {
         super(props);
         this.state = {
         };
-        this.Client = new Client();
         this.routeMessages = this.routeMessages.bind(this);
         this.routeTeams = this.routeTeams.bind(this);
         this.routeStatistics = this.routeStatistics.bind(this);
@@ -57,22 +55,22 @@ class LeftNav extends Component {
                         </a>
                     </HeaderNav>
                     <HeaderNav key={1} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_CATEGORIES}>
-                        <Category {...this.props} Category={this.Client.Category} />
+                        <Category {...this.props} />
                     </HeaderNav>
                     <HeaderNav key={2} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_TEAMS}>
                         <a className="nav-link" data-tip="Teams" href="#" onClick={this.routeTeams}><i className="fa fa-2x fa-users" /></a>
                     </HeaderNav>
                     <HeaderNav key={3} type="navbar">
-                        <PST {...this.props} Message={this.Client.Message} />
+                        <PST {...this.props} />
                     </HeaderNav>
                     <HeaderNav key={4} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_STATISTICS}>
                         <a className="nav-link" data-tip="Statistics" href="#" onClick={this.routeStatistics}><i className="fa fa-2x fa-bar-chart" /></a>
                     </HeaderNav>
                     <HeaderNav key={5} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
-                        <Record {...this.props} Statistics={this.Client.Statistics} />
+                        <Record {...this.props} />
                     </HeaderNav>
                     <HeaderNav key={7} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>
-                        <FormMain {...this.props} Form={this.Client.Form} />
+                        <FormMain {...this.props} />
                     </HeaderNav>
                     <HeaderNav key={8} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_DRIVE}>
                         <a className="nav-link" data-tip="Drive" href="#" onClick={this.routeDrive}><i className="fa fa-2x fa-hdd-o" /></a>
@@ -81,7 +79,7 @@ class LeftNav extends Component {
                         <a className="nav-link" data-tip="Emails" href="#" onClick={this.routeEmails}><i className="fa fa-2x fa-at" /></a>
                     </HeaderNav>
                     <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
-                        <Global {...this.props} Settings={this.Client.Settings} />
+                        <Global {...this.props} />
                     </HeaderNav>
                 </ul>
                 <ReactTooltip />

@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 import Info from './Info';
 import Stats from './Stats';
+import CandidateForms from './CandidateForms';
 import Transfer from './Transfer';
 import Claim from './Claim';
 import Followers from './Followers';
@@ -41,9 +42,13 @@ class CandidatesContent extends React.Component {
                         </div>
                         <div>
                             <Stats selectedCandidate={candidate} Candidate={this.props.Candidate} />
+                            <CandidateForms selectedCandidate={candidate} Candidate={this.props.Candidate} user={this.props.user} />
                             <Info selectedCandidate={candidate} Candidate={this.props.Candidate} />
                             {candidate.email && <small className="badge bg-secondary-light text-light mr-1">{candidate.email}</small>}
                             {candidate.number && <small className="badge bg-secondary-light text-light mr-1">{candidate.number}</small>}
+                            {candidate.state && candidate.country && <i className="fa fa-map-marker mr-1" />}
+                            {candidate.state && candidate.country && <small className="mr-1">{candidate.state},</small>}
+                            {candidate.state && candidate.country && <small className="mr-1">{candidate.country}</small>}
                             <Transfer {...this.props} />
                             <Claim {...this.props} />
                             <Followers {...this.props} />

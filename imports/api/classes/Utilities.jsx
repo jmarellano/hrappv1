@@ -83,6 +83,57 @@ class Utilities {
     hash(string) {
         return md5(string);
     }
+    parseFile(file, options) {
+        let opts = typeof options === 'undefined' ? {} : options;
+        let fileSize = file.size;
+        let chunkSize = typeof opts['chunk_size'] === 'undefined' ? 64 * 1024 : parseInt(opts['chunk_size']); // bytes
+        let offset = 0;
+        let self = this; // we need a reference to the current object
+        let readBlock = null;
+        let chunkReadCallback = typeof opts['chunk_read_callback'] === 'function' ? opts['chunk_read_callback'] : function () { };
+        let chunkErrorCallback = typeof opts['error_callback'] === 'function' ? opts['error_callback'] : function () { };
+        let success = typeof opts['success'] === 'function' ? opts['success'] : function () { };
+
+        readBlock = function (_offset, length, _file) {
+            let r = new FileReader();
+            let blob = _file.slice(_offset, length + _offset);
+            offset += length;
+            chunkReadCallback({ result: blob, offset: offset, chunkSize });
+            if ((length + _offset) >= fileSize) {
+                success(file);
+                return;
+            } else {
+                readBlock(offset, chunkSize, file);
+            }
+        }
+
+
+        // let onLoadHandler = function (evt) {
+        //     if (evt.target.error == null) {
+        //         let boffset = offset;
+        //         offset += evt.target.result.length;
+        //         chunkReadCallback({ result: evt.target.result, offset, boffset, chunkSize });
+        //     } else {
+        //         chunkErrorCallback(evt.target.error);
+        //         return;
+        //     }
+        //     if (offset >= fileSize) {
+        //         success(file);
+        //         return;
+        //     }
+
+        //     readBlock(offset, chunkSize, file);
+        // }
+
+        // readBlock = function (_offset, length, _file) {
+        //     let r = new FileReader();
+        //     let blob = _file.slice(_offset, length + _offset);
+        //     r.onload = onLoadHandler;
+        //     r.readAsText(blob);
+        // }
+
+        readBlock(offset, chunkSize, file);
+    }
 }
 
 export default new Utilities();

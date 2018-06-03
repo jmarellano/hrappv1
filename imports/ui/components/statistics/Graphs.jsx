@@ -106,16 +106,39 @@ class Graphs extends Component {
                 <div className="row col-sm-12 graph-menu">
                     <div className="col-sm-3">
                         <label className="col-sm-3 control-label">From</label>
-                        <div className="col-sm-9"><input type="date" className="form-control" name="fromRange" value={this.state.fromRange} required onChange={this.handleInputChange} /></div>
+                        <div className="col-sm-9">
+                            <input
+                                type="date"
+                                className="form-control"
+                                name="fromRange"
+                                value={this.state.fromRange}
+                                required
+                                onChange={this.handleInputChange}
+                            />
+                        </div>
                     </div>
                     <div className="col-sm-3">
                         <label className="col-sm-3 control-label">To</label>
-                        <div className="col-sm-9"><input type="date" className="form-control" name="toRange" value={this.state.toRange} required onChange={this.handleInputChange} /></div>
+                        <div className="col-sm-9">
+                            <input
+                                type="date"
+                                className="form-control"
+                                name="toRange"
+                                value={this.state.toRange}
+                                required
+                                onChange={this.handleInputChange}
+                            />
+                        </div>
                     </div>
                     <div className="col-sm-3">
                         <label className="col-sm-5 control-label">Category</label>
                         <div className="col-sm-7">
-                            <select className="form-control mb" name="jobType" value={this.state.jobType} required onChange={this.handleInputChange}>
+                            <select
+                                className="form-control mb"
+                                name="jobType"
+                                value={this.state.jobType}
+                                required
+                                onChange={this.handleInputChange}>
                                 <option value="0">All</option>
                                 {this.renderCategories()}
                             </select>

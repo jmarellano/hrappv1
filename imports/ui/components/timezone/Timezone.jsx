@@ -86,10 +86,23 @@ class Timezone extends React.Component {
                             </div>
                         </div>
                         <div className="panel-body p-2">
-                            <select className="form-control" name="timezone" onChange={this.handleChangeInput} value={this.state.timezone} required >
+                            <select
+                                className="form-control"
+                                name="timezone"
+                                onChange={this.handleChangeInput}
+                                value={this.state.timezone} required
+                            >
                                 {this.renderTimezones()}
                             </select>
-                            {save && <Button className="btn btn-warning mt-3 mb-3 form-control" type="submit" processing={this.state.processing}>Save</Button>}
+                            {
+                                save &&
+                                <Button
+                                    className="btn btn-warning mt-3 mb-3 form-control"
+                                    type="submit"
+                                    processing={this.state.processing}>
+                                    Save
+                                </Button>
+                            }
                         </div>
                     </form>
                 </Modal>

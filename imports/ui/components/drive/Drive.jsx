@@ -4,7 +4,6 @@ import { DRIVE, ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
-import '../extras/MediaUploader.js';
 
 class Drive extends React.Component {
     constructor(props) {
@@ -12,6 +11,7 @@ class Drive extends React.Component {
         let q = props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ?
             `trashed=false and mimeType = 'application/vnd.google-apps.folder'` :
             `trashed=false and '${props.user.drive}' in parents`;
+        let display = [DRIVE.ALL, DRIVE.DOCUMENTS, DRIVE.PDF, DRIVE.SHEETS, DRIVE.FILES, DRIVE.AUDIO, DRIVE.IMAGES, DRIVE.VIDEOS];
         this.state = {
             parent: props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ? 'root' : props.user.drive,
             uploading: false,
@@ -21,7 +21,7 @@ class Drive extends React.Component {
             fields: 'nextPageToken, files',
             pageToken: '',
             pageSize: 20,
-            display: [DRIVE.ALL, DRIVE.DOCUMENTS, DRIVE.PDF, DRIVE.SHEETS, DRIVE.FILES, DRIVE.AUDIO, DRIVE.IMAGES, DRIVE.VIDEOS],
+            display,
             displayOptions: [
                 {
                     label: 'All', value: DRIVE.ALL, options: [
@@ -37,7 +37,9 @@ class Drive extends React.Component {
                 }
             ],
             token: null,
-            search: ''
+            search: '',
+            sortOrderBy: 0,
+            sortOrder: 0
         };
         this.changeDisplay = this.changeDisplay.bind(this);
         this.getQuery = this.getQuery.bind(this);
@@ -45,10 +47,16 @@ class Drive extends React.Component {
         this.getFiles = this.getFiles.bind(this);
         this.viewMore = this.viewMore.bind(this);
         this.browse = this.browse.bind(this);
+        this.toggleSortOrderBy = this.toggleSortOrderBy.bind(this);
+        this.updateProgress = this.updateProgress.bind(this);
     }
     componentDidMount() {
         this.getToken();
         this.getFiles();
+        if (this.props.Drive.drive_uploading) {
+            this.props.Drive.setOnProgress(this.updateProgress);
+            this.setState({ uploading: true, uploadProgress: this.props.Drive.drive_uploading });
+        }
     }
     viewMore() {
         this.getFiles();
@@ -67,11 +75,27 @@ class Drive extends React.Component {
         if (e)
             e.preventDefault();
         this.setState({ processing: true });
+        let sortOrder = '',
+            sortOrderBy = '';
+        switch (this.state.sortOrderBy) {
+            case 0:
+                sortOrderBy = 'name';
+                break;
+            case 1:
+                sortOrderBy = 'modifiedTime';
+                break;
+            case 2:
+                sortOrderBy = 'quotaBytesUsed';
+                break;
+        }
+        if (this.state.sortOrder)
+            sortOrder = ' desc';
         let options = {
             q: this.state.q,
             fields: this.state.fields,
             pageToken: changeFilter ? '' : this.state.pageToken,
             pageSize: this.state.pageSize,
+            orderBy: sortOrderBy + sortOrder
         };
         let fileList = this.state.files;
         if (changeFilter)
@@ -148,11 +172,12 @@ class Drive extends React.Component {
             reader.onload = function () {
                 let name = file.name;
                 let metadata = {
+                    'Content-Type': file.type,
                     'Content-Length': file.size,
                     'name': name,
                     'parents': [self.props.user.drive]
                 };
-                let uploader = new MediaUploader({
+                self.props.Drive.initiateUpload({
                     file: file,
                     token: self.state.token,
                     metadata: metadata,
@@ -160,6 +185,7 @@ class Drive extends React.Component {
                         Bert.alert(response, 'danger', 'growl-top-right');
                         self.setState({ uploadProgress: 0, uploading: false });
                     },
+                    onProgress: self.updateProgress,
                     onComplete: function (response) {
                         response = JSON.parse(response);
                         self.props.Drive.insertPermission(response, (err) => {
@@ -172,17 +198,13 @@ class Drive extends React.Component {
                             self.setState({ uploadProgress: 0, uploading: false });
                         });
                     },
-                    onProgress: function (event) {
-                        self.setState({ uploadProgress: (event.loaded / event.total * 100) });
-                    },
                     params: {
                         convert: false,
                         ocr: false
                     }
                 });
-                uploader.upload();
             };
-            reader.readAsArrayBuffer(e.currentTarget.files[0]);
+            reader.readAsText(e.currentTarget.files[0]);
         }
     }
 
@@ -192,18 +214,35 @@ class Drive extends React.Component {
         });
     }
 
+    toggleSortOrderBy(val) {
+        this.setState({ sortOrderBy: val, sortOrder: !this.state.sortOrder ? 1 : 0 }, () => {
+            this.getFiles(null, true);
+        });
+    }
+
+    updateProgress(progress) {
+        this.setState({ uploadProgress: progress });
+    }
+
     render() {
         return (
             <div id="drive" className="pull-left">
                 <div className="container bg-secondary">
                     <div className="row pl-2 pr-2">
                         <div className="col-sm-4 pt-3">
-                            <div className="row">
+                            <div className="row mb-2">
                                 <DropdownSelect name='dselect2' options={this.state.displayOptions} value={this.state.display}
                                     onChange={this.changeDisplay}
                                     className='col-sm-6 p-0 no-highlight' />
                                 <div className="input-group col-sm-6">
-                                    <input type="text" className="form-control" name="search" placeholder="Search for..." value={this.state.search} onChange={this.handleChangeInput} />
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        name="search"
+                                        placeholder="Search for..."
+                                        value={this.state.search}
+                                        onChange={this.handleChangeInput}
+                                    />
                                     <span className="input-group-btn">
                                         <button className="btn btn-primary" type="button" onClick={this.getQuery}>
                                             <i className="fa fa-search" />
@@ -227,7 +266,9 @@ class Drive extends React.Component {
                                 {this.state.uploading &&
                                     <li className="mr-2 mt-3">
                                         <label>
-                                            <span className="drive-upload-percentage">Uploading File {this.state.uploadProgress}%</span>
+                                            <span className="drive-upload-percentage">
+                                                Uploading File... {this.state.uploadProgress.toFixed(2)}%
+                                            </span>
                                         </label>
                                     </li>
                                 }
@@ -247,7 +288,17 @@ class Drive extends React.Component {
                         this.state.processing ?
                             <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> :
                             <div>
-                                <DriveList files={this.state.files} user={this.props.user} Drive={this.props.Drive} getFiles={this.getFiles} browse={this.browse} parent={this.state.parent} />
+                                <DriveList
+                                    files={this.state.files}
+                                    user={this.props.user}
+                                    Drive={this.props.Drive}
+                                    getFiles={this.getFiles}
+                                    browse={this.browse}
+                                    parent={this.state.parent}
+                                    toggleSortOrderBy={this.toggleSortOrderBy}
+                                    sortOrder={this.state.sortOrder}
+                                    sortOrderBy={this.state.sortOrderBy}
+                                />
                                 {this.state.pageToken && <button className="btn btn-default" onClick={this.viewMore}>View More</button>}
                             </div>
                     }
@@ -263,9 +314,5 @@ Drive.propTypes = {
 };
 
 export default withTracker(() => {
-
-    return {
-
-    };
-
+    return {};
 })(Drive);

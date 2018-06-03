@@ -1,12 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { ROLES, isPermitted, VALUE } from './classes/Const';
-import { CandidatesDB } from './candidates';
 import { check } from 'meteor/check';
-//import { IncomingDB } from './messages';
 import Util from './classes/Utilities';
 import FormManager from './classes/FormManager';
-//import Notification from './Classes/Notification';
 
 export const ValidForms = 'forms_valid';
 export const FormsDPub = 'formsd';
@@ -15,6 +12,8 @@ export const GetForm = 'forms_get';
 export const DeleteForm = 'forms_delete';
 export const FormsSubmit = 'forms_submit';
 export const FormHeaders = 'forms_header';
+export const CandidateFormData = 'forms_candidate';
+
 let databaseName = Meteor.settings.public.collections.forms || 'forms';
 let databaseName2 = Meteor.settings.public.collections.formsData || 'formsd';
 export const FormsDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
@@ -108,6 +107,30 @@ if (Meteor.isServer) {
             Util.setupHandler(this, databaseName2, cursor, (doc) => {
                 doc.max = count;
                 return doc;
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
+    Meteor.publish(CandidateFormData, function (key) {
+        let cursor = null;
+        try {
+            check(this.userId, String);
+            key.removed = VALUE.FALSE;
+            let count = FormsDDB.find(key, { sort: { createdAt: -1 } }).count();
+            cursor = FormsDDB.find(key, { sort: { createdAt: -1 } });
+            Util.setupHandler(this, databaseName2, cursor, (doc) => {
+                let newDoc = {};
+                newDoc.createdAt = doc.createdAt;
+                newDoc.version = doc.version;
+                newDoc.data = doc.data.filter((item) => {
+                    return item.label !== '';
+                });
+                newDoc.max = count;
+                newDoc.form = FormsDB.findOne({ _id: doc.form_id }).name;
+                return newDoc;
             });
         } catch (err) {
             console.error(err);

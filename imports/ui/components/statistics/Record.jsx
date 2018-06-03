@@ -103,25 +103,64 @@ class Record extends Component {
                         <div className="panel-body p-2">
                             <div className="mb-1">
                                 Site of Job Ad: <br />
-                                <input type="text" className="form-control" name="site" value={this.state.site} onChange={this.handleChangeInput} required />
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="site"
+                                    value={this.state.site}
+                                    onChange={this.handleChangeInput}
+                                    required
+                                />
                             </div>
                             <div className="mb-1">
                                 Link to Job Ad: <br />
-                                <input type="text" className="form-control" name="link" value={this.state.link} onChange={this.handleChangeInput} required />
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    name="link"
+                                    value={this.state.link}
+                                    onChange={this.handleChangeInput}
+                                    required
+                                />
                             </div>
                             <div className="mb-1">
                                 Date Posted: <br />
-                                <input type="date" className="mb-1 pull-left form-control" name="datePosted" value={this.state.datePosted} onChange={this.handleChangeInput} required />
-                                <input type="time" className="mb-1 pull-right form-control" name="timePosted" value={this.state.timePosted} onChange={this.handleChangeInput} required />
+                                <input
+                                    type="date"
+                                    className="mb-1 pull-left form-control"
+                                    name="datePosted"
+                                    value={this.state.datePosted}
+                                    onChange={this.handleChangeInput}
+                                    required
+                                />
+                                <input
+                                    type="time"
+                                    className="mb-1 pull-right form-control"
+                                    name="timePosted"
+                                    value={this.state.timePosted}
+                                    onChange={this.handleChangeInput}
+                                    required
+                                />
                             </div>
                             <div className="mb-1">
                                 Job Ad Category: <br />
-                                <select className="form-control mb-1" name="jobType" value={this.state.jobType} onChange={this.handleChangeInput} required >
+                                <select
+                                    className="form-control mb-1"
+                                    name="jobType"
+                                    value={this.state.jobType}
+                                    onChange={this.handleChangeInput}
+                                    required
+                                >
                                     <option value={''}>Select Category</option>
                                     {this.renderCategories()}
                                 </select>
                             </div>
-                            <Button className="btn btn-success" type="submit" processing={this.state.processing}>Save</Button>
+                            <Button
+                                className="btn btn-success"
+                                type="submit"
+                                processing={this.state.processing}>
+                                Save
+                            </Button>
                         </div>
                     </form>
                 </Modal>

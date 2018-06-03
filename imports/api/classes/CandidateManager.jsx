@@ -53,24 +53,31 @@ export default class CandidateManager {
                 'name': data.name,
                 'category': data.category,
                 'address': data.address,
+                'city': data.city,
+                'country': data.country,
+                'state': data.state,
                 'zip': data.zip,
                 'email': data.email,
                 'number': data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : ''
             }
         });
     }
-    static updateCandidateSelectedInfo(contact, info, value) {
+    static updateCandidateSelectedInfo(contact, info, value, text) {
         let set = {};
         set[info] = value;
+        let info_trim = info.replace(/_notes|_file/gi, '');
         return CandidatesDB.update({ _id: contact }, {
-            $set: set
+            $set: set,
+            $push: { [info_trim + '_history']: { text, date: moment().valueOf() } }
         });
     }
-    static updateCandidateSelectedRemoveFile(contact, info) {
+    static updateCandidateSelectedRemoveFile(contact, info, text) {
         let set = {};
         set[info] = '';
+        let info_trim = info.replace(/_notes|_file/gi, '');
         return CandidatesDB.update({ _id: contact }, {
-            $unset: set
+            $set: set,
+            $push: { [info_trim + '_history']: { text, date: moment().valueOf() } }
         });
     }
     static updateCandidateStats(contact, data) {

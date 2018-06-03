@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES } from '../../api/classes/Const';
 import { SettingsDB } from '../../api/settings';
+import { DriveAddFolder } from '../../api/drive';
 import moment from 'moment-timezone';
 
 Meteor.startup(() => {
@@ -13,6 +14,7 @@ Meteor.startup(() => {
         user.email = 'tmq.hrapp@gmail.com';
         user.password = 'gemgem';
         Accounts.createUser(user);
+        Meteor.users.update({ username: 'TMQHRAPP' }, { $set: { 'profile.drive': functions[DriveAddFolder].call(this, 'TMQHRAPP').id } });
     }
     if (!SettingsDB.findOne()) {
         let settings = {};

@@ -192,17 +192,44 @@ class Category extends React.Component {
                         <div className="panel-body p-2">
                             <nav>
                                 <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a className="nav-link text-primary active" data-toggle="tab" href="#add" role="tab">Add Category</a>
-                                    <a className="nav-link text-primary" data-toggle="tab" href="#remove" role="tab">Remove Category</a>
+                                    <a
+                                        className="nav-link text-primary active"
+                                        data-toggle="tab"
+                                        href="#add"
+                                        role="tab">
+                                        Add Category
+                                    </a>
+                                    <a
+                                        className="nav-link text-primary"
+                                        data-toggle="tab"
+                                        href="#remove"
+                                        role="tab">
+                                        Remove Category
+                                    </a>
                                 </div>
                             </nav>
                             <div className="tab-content" id="nav-tabContent">
-                                <div id="add" className="tab-pane fade show active" role="tabpanel" aria-labelledby="add-tab">
-                                    <form role="form" className="form-horizontal mb-1" onSubmit={this.addCategory}>
+                                <div
+                                    id="add"
+                                    className="tab-pane fade show active"
+                                    role="tabpanel"
+                                    aria-labelledby="add-tab">
+                                    <form
+                                        role="form"
+                                        className="form-horizontal mb-1"
+                                        onSubmit={this.addCategory}>
                                         <div className="form-group panel-body pt-2">
                                             <label className="col-md-2 control-label">Category Name</label>
                                             <div className="col-md-10">
-                                                <input type="text" placeholder="" value={this.state.category} name="category" className="form-control" onChange={this.handleChangeInput} required />
+                                                <input
+                                                    type="text"
+                                                    placeholder=""
+                                                    value={this.state.category}
+                                                    name="category"
+                                                    className="form-control"
+                                                    onChange={this.handleChangeInput}
+                                                    required
+                                                />
                                             </div>
                                         </div>
 
@@ -217,86 +244,334 @@ class Category extends React.Component {
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td>Resume</td>
-                                                    <td><input type="number" min="0" value={this.state.resume} name="resume" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        Resume
                                                     </td>
-                                                    <td>Portfolio</td>
-                                                    <td><input type="number" min="0" value={this.state.portfolio} name="portfolio" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.resume}
+                                                            name="resume"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
                                                     </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>DISC</td>
-                                                    <td><input type="number" min="0" value={this.state.disc} name="disc" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        Portfolio
                                                     </td>
-                                                    <td>VALUES</td>
-                                                    <td><input type="number" min="0" value={this.state.values} name="values" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>IQ</td>
-                                                    <td><input type="number" min="0" value={this.state.iq} name="iq" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
-                                                    </td>
-                                                    <td>METEOR</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_METEOR} name="TEST_METEOR" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>LIVE TEST</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_LIVE} name="TEST_LIVE" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
-                                                    </td>
-                                                    <td>Writing</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_WRITING} name="TEST_WRITING" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Video</td>
-                                                    <td><input type="number" min="0" value={this.state.VIDEO} name="VIDEO" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
-                                                    </td>
-                                                    <td>HR Interview</td>
-                                                    <td><input type="number" min="0" value={this.state.INTERVIEW} name="INTERVIEW" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.portfolio}
+                                                            name="portfolio"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Manager/Head</td>
-                                                    <td><input type="number" min="0" value={this.state.MANAGER} name="MANAGER" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        DISC
                                                     </td>
-                                                    <td>CAT 1</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_IMAGE} name="TEST_IMAGE" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.disc}
+                                                            name="disc"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        VALUES
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.values}
+                                                            name="values"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>CAT 2</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_CREATIVE} name="TEST_CREATIVE" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        IQ
                                                     </td>
-                                                    <td>CAT 3</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_WEBFLOW} name="TEST_WEBFLOW" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.iq}
+                                                            name="iq"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        METEOR
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_METEOR}
+                                                            name="TEST_METEOR"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Mock Call</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_MOCK} name="TEST_MOCK" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        LIVE TEST
                                                     </td>
-                                                    <td>Simulation</td>
-                                                    <td><input type="number" min="0" value={this.state.TEST_SIMULATION} name="TEST_SIMULATION" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_LIVE}
+                                                            name="TEST_LIVE"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        Writing
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_WRITING}
+                                                            name="TEST_WRITING"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td>Others</td>
-                                                    <td><input type="number" min="0" value={this.state.others} name="others" max="100" step="0.1" className="form-control" onChange={this.handleChangeInput} placeholder="%" required />
+                                                    <td>
+                                                        Video
                                                     </td>
-                                                    <td />
-                                                    <td />
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.VIDEO}
+                                                            name="VIDEO"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        HR Interview
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.INTERVIEW}
+                                                            name="INTERVIEW"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Manager/Head
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.MANAGER}
+                                                            name="MANAGER"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            require
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        CAT 1
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_IMAGE}
+                                                            name="TEST_IMAGE"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        CAT 2
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_CREATIVE}
+                                                            name="TEST_CREATIVE"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        CAT 3
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_WEBFLOW}
+                                                            name="TEST_WEBFLOW"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Mock Call
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_MOCK}
+                                                            name="TEST_MOCK"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                    <td>
+                                                        Simulation
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.TEST_SIMULATION}
+                                                            name="TEST_SIMULATION"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        Others
+                                                    </td>
+                                                    <td>
+                                                        <input
+                                                            type="number"
+                                                            min="0"
+                                                            value={this.state.others}
+                                                            name="others"
+                                                            max="100"
+                                                            step="0.1"
+                                                            className="form-control"
+                                                            onChange={this.handleChangeInput}
+                                                            placeholder="%"
+                                                            required
+                                                        />
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
-                                        <Button className="btn btn-primary" type="submit" processing={this.state.processing}>Add</Button>
+                                        <Button
+                                            className="btn btn-primary"
+                                            type="submit"
+                                            processing={this.state.processing}>
+                                            Add
+                                        </Button>
                                     </form>
                                 </div>
                                 <div id="remove" className="tab-pane fade" role="tabpanel" aria-labelledby="remove-tab">
                                     <div className="form-group panel-body pt-2">
                                         <label className="col-lg-2 control-label">Category</label>
                                         <div className="col-lg-10">
-                                            <select className="form-control selectpicker" data-style="btn-primary" value={this.state.category_id} name="category_id" onChange={this.handleChangeInput} required>
+                                            <select
+                                                className="form-control selectpicker"
+                                                data-style="btn-primary"
+                                                value={this.state.category_id}
+                                                name="category_id"
+                                                onChange={this.handleChangeInput}
+                                                required
+                                            >
                                                 <option value={''}>Select Category</option>
                                                 {this.renderCategories()}
                                             </select>

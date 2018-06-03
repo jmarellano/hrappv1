@@ -137,9 +137,21 @@ class Forms extends Component {
                                             <th scope="col">Form Name</th>
                                             <th scope="col">
                                                 <form className="input-group mb-2 mr-sm-2" onSubmit={this.props.searchForm}>
-                                                    <input type="text" className="form-control" placeholder="Search" name="search" value={this.props.search} onChange={this.props.changeSearch} />
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Search"
+                                                        name="search"
+                                                        value={this.props.search}
+                                                        onChange={this.props.changeSearch}
+                                                    />
                                                     <div className="input-group-prepend">
-                                                        <Button type="submit" className="btn btn-primary input-group-text"><i className="fa fa-search" /></Button>
+                                                        <Button
+                                                            type="submit"
+                                                            className="btn btn-primary input-group-text"
+                                                        >
+                                                            <i className="fa fa-search" />
+                                                        </Button>
                                                     </div>
                                                 </form>
                                             </th>
@@ -150,12 +162,20 @@ class Forms extends Component {
                                     </tbody>
                                 </table>
                                 <hr />
-                                <button onClick={this.routeCreator.bind(this, { id: 0 })} className="btn btn-primary ml-1 pull-right" type="button">
+                                <button
+                                    onClick={this.routeCreator.bind(this, { id: 0 })}
+                                    className="btn btn-primary ml-1 pull-right"
+                                    type="button"
+                                >
                                     <i className="fa fa-plus" aria-hidden="true" /> New
                                 </button>
                                 {
                                     !this.props.isMax &&
-                                    <button onClick={this.props.viewMore} className="btn btn-default pull-right" type="button">
+                                    <button
+                                        onClick={this.props.viewMore}
+                                        className="btn btn-default pull-right"
+                                        type="button"
+                                    >
                                         View More
                                     </button>
                                 }

@@ -1,18 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { FilesCollection } from 'meteor/ostrio:files';
 import ClamAv from './classes/ClamAv';
-import path from 'path';
 
 let isWindows = (process.env.OS && process.env.OS === 'Windows_NT');
-let separator = isWindows ? '\\' : '/';
-let basepath = path.resolve('.').split(separator + '.meteor')[0] + separator;
+let separator = (process.env.OS && process.env.OS === 'Windows_NT') ? '\\' : '/';
 PATH = {
-    BASE: basepath,
     UPLOAD: `${separator}data${separator}uploads${separator}`,
     INFECTED: `${separator}data${separator}infected${separator}`,
-    THUMB: `${separator}data${separator}uploads${separator}thumb${separator}`,
-    GIT: `${basepath}.git${separator}`,
-    METEOR: `${basepath}.meteor${separator}`
 };
 let EmailFiles = new FilesCollection({
     debug: false,
@@ -23,9 +17,7 @@ let EmailFiles = new FilesCollection({
     storagePath: PATH.UPLOAD,
     onAfterUpload: function (fileRef) {
         if (!isWindows)
-            new ClamAv().scanFile(EmailFiles.link(fileRef), (data) => {
-                console.log(data);
-            })
+            new ClamAv().scanFile(EmailFiles.link(fileRef));
         return true;
     }
 });

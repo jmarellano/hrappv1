@@ -2,6 +2,7 @@ import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { MESSAGES_TYPE } from '../../../api/classes/Const';
 import { EmailFiles } from '../../../api/files';
+import Util from '../../../api/classes/Utilities';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
@@ -53,8 +54,15 @@ class MessageBox extends React.Component {
             this.setState({ sender: this.props.user.default_email });
     }
 
-    componentDidUpdate() {
-        this.attachQuillRefs()
+    componentDidUpdate(prevProps, prevState) {
+        this.attachQuillRefs();
+        if (prevState.sender !== this.state.sender) {
+            let type = MESSAGES_TYPE.EMAIL;
+            try {
+                type = Util.numberValidator(this.state.sender).isValid ? MESSAGES_TYPE.SMS : MESSAGES_TYPE.EMAIL;
+            } catch (err) { }
+            this.setState({ type });
+        }
     }
 
     attachQuillRefs() {
@@ -255,24 +263,13 @@ class MessageBox extends React.Component {
                                         </div>
                                     </div>
                                 </div>
-                                {
-                                    type === MESSAGES_TYPE.EMAIL &&
-                                    <div className="col-md-6 mt-1">
-                                        <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
-                                            <option value={{}}>Select Email</option>
-                                            {this.renderEmails()}
-                                        </select>
-                                    </div>
-                                }
-                                {
-                                    type === MESSAGES_TYPE.SMS &&
-                                    <div className="col-md-6 mt-1">
-                                        <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
-                                            <option value={{}}>Select Number</option>
-                                            {this.renderCredSMS()}
-                                        </select>
-                                    </div>
-                                }
+                                <div className="col-md-6 mt-1">
+                                    <select className="form-control" name="sender" onChange={this.handleChangeInput} value={this.state.sender}>
+                                        <option value={{}}>Select Email / Number</option>
+                                        {this.renderEmails()}
+                                        {this.renderCredSMS()}
+                                    </select>
+                                </div>
                             </div>
                             <div className="row p-3 m-0 mb-4">
                                 <ReactQuill ref={(el) => { this.reactQuillRef = el }} style={{ width: '100%', height: '220px' }} value={this.state.text} onChange={this.handleChange} />
@@ -295,18 +292,9 @@ class MessageBox extends React.Component {
                                     </label>
                                 </div>
                                 <div className="col-md-2 p-0">
-                                    <select name="type" className="form-control" onChange={this.handleChangeInput}>
-                                        <option value={MESSAGES_TYPE.EMAIL}>Email</option>
-                                        <option value={MESSAGES_TYPE.SMS}>SMS</option>
-                                    </select>
-                                </div>
-                                <div className="col-md-2">
                                     <TemplateMain {...this.props} Message={this.props.Message} setTemplate={this.template} />
                                 </div>
-                                <div className="col-md-6">
-                                    Files:
-                                    {this.renderFiles()}
-                                </div>
+                                {this.state.files.length > 0 && <div className="col-md-8">Files:{this.renderFiles()}</div>}
                             </div>
                         </div>
                     </form>

@@ -23,6 +23,7 @@ class User {
         this.firstName = obj.profile.first;
         this.lastName = obj.profile.last;
         this.importing = obj.profile.importing;
+        this.drive_uploading = obj.profile.drive_uploading;
         this.drive = obj.profile.drive;
     }
 
@@ -63,7 +64,8 @@ class User {
                     val = true;
                 break;
             case MESSAGES_TYPE.SMS:
-                //TODO
+                if (Meteor.settings.public.twilioNumbers.filter((item) => item === contact).length)
+                    val = true;
                 break;
         }
         return val;

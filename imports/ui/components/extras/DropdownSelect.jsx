@@ -1,6 +1,7 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import PropTypes from 'prop-types';
+import ReactTooltip from 'react-tooltip';
 
 class DropdownSelect extends React.Component {
     constructor() {
@@ -108,11 +109,15 @@ class DropdownSelect extends React.Component {
                     readOnly={true}
                     onFocus={this.onFocus}
                     onBlur={this.onBlur}
+                    data-tip data-for={"selected_options_drive"}
                 />
                 <span className='caret'><i className='fa fa-sort-down' /></span>
                 <div style={{ display: this.state.options ? 'block' : 'none' }} className='dropdown-multi-options'>
                     {this.renderGroups()}
                 </div>
+                <ReactTooltip id={"selected_options_drive"} place="bottom" aria-haspopup="true" role="example">
+                    {this.renderValue()}
+                </ReactTooltip>
             </div>
         );
     }

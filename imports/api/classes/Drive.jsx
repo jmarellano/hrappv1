@@ -47,7 +47,8 @@ class Drive {
             q: options.q || '',
             fields: options.fields || 'nextPageToken, files',
             pageToken: options.pageToken || '',
-            pageSize: options.pageSize || 20
+            pageSize: options.pageSize || 20,
+            orderBy: options.orderBy
         };
         this.drive.files.list(query, function (err, res) {
             if (err) {
@@ -154,6 +155,27 @@ class Drive {
                 myFuture.return(response.data);
             });
         return myFuture.wait();
+    }
+    moveToFolder(fileId, folderId) {
+        let params = {
+            'fileId': fileId.id,
+            'fields': 'parents',
+            auth: this.jwt
+        };
+        let params2 = {
+            fileId: fileId,
+            addParents: folderId,
+            fields: 'id, parents',
+            auth: this.jwt
+        }
+        let future = server.createFuture();
+        this.drive.files.get(params, function (err, response) {
+            let previousParents = response.data.parents.join(',');
+            params2.removeParents = previousParents;
+            this.drive.files.update(params2);
+            future.return(true);
+        });
+        return future.wait();
     }
 }
 

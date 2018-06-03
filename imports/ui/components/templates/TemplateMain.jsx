@@ -39,7 +39,15 @@ class TemplateMain extends Component {
 
     render() {
         return (
-            <Templates {...this.props} limit={this.state.limit} viewMore={this.viewMore} search={this.state.search} changeSearch={this.changeSearch} searchTemplate={this.searchTemplate} template={this.state.searchTemplate} />
+            <Templates
+                {...this.props}
+                limit={this.state.limit}
+                viewMore={this.viewMore}
+                search={this.state.search}
+                changeSearch={this.changeSearch}
+                searchTemplate={this.searchTemplate}
+                template={this.state.searchTemplate}
+            />
         );
     }
 }

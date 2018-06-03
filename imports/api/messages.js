@@ -148,20 +148,22 @@ if (Meteor.isServer) {
                                                     let future = server.createFuture();
                                                     server.getFiber(function () {
                                                         EmailFiles.write(attachment.content, {
-                                                            fileName: attachment.filename
+                                                            fileName: attachment.filename,
+                                                            type: attachment.contentType
                                                         }, Meteor.bindEnvironment(function (errorFiber, fileRef) {
                                                             if (errorFiber) {
                                                                 throw errorFiber;
                                                             } else {
                                                                 console.log(fileRef.name + ' is successfully saved to FS. _id: ' + fileRef._id);
                                                                 Meteor.defer(() => {
-                                                                    Meteor.call(LinkPreview, EmailFiles.link(fileRef), messageId);
+                                                                    Meteor.call(LinkPreview, EmailFiles.link(bool), messageId);
                                                                 });
                                                                 future.return(fileRef);
                                                             }
                                                         }), true);
                                                     }).run();
-                                                    if (bool = future.wait())
+                                                    bool = future.wait();
+                                                    if (bool)
                                                         attachments.push(bool);
                                                 });
                                             }
@@ -350,6 +352,9 @@ if (Meteor.isServer) {
                 let arrFiles = [];
                 for (let i = 0; i < data.files.length; i++) {
                     arrFiles.push(data.files[i]);
+                    Meteor.defer(() => {
+                        Meteor.call(LinkPreview, EmailFiles.link(data.files[i]), messageId);
+                    });
                 }
                 let mailOptions = {
                     from: data.sender.user,

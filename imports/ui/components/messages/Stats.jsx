@@ -2,10 +2,12 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
 import { CategoriesDB } from '../../../api/categories';
 import { EmailFiles } from '../../../api/files';
+import Util from '../../../api/classes/Utilities';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
 import ReactTooltip from 'react-tooltip';
+import moment from 'moment';
 
 import CategoryClass from '../../../api/classes/Category';
 
@@ -58,7 +60,9 @@ class Stats extends Component {
             selectedStat: '',
             notesValue: '',
             uploading: false,
-            confirmation: false
+            confirmation: false,
+            uploadProgress: 0,
+            history: false
         };
         this.styleSet = {
             overlay: {
@@ -66,7 +70,7 @@ class Stats extends Component {
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
             },
             content: {
-                maxWidth: '530px',
+                maxWidth: '800px',
                 width: 'auto',
                 height: 'auto',
                 maxHeight: '520px',
@@ -96,6 +100,7 @@ class Stats extends Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.toggleConfirmation = this.toggleConfirmation.bind(this);
+        this.toggleHistory = this.toggleHistory.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -156,7 +161,12 @@ class Stats extends Component {
                         Bert.alert(err.reason, 'danger', 'growl-top-right');
                     else
                         Bert.alert('File uploaded!', 'success', 'growl-top-right');
-                    this.props.Candidate.addFileStats(id, stats + '_file', EmailFiles.link(fileRef), (error) => {
+                    let data = {
+                        id,
+                        info: stats + '_file',
+                        value: EmailFiles.link(fileRef)
+                    };
+                    this.props.Candidate.addFileStats(data, (error) => {
                         if (error)
                             Bert.alert(err.reason, 'danger', 'growl-top-right');
                     });
@@ -171,7 +181,7 @@ class Stats extends Component {
                     this.setState({ uploading: false, pst: false });
                 },
                 onProgress: (progress) => {
-                    this.setState({ uploadProgress: progress });
+                    this.setState({ selectedStat: stats, uploadProgress: progress });
                 }
             });
         }
@@ -188,6 +198,8 @@ class Stats extends Component {
         delete states['notesValue'];
         delete states['uploading'];
         delete states['confirmation'];
+        delete states['uploadProgress'];
+        delete states['history'];
         this.props.Candidate.changeStats(states, this.props.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -201,7 +213,7 @@ class Stats extends Component {
         e.preventDefault();
         this.setState({ processing: true });
         let data = { id: this.props.selectedCandidate.id, info: this.state.selectedStat + '_notes', value: this.state.notesValue };
-        this.props.Candidate.addInfo(data, (err) => {
+        this.props.Candidate.addFileStats(data, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
@@ -222,6 +234,11 @@ class Stats extends Component {
     toggleModal() {
         this.setState({ stats: !this.state.stats });
     }
+
+    toggleHistory(stat) {
+        this.setState({ history: !this.state.history, selectedStat: stat });
+    }
+
 
     renderCategories() {
         return this.props.categories.map((category, index) => {
@@ -244,7 +261,7 @@ class Stats extends Component {
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
                 Bert.alert('Info updated', 'success', 'growl-top-right');
-            this.setState({ processing: false, confirmation: false, stats: false });
+            this.setState({ processing: false, confirmation: false });
         });
     }
 
@@ -295,43 +312,64 @@ class Stats extends Component {
                 return null;
             return (
                 <div key={index} className="form-group row">
-                    <label className={`col-sm-8 control-label mt-2 ${item.sub && 'text-right'}`} htmlFor={item.name}>
-                        {!item.sub && <i className="fa fa-circle" />} {item.name}
-                        {
-                            !item.sub &&
-                            <span className="pull-right">
-                                {
-                                    this.props.selectedCandidate[item.name + '_file'] ?
-                                        <button type="button" className="btn btn-sm btn-default mr-1">
-                                            <a href={this.props.selectedCandidate[item.name + '_file']} target="_blank" className="mr-1">FILE</a>
-                                        </button> :
-                                        <label className="btn btn-sm mr-1 mt-2 text-center" type="button">
-                                            {(!this.state.uploading) ? <i className="fa fa-paperclip" /> : <i className="fa fa-circle-o-notch fa-spin" />}
-                                            <input type="file"
-                                                ref={(e) => {
-                                                    this.attach = e
-                                                }}
-                                                style={{ display: "none" }}
-                                                className="hidden"
-                                                disabled={this.state.uploading}
-                                                onChange={this.handleUpload.bind(this, item.name, this.props.selectedCandidate.id)} />
-                                        </label>
-                                }
-                                {
-                                    this.props.selectedCandidate[item.name + '_file'] ?
-                                        <button type="button" className="btn btn-sm btn-danger mr-1" data-tip="Remove file" onClick={this.setRemovefile.bind(this, item.name)}>
-                                            <i className="fa fa-trash" />
-                                        </button> : null
-                                }
-                                <button type="button" className="btn btn-sm btn-default mr-1" onClick={this.toggleNotes.bind(this, item.name)}>Edit Notes</button>
-                                <ReactTooltip />
-                            </span>
-                        }
-                    </label>
-                    <div className="col-sm-4">
+                    <label className="col-sm-8 control-label mt-2" htmlFor={item.name}>
+                        <h4 className={`${item.sub && 'pl-4 ml-4 border-bottom pb-2'}`}>
+                            {!item.sub && <b>{item.name}</b>}
+                            {item.sub && <small>{item.name}</small>}
+                            {
+                                !item.sub &&
+                                <span className="pull-right">
+                                    {
+                                        this.state.uploading && item.name === this.state.selectedStat &&
+                                        <span id="stat-file" className="progress pull-left mr-3 mt-3">
+                                            <div className="progress-bar" style={{ width: `${this.state.uploadProgress}%` }}></div>
+                                        </span>
+                                    }
+                                    {
+                                        this.props.selectedCandidate[item.name + '_file'].length || (this.state.uploading && item.name === this.state.selectedStat) ?
+                                            null :
+                                            <label className="btn btn-sm mr-1 mt-2 text-center" type="button">
+                                                {(!this.state.uploading) ? <i className="fa fa-paperclip" /> : <i className="fa fa-circle-o-notch fa-spin" />}
+                                                <input type="file"
+                                                    ref={(e) => {
+                                                        this.attach = e
+                                                    }}
+                                                    style={{ display: "none" }}
+                                                    className="hidden"
+                                                    disabled={this.state.uploading}
+                                                    onChange={this.handleUpload.bind(this, item.name, this.props.selectedCandidate.id)} />
+                                            </label>
+                                    }
+                                    {
+                                        this.props.selectedCandidate[item.name + '_file'].length ?
+                                            <button type="button" className="btn btn-sm btn-danger mr-1" data-tip="Remove file" onClick={this.setRemovefile.bind(this, item.name)}>
+                                                <i className="fa fa-trash" />
+                                            </button> : null
+                                    }
+                                    {
+                                        this.props.selectedCandidate[item.name + '_file'].length ?
+                                            <small>
+                                                {
+                                                    <a href={this.props.selectedCandidate[item.name + '_file']} target="_blank" className="mr-1">{Util.trunc(this.props.selectedCandidate[item.name + '_file'], 15)}</a>
+                                                }
+                                            </small> : null
+                                    }
+                                    <button type="button" className="btn btn-sm btn-default mr-1" data-tip="Edit Notes" onClick={this.toggleNotes.bind(this, item.name)}>
+                                        <i className="fa fa-pencil" />
+                                    </button>
+                                    {this.props.selectedCandidate[item.name + '_notes'] && <small>{Util.trunc(this.props.selectedCandidate[item.name + '_notes'], 15)}</small>}
+                                    <button type="button" className="btn btn-sm btn-default mr-1" data-tip="History" onClick={this.toggleHistory.bind(this, item.name)}>
+                                        <i className="fa fa-history" />
+                                    </button>
+                                    <ReactTooltip />
+                                </span>
+                            }
+                        </h4>
+                    </label >
+                    <div className="col-sm-4 mt-2">
                         <input type="number" min="0" step="1" className="form-control" name={item.name} value={this.state[item.name]} onChange={this.handleInputChange} required />
                     </div>
-                </div>
+                </div >
             );
         });
     }
@@ -344,7 +382,22 @@ class Stats extends Component {
         this.setState({ confirmation: !this.state.confirmation });
     }
 
+    renderHistory() {
+        let historyArr = this.props.selectedCandidate[this.state.selectedStat + '_history'] || [];
+        return historyArr.reverse().map((history, index) => {
+            return (
+                <li key={index} className="list-group-item">
+                    {history.text} <br />
+                    <small>
+                        <i className="fa fa-calendar" /> {moment(history.date).format("MM/DD/YYYY HH:mm:ss A")}
+                    </small>
+                </li>
+            );
+        });
+    }
+
     render() {
+        console.log(this.props);
         let category = this.props.categories.filter((item) => item.category === this.props.selectedCandidate.category)[0];
         if (!category)
             return null;
@@ -438,6 +491,33 @@ class Stats extends Component {
                             </div>
                         </div>
                     </form>
+                </Modal>
+                <Modal isOpen={this.state.history} contentLabel="NotesModal" style={this.styleSetSmall}>
+                    <div className="panel panel-primary">
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                History
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.toggleHistory}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="panel-body p-2">
+                            {
+                                (
+                                    this.state.selectedStat &&
+                                    (!this.props.selectedCandidate[this.state.selectedStat + '_history'] || !this.props.selectedCandidate[this.state.selectedStat + '_history'].length)
+                                ) &&
+                                <small className="text-center">No progress on this stat</small>
+                            }
+                            <ul className="list-group">
+                                {this.renderHistory()}
+                            </ul>
+                        </div>
+                    </div>
                 </Modal>
                 <ReactTooltip />
             </a>

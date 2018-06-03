@@ -3,8 +3,8 @@ import Future from 'fibers/future';
 import Fiber from 'fibers';
 import nodemailer from 'nodemailer';
 import Imap from 'imap';
-import webshot from 'webshot';
 import Drive from './Drive';
+import WebShot from './WebShot';
 import clamscan from 'clamscan';
 import twilio from 'twilio';
 import { MessagesAddListener } from '../messages';
@@ -40,7 +40,7 @@ export default class Server {
     }
 
     getWebshot(link, filename, options, callback) {
-        return webshot(link, filename, options, callback);
+        return new WebShot(link, filename, options, callback);
     }
 
     getDrive() {

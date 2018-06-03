@@ -16,6 +16,9 @@ class Info extends Component {
             email: props.selectedCandidate.email,
             number: props.selectedCandidate.number,
             address: props.selectedCandidate.address,
+            city: props.selectedCandidate.city,
+            country: props.selectedCandidate.country,
+            state: props.selectedCandidate.state,
             zip: props.selectedCandidate.zip,
             category: props.selectedCandidate.category,
             processing: false
@@ -46,6 +49,9 @@ class Info extends Component {
                 email: this.props.selectedCandidate.email,
                 number: this.props.selectedCandidate.number,
                 address: this.props.selectedCandidate.address,
+                city: this.props.selectedCandidate.city,
+                country: this.props.selectedCandidate.country,
+                state: this.props.selectedCandidate.state,
                 zip: this.props.selectedCandidate.zip,
                 category: this.props.selectedCandidate.category,
             });
@@ -56,7 +62,18 @@ class Info extends Component {
         if (!this.state.category.length)
             return;
         this.setState({ processing: true });
-        this.props.Candidate.changeInfo({ name: this.state.name, email: this.state.email, number: this.state.number, address: this.state.address, zip: this.state.zip, category: this.state.category, contact: this.props.selectedCandidate.contact }, (err) => {
+        this.props.Candidate.changeInfo({
+            name: this.state.name,
+            email: this.state.email,
+            number: this.state.number,
+            address: this.state.address,
+            city: this.state.city,
+            country: this.state.country,
+            state: this.state.state,
+            zip: this.state.zip,
+            category: this.state.category,
+            contact: this.props.selectedCandidate.contact
+        }, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
@@ -82,6 +99,15 @@ class Info extends Component {
         return this.props.categories.map((category, index) => {
             return (
                 <option key={index} value={category.category}>{category.category}</option>
+            );
+        });
+    }
+
+    renderCountries() {
+        var country_list = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Anguilla", "Antigua &amp; Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia &amp; Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Cape Verde", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Congo", "Cook Islands", "Costa Rica", "Cote D Ivoire", "Croatia", "Cruise Ship", "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Estonia", "Ethiopia", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "France", "French Polynesia", "French West Indies", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea Bissau", "Guyana", "Haiti", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Kyrgyz Republic", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico", "Moldova", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Norway", "Oman", "Pakistan", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romania", "Russia", "Rwanda", "Saint Pierre &amp; Miquelon", "Samoa", "San Marino", "Satellite", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "South Africa", "South Korea", "Spain", "Sri Lanka", "St Kitts &amp; Nevis", "St Lucia", "St Vincent", "St. Lucia", "Sudan", "Suriname", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor L'Este", "Togo", "Tonga", "Trinidad &amp; Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks &amp; Caicos", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "Uzbekistan", "Venezuela", "Vietnam", "Virgin Islands (US)", "Yemen", "Zambia", "Zimbabwe"];
+        return country_list.map((country, index) => {
+            return (
+                <option key={index} value={country}>{country}</option>
             );
         });
     }
@@ -147,6 +173,29 @@ class Info extends Component {
                                                 className="text-danger">*</span></label>
                                             <div className="col-sm-12">
                                                 <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} required />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label" htmlFor="city">City <span
+                                                className="text-danger">*</span></label>
+                                            <div className="col-sm-12">
+                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} required />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label" htmlFor="state">State <span
+                                                className="text-danger">*</span></label>
+                                            <div className="col-sm-12">
+                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} required />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label" htmlFor="country">Country <span
+                                                className="text-danger">*</span></label>
+                                            <div className="col-sm-12">
+                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange} required>
+                                                    {this.renderCountries()}
+                                                </select>
                                             </div>
                                         </div>
                                         <div className="form-group">

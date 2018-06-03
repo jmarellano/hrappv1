@@ -49,66 +49,28 @@ class Section extends Component {
             case ROUTES.MESSAGES:
             case ROUTES.TEAMS:
             case ROUTES.TEMPLATES_CREATOR:
-                return {
-                    history: this.props.history,
-                    location: this.props.location,
-                    match: this.props.match,
-                    title: this.props.title,
-                    Account: this.props.Client.Account,
-                    user: this.props.user,
-                    users: this.props.users,
-                    settings: this.props.settings,
-                    Candidate: this.props.Client.Candidate,
-                    Message: this.props.Client.Message
-                };
+            case ROUTES.FORMS_CREATOR:
+            case ROUTES.FORMS_VIEWER:
+            case ROUTES.FORMS_DATA:
+            case ROUTES.EMAILS:
+            case ROUTES.STATISTICS:
             case ROUTES.DRIVE:
                 return {
                     history: this.props.history,
                     location: this.props.location,
                     match: this.props.match,
                     title: this.props.title,
-                    Account: this.props.Client.Account,
-                    Drive: this.props.Client.Drive,
-                    user: this.props.user,
-                    settings: this.props.settings
-                };
-            case ROUTES.FORMS_CREATOR:
-            case ROUTES.FORMS_VIEWER:
-            case ROUTES.FORMS_DATA:
-                return {
-                    history: this.props.history,
-                    location: this.props.location,
-                    match: this.props.match,
-                    title: this.props.title,
-                    Account: this.props.Client.Account,
-                    Form: this.props.Client.Form,
-                    Candidate: this.props.Client.Candidate,
-                    user: this.props.user,
-                    settings: this.props.settings
-                };
-            case ROUTES.EMAILS:
-                return {
-                    history: this.props.history,
-                    location: this.props.location,
-                    match: this.props.match,
-                    title: this.props.title,
-                    Account: this.props.Client.Account,
-                    Message: this.props.Client.Message,
-                    user: this.props.user,
-                    settings: this.props.settings,
-                    users: this.props.users
-                };
-            case ROUTES.STATISTICS:
-                return {
-                    history: this.props.history,
-                    location: this.props.location,
-                    match: this.props.match,
-                    title: this.props.title,
-                    Account: this.props.Client.Account,
-                    Statistics: this.props.Client.Statistics,
                     user: this.props.user,
                     users: this.props.users,
-                    settings: this.props.settings
+                    settings: this.props.settings,
+                    Account: this.props.Client.Account,
+                    Candidate: this.props.Client.Candidate,
+                    Category: this.props.Client.Category,
+                    Form: this.props.Client.Form,
+                    Message: this.props.Client.Message,
+                    Statistics: this.props.Client.Statistics,
+                    Settings: this.props.Client.Settings,
+                    Drive: this.props.Client.Drive,
                 };
             default:
                 return { ...this.props };
@@ -130,14 +92,19 @@ class Section extends Component {
                     break;
                 case ROUTES.MESSAGES:
                 case ROUTES.DRIVE:
-                case ROUTES.FORMS_CREATOR:
-                case ROUTES.FORMS_DATA:
                 case ROUTES.EMAILS:
                 case ROUTES.TEAMS:
                 case ROUTES.STATISTICS:
-                case ROUTES.TEMPLATES_CREATOR:
                     if (!this.props.user) {
                         this.props.history.replace(ROUTES.LOGIN);
+                        continueRender = false;
+                    }
+                    break;
+                case ROUTES.FORMS_DATA:
+                case ROUTES.FORMS_CREATOR:
+                case ROUTES.TEMPLATES_CREATOR:
+                    if (!this.props.user) {
+                        this.props.history.replace('../' + ROUTES.LOGIN);
                         continueRender = false;
                     }
                     break;
@@ -205,11 +172,17 @@ class Section extends Component {
                     case ROUTES.TEMPLATES_CREATOR:
                         return (<TemplateCreator key={component} {...this.filteredProps()} />);
                     case ROUTES.FORMS_CREATOR:
-                        return (<FormCreator key={component} {...this.filteredProps()} />);
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <FormCreator key={component} {...this.filteredProps()} />
+                        ]);
                     case ROUTES.FORMS_VIEWER:
                         return (<FormViewer key={component} {...this.filteredProps()} />);
                     case ROUTES.FORMS_DATA:
-                        return (<FormData key={component} {...this.filteredProps()} />);
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <FormData key={component} {...this.filteredProps()} />
+                        ]);
                     case ROUTES.FORMS_NOT_FOUND:
                         return (<NotFound type='FormsNotFound' key={component} {...this.filteredProps()} />);
                     case ROUTES.TEMPLATES_NOT_FOUND:

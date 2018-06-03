@@ -81,7 +81,10 @@ class Followers extends Component {
                 <li key={index} className="list-group-item">
                     {user.username}
                     <span className="pull-right">
-                        {isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) && <button className="btn btn-danger btn-sm" onClick={this.toggleConfirmation.bind(this, user)}>Remove</button>}
+                        {
+                            isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) &&
+                            <button className="btn btn-danger btn-sm" onClick={this.toggleConfirmation.bind(this, user)}>Remove</button>
+                        }
                     </span>
                 </li>
             );

@@ -7,8 +7,14 @@ export const DriveGetToken = 'drive_get_token';
 export const DriveInsertPermission = 'drive_insert_permission';
 export const DriveRemoveFile = 'drive_remove_file';
 export const DriveAddFolder = 'drive_create_folder';
+export const DriveMoveToFolder = 'drive_move_to_folder';
+export const DriveInitiateUpload = 'drive_initiate_upload';
+export const DriveGetAccessToken = 'drive_get_access_token';
 
 if (Meteor.isServer) {
+    functions[DriveMoveToFolder] = function (fileId, folderId) {
+        return server.getDrive().moveToFolder(fileId, folderId);
+    }
     functions[DriveGetFiles] = function (data) {
         return server.getDrive().getFiles(data);
     }

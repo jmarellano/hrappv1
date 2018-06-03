@@ -88,31 +88,57 @@ class Settings extends Component {
                         <div className="panel-body p-2">
                             <ul className="nav nav-tabs">
                                 <li className="nav-item">
-                                    <a className="nav-link active" href="#">Change Password</a>
+                                    <a className="nav-link active" href="#">
+                                        Change Password
+                                    </a>
                                 </li>
                             </ul>
                             <div className="tab-content" id="myTabContent">
                                 <div className={"tab-pane fade show active"} role="tabpanel" aria-labelledby="home-tab">
                                     <div className="form-horizontal mt-3">
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="oldPassword">Old Password <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="oldPassword">
+                                                Old Password
+                                                <span className="ml-1 text-danger">*</span>
+                                            </label>
                                             <div className="col-sm-12">
-                                                <input type="password" className="form-control" name="oldPassword" onChange={this.handleInputChange} required />
+                                                <input
+                                                    type="password"
+                                                    className="form-control"
+                                                    name="oldPassword"
+                                                    onChange={this.handleInputChange}
+                                                    required
+                                                />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="password">New Password <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="password">
+                                                New Password
+                                                <span className="ml-1 text-danger">*</span>
+                                            </label>
                                             <div className="col-sm-12">
-                                                <input type="password" className="form-control" name="password" onChange={this.handleInputChange} required />
+                                                <input
+                                                    type="password"
+                                                    className="form-control"
+                                                    name="password"
+                                                    onChange={this.handleInputChange}
+                                                    required
+                                                />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="cPassword">Confirm Password <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="cPassword">
+                                                Confirm Password
+                                                <span className="ml-1 text-danger">*</span>
+                                            </label>
                                             <div className="col-sm-12">
-                                                <input type="password" className="form-control" name="cPassword" onChange={this.handleInputChange} required />
+                                                <input
+                                                    type="password"
+                                                    className="form-control"
+                                                    name="cPassword"
+                                                    onChange={this.handleInputChange}
+                                                    required
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -123,13 +149,17 @@ class Settings extends Component {
                             <hr />
                             <div className="container">
                                 <div className="pull-right mb-2">
-                                    <Button type="submit" className="form-control btn btn-success" processing={this.state.processing}>Save</Button>
+                                    <Button
+                                        type="submit"
+                                        className="form-control btn btn-success"
+                                        processing={this.state.processing}>
+                                        Save
+                                    </Button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </Modal>
-
             </div>
         );
     }

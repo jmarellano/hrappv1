@@ -49,8 +49,6 @@ if (Meteor.isServer) {
             const mediaSid = path.basename(urlUtil.parse(mediaUrl).pathname);
             const filename = `${mediaSid}.${extension}`;
 
-            //mediaUrl = "https://api.twilio.com/2010-04-01/Accounts/AC31f64b05aa0843de83daeff072fd22e2/Messages/MM38ab01e041aa9435c555166a89cceac5/Media/ME979ea29562cd5791c081d43660acdc4d";
-
             mediaItems.push({ mediaSid, MessageSid: req.body.MessageSid, mediaUrl, filename });
             mediaItems.map(mediaItem => saveMedia(mediaItem));
         }

@@ -71,12 +71,21 @@ class FormData extends Component {
                     {this.state.name}
                 </h4>
                 <div className="container">
-                    <select className="form-control col-sm-3 mb-1" onChange={this.changeVersion} value={this.state.version}>
+                    <select
+                        className="form-control col-sm-3 mb-1"
+                        onChange={this.changeVersion}
+                        value={this.state.version}>
                         <option value={0} disabled> Select Version</option>
                         {this.renderVersion()}
                     </select>
                 </div>
-                <FormDataTable {...this.props} headers={this.state.headers} version={this.state.version} viewMore={this.viewMore} limit={this.state.limit} />
+                <FormDataTable
+                    {...this.props}
+                    headers={this.state.headers}
+                    version={this.state.version}
+                    viewMore={this.viewMore}
+                    limit={this.state.limit}
+                />
             </div>
         )
     }

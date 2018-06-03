@@ -51,10 +51,24 @@ class ForgotPassword extends Component {
                     <div className="col-md-4 mt-3 text-center">
                         <h1>Send Reset Link</h1>
                         <form className="mb-1" onSubmit={this.onSubmit}>
-                            <input className="form-control mb-1" type="email" value={this.state.email} name="email" placeholder="Email" onChange={this.handleChangeInput} required />
-                            <Button className="form-control btn btn-primary" type="submit" processing={this.state.processing}>Send Link</Button>
+                            <input className="form-control mb-1"
+                                type="email"
+                                value={this.state.email}
+                                name="email"
+                                placeholder="Email"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <Button
+                                className="form-control btn btn-primary"
+                                type="submit"
+                                processing={this.state.processing}>
+                                Send Link
+                            </Button>
                         </form>
-                        <a href="#" className="text-secondary" onClick={this.redirect}>Need an account?</a>
+                        <a href="#" className="text-secondary" onClick={this.redirect}>
+                            Need an account?
+                        </a>
                     </div>
                 </div>
             </div>

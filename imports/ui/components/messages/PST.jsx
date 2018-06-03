@@ -99,7 +99,14 @@ class PST extends Component {
                             {!this.state.uploading &&
                                 <div className="form-group">
                                     <label htmlFor="exampleInputFile">PST FILE</label>
-                                    <input type="file" className="form-control-file" id="exampleInputFile" aria-describedby="fileHelp" onChange={this.handleUpload.bind(this)} disabled={this.props.user.importing} />
+                                    <input
+                                        type="file"
+                                        className="form-control-file"
+                                        id="exampleInputFile"
+                                        aria-describedby="fileHelp"
+                                        onChange={this.handleUpload.bind(this)}
+                                        disabled={this.props.user.importing}
+                                    />
                                     <small id="fileHelp" className="form-text text-muted">Upload here the PST File...</small>
                                 </div>
                             }

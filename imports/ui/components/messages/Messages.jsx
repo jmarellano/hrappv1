@@ -38,9 +38,9 @@ class Messages extends React.Component {
                 {
                     label: 'ALL STATUS', value: SEARCH.ALL, options: [
                         { value: SEARCH.ASSIGNED, label: 'Assigned' },
-                        { value: SEARCH.CLAIMED, label: 'Claimed' },
+                        { value: SEARCH.CLAIMED, label: 'Claimed', element: <span>{'Claimed'}<span className="pull-right mt-1 badge badge-warning">{props.claimed}</span></span> },
                         { value: SEARCH.FOLLOWING, label: 'Following' },
-                        { value: SEARCH.UNCLAIMED, label: 'Unclaim' },
+                        { value: SEARCH.UNCLAIMED, label: 'Unclaim', element: <span>{'Unclaimed'}<span className="pull-right mt-1 badge badge-warning">{props.unclaimed}</span></span> },
                     ]
                 },
                 {

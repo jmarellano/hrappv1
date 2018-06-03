@@ -2,13 +2,12 @@ import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import HeaderNav from './HeaderNav';
-import Client from '../../../api/classes/Client';
 import Util from '../../../api/classes/Utilities';
 import { MessagesIncomingPub, IncomingDB } from '../../../api/messages';
 import Timezone from '../timezone/Timezone';
 import MessageBox from '../messages/MessageBox';
 import moment from 'moment-timezone';
-
+import Help from './Help';
 class RightNav extends Component {
     constructor(props) {
         super(props);
@@ -16,7 +15,6 @@ class RightNav extends Component {
             timestamp: moment().valueOf(),
         };
         this.toggleMute = this.toggleMute.bind(this);
-        this.Client = new Client();
         this.audio = null;
     }
 
@@ -36,7 +34,7 @@ class RightNav extends Component {
     }
 
     toggleMute() {
-        this.Client.Account.toggleMute();
+        this.props.Account.toggleMute();
     }
 
     render() {
@@ -45,7 +43,7 @@ class RightNav extends Component {
             <div className="left-nav pull-right bg-secondary">
                 <ul className="navbar-nav ml-auto text-center">
                     <HeaderNav key={0} type="navbar">
-                        <MessageBox {...this.props} Message={this.Client.Message} />
+                        <MessageBox {...this.props} Message={this.props.Message} />
                     </HeaderNav>
                     <HeaderNav key={1} type="navbar">
                         <a href="#" onClick={this.toggleMute} data-tip="Toggle Volume"
@@ -55,7 +53,10 @@ class RightNav extends Component {
                         </a>
                     </HeaderNav>
                     <HeaderNav key={2} type="navbar">
-                        <Timezone {...this.props} Category={this.Client.Account} />
+                        <Timezone {...this.props} Category={this.props.Account} />
+                    </HeaderNav>
+                    <HeaderNav key={3} type="navbar">
+                        <Help {...this.props} />
                     </HeaderNav>
                 </ul>
             </div>
@@ -66,7 +67,9 @@ class RightNav extends Component {
 RightNav.propTypes = {
     user: PropTypes.object,
     timestamp: PropTypes.number,
-    logs: PropTypes.array
+    logs: PropTypes.array,
+    Account: PropTypes.object,
+    Message: PropTypes.object,
 };
 
 export default withTracker(() => {

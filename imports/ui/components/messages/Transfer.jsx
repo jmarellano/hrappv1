@@ -69,7 +69,11 @@ class Transfer extends Component {
         if (!isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE))
             return null;
         return (
-            <button className="link badge badge-success text-light pull-right ml-1 mr-1" data-tip="Transfer Claim" onClick={this.toggleModal}><i className="fa fa-exchange" /> Transfer
+            <button
+                className="link badge badge-success text-light pull-right ml-1 mr-1"
+                data-tip="Transfer Claim"
+                onClick={this.toggleModal}>
+                <i className="fa fa-exchange" /> Transfer
                 <Modal isOpen={this.state.transfer} contentLabel="TransferModal" style={this.styleSet}>
                     <form className="panel panel-primary" onSubmit={this.transferClaim}>
                         <div className="panel-heading bg-secondary text-white p-2">

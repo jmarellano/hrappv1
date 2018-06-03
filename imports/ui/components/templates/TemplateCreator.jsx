@@ -80,7 +80,15 @@ class TemplateCreator extends React.Component {
                 <form className="col-md-12 p-xs mt-2 mb-2" onSubmit={this.saveTemplate.bind(this)}>
                     <div className="row">
                         <div className="col-md-2">
-                            <input type="text" className="form-control" onChange={this.handleName.bind(this)} name="name" value={this.state.name} placeholder="Template Name" required />
+                            <input
+                                type="text"
+                                className="form-control"
+                                onChange={this.handleName.bind(this)}
+                                name="name"
+                                value={this.state.name}
+                                placeholder="Template Name"
+                                required
+                            />
                         </div>
                         <div className="col-md-10">
                             Codes:

@@ -194,7 +194,13 @@ class FormViewer extends React.Component {
                                 }
                                 {
                                     this.props.location.pathname.split("/")[3] &&
-                                    <ReCAPTCHA className="text-center" ref={(el) => { this.captcha = el; }} size="normal" sitekey="6LcLLCgUAAAAAG5U2RfKxQ9dBw0xWNVrGcSAFFm8" onChange={this.onChange.bind(this)} />
+                                    <ReCAPTCHA
+                                        className="text-center"
+                                        ref={(el) => { this.captcha = el; }}
+                                        size="normal"
+                                        sitekey="6LcLLCgUAAAAAG5U2RfKxQ9dBw0xWNVrGcSAFFm8"
+                                        onChange={this.onChange.bind(this)}
+                                    />
                                 }
                             </div>
                             <ul id="tmq-form-builder-center" className="text-center" />
@@ -216,8 +222,22 @@ class FormViewer extends React.Component {
                         </div>
                         <div className="panel-body p-2">
                             <form onSubmit={this.getCandidateId}>
-                                <input type="email" name="email" className="form-control mb-1" onChange={this.handleChangeInput} value={this.state.email} placeholder="Email Address" required />
-                                <Button type="submit" gettingId={this.state.gettingId} className="btn btn-success mb-1">Generate Link</Button>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="form-control mb-1"
+                                    onChange={this.handleChangeInput}
+                                    value={this.state.email}
+                                    placeholder="Email Address"
+                                    required
+                                />
+                                <Button
+                                    type="submit"
+                                    gettingId={this.state.gettingId}
+                                    className="btn btn-success mb-1"
+                                >
+                                    Generate Link
+                                </Button>
                             </form>
                             {
                                 this.state.id &&

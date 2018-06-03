@@ -23,9 +23,7 @@
                 "mailbox_outgoing": "INBOX.Sent"
             }
         ],
-        "collections": {
-            "forms": "forms"
-        },
+        "collections": {},
         "twilioNumbers": [
             "+15164693486"
         ]
@@ -42,12 +40,6 @@
                 "password": "John*080816",
                 "host": "smtp.gmail.com",
                 "port": "587"
-            },
-            "imap": {
-                "username": "jmarellano0410@gmail.com",
-                "password": "John*080816",
-                "host": "imap.gmail.com",
-                "port": "993"
             }
         }
     },

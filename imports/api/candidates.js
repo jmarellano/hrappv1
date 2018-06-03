@@ -93,7 +93,8 @@ if (Meteor.isServer) {
             check(contact, Mongo.ObjectID);
             check(info, String);
             check(value, String);
-            return CandidateManager.updateCandidateSelectedInfo(contact, info, value);
+            let info_trim = info.replace(/_notes|_file/gi, '');
+            return CandidateManager.updateCandidateSelectedInfo(contact, info, value, `${Meteor.user().username} attached a file / notes to ${info_trim}`);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -104,7 +105,8 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(contact, Mongo.ObjectID);
             check(info, String);
-            return CandidateManager.updateCandidateSelectedRemoveFile(contact, info);
+            let info_trim = info.replace(/_notes|_file/gi, '');
+            return CandidateManager.updateCandidateSelectedRemoveFile(contact, info, `${Meteor.user().username} removed a file to ${info_trim}`);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

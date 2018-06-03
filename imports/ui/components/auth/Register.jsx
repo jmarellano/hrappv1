@@ -70,14 +70,61 @@ class Signup extends Component {
                     <div className="col-md-4 mt-3">
                         <h1 className="text-center text-primary">Join {this.props.title}</h1>
                         <form className="mb-1 text-center" onSubmit={this.onSubmit}>
-                            <input className="form-control mb-1" type="text" value={this.state.username} name="username" placeholder="Username" onChange={this.handleChangeInput} required />
-                            <input className="form-control mb-1" type="email" value={this.state.email} name="email" placeholder="Email" onChange={this.handleChangeInput} required />
-                            <input className="form-control mb-1" type="password" value={this.state.password} name="password" placeholder="Password" onChange={this.handleChangeInput} required />
-                            <input className="form-control mb-1" type="text" value={this.state.first} name="first" placeholder="First Name" onChange={this.handleChangeInput} required />
-                            <input className="form-control mb-1" type="text" value={this.state.last} name="last" placeholder="Last Name" onChange={this.handleChangeInput} required />
-                            <Button className="form-control btn btn-primary" type="submit" processing={this.state.processing}>Create Account</Button>
+                            <input
+                                className="form-control mb-1"
+                                type="text"
+                                value={this.state.username}
+                                name="username"
+                                placeholder="Username"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <input
+                                className="form-control mb-1"
+                                type="email"
+                                value={this.state.email}
+                                name="email"
+                                placeholder="Email"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <input
+                                className="form-control mb-1"
+                                type="password"
+                                value={this.state.password}
+                                name="password"
+                                placeholder="Password"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <input
+                                className="form-control mb-1"
+                                type="text"
+                                value={this.state.first}
+                                name="first"
+                                placeholder="First Name"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <input
+                                className="form-control mb-1"
+                                type="text"
+                                value={this.state.last}
+                                name="last"
+                                placeholder="Last Name"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <Button
+                                className="form-control btn btn-primary"
+                                type="submit"
+                                processing={this.state.processing}>
+                                Create Account
+                            </Button>
                         </form>
-                        <a href="#" className="text-secondary" onClick={this.redirect}>Have an account?</a>
+                        <a href="#" className="text-secondary" onClick={this.redirect}>
+                            Have an account?
+                        </a>
                     </div>
                 </div>
             </div>

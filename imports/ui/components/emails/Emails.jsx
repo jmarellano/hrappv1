@@ -282,9 +282,31 @@ class Emails extends Component {
                             </div>
                         </div>
                         <div className="panel-body p-2">
-                            <input className="mb-2 form-control" type="text" value={credit.user} name="user" placeholder="User" onChange={this.changeCredit.bind(this, "user")} required />
-                            <input className="mb-2 form-control" type="password" value={credit.password} name="password" placeholder="Password" onChange={this.changeCredit.bind(this, "password")} required />
-                            <select className="mb-2 form-control" name="index" value={credit.index} onChange={this.changeCredit.bind(this, "index")} required >
+                            <input
+                                className="mb-2 form-control"
+                                type="text"
+                                value={credit.user}
+                                name="user"
+                                placeholder="User"
+                                onChange={this.changeCredit.bind(this, "user")}
+                                required
+                            />
+                            <input
+                                className="mb-2 form-control"
+                                type="password"
+                                value={credit.password}
+                                name="password"
+                                placeholder="Password"
+                                onChange={this.changeCredit.bind(this, "password")}
+                                required
+                            />
+                            <select
+                                className="mb-2 form-control"
+                                name="index"
+                                value={credit.index}
+                                onChange={this.changeCredit.bind(this, "index")}
+                                required
+                            >
                                 {this.renderAccount()}
                             </select>
                             {(this.props.user.role === ROLES.ADMIN || this.props.user.role === ROLES.SUPERUSER) &&

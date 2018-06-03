@@ -86,7 +86,6 @@ class Message extends React.Component {
             $('.custom-menu li').click(function () {
                 switch ($(this).attr('data-action')) {
                     case 'name':
-                    case 'address':
                     case 'number':
                     case 'zip':
                         self.addInfo($(this).attr('data-action'));
@@ -280,7 +279,6 @@ class Message extends React.Component {
                 </Modal>
                 <ul className="custom-menu">
                     <li data-action="name">Attach to Name</li>
-                    <li data-action="address">Attach to Address</li>
                     <li data-action="number">Attach to Phone Number</li>
                     <li data-action="zip">Attach to Zip Code</li>
                     <li data-action="disc">Attach to DISC</li>

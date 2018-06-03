@@ -107,16 +107,42 @@ class Login extends Component {
                             </div>
                         }
                         <form className="mb-1" onSubmit={this.onSubmit} >
-                            <input className="form-control mb-1" type="email" value={this.state.email} name="email" placeholder="Email" onChange={this.handleChangeInput} required />
-                            <input className="form-control mb-1" type="password" value={this.state.password} name="password" placeholder="Password" onChange={this.handleChangeInput} required />
-                            <Button className="form-control btn btn-primary mb-1" type="submit" processing={this.state.processing}>Login</Button>
+                            <input
+                                className="form-control mb-1"
+                                type="email"
+                                value={this.state.email}
+                                name="email"
+                                placeholder="Email"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <input
+                                className="form-control mb-1"
+                                type="password"
+                                value={this.state.password}
+                                name="password"
+                                placeholder="Password"
+                                onChange={this.handleChangeInput}
+                                required
+                            />
+                            <Button
+                                className="form-control btn btn-primary mb-1"
+                                type="submit"
+                                processing={this.state.processing}>
+                                Login
+                            </Button>
                         </form>
                         <div className="row">
                             <div className="col-md-6 pull-left">
-                                <a href="#" className="text-secondary" onClick={this.redirectRegister}>Need an account?</a> <br />
+                                <a href="#" className="text-secondary" onClick={this.redirectRegister}>
+                                    Need an account?
+                                </a>
+                                <br />
                             </div>
                             <div className="col-md-6 pull-right text-right">
-                                <a className="text-secondary" href="#" onClick={this.redirectPass}>Forgot Password?</a>
+                                <a className="text-secondary" href="#" onClick={this.redirectPass}>
+                                    Forgot Password?
+                                </a>
                             </div>
                         </div>
                     </div>

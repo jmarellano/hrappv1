@@ -39,7 +39,15 @@ class FormMain extends Component {
 
     render() {
         return (
-            <Forms {...this.props} limit={this.state.limit} viewMore={this.viewMore} search={this.state.search} changeSearch={this.changeSearch} searchForm={this.searchForm} form={this.state.searchForm} />
+            <Forms
+                {...this.props}
+                limit={this.state.limit}
+                viewMore={this.viewMore}
+                search={this.state.search}
+                changeSearch={this.changeSearch}
+                searchForm={this.searchForm}
+                form={this.state.searchForm}
+            />
         );
     }
 }

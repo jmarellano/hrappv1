@@ -93,6 +93,9 @@ class DriveList extends React.Component {
     browse(id) {
         this.props.browse(id);
     }
+    toggleSortOrderBy(val) {
+        this.props.toggleSortOrderBy(val);
+    }
     renderFiles() {
         return this.props.files.map((file, index) => {
             if (file.mimeType === 'application/vnd.google-apps.folder')
@@ -106,15 +109,20 @@ class DriveList extends React.Component {
                         <td>
                             {
                                 !file.trashed &&
-                                <button className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`} onClick={this.trash.bind(this, file)}>
+                                <button
+                                    className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                    onClick={this.trash.bind(this, file)}>
                                     <i className="fa fa-trash" /> Trash
-                            </button>
+                                </button>
                             }
                             {
                                 file.trashed &&
-                                <Button className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`} data={file} onClick={this.undoTrash.bind(this, file, true)}>
+                                <Button
+                                    className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                    data={file}
+                                    onClick={this.undoTrash.bind(this, file, true)}>
                                     <i className="fa fa-undo" /> Undo Trash
-                            </Button>
+                                </Button>
                             }
                             <button className={`btn btn-sm m-1 ${file.trashed ? 'btn-secondary disabled' : 'btn-success'}`} onClick={this.browse.bind(this, file.id)}>
                                 <i className="fa fa-folder-open" /> Browse
@@ -132,13 +140,18 @@ class DriveList extends React.Component {
                     <td>
                         {
                             !file.trashed &&
-                            <button className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`} onClick={this.trash.bind(this, file)}>
+                            <button
+                                className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                onClick={this.trash.bind(this, file)}>
                                 <i className="fa fa-trash" /> Trash
                             </button>
                         }
                         {
                             file.trashed &&
-                            <Button className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`} data={file} onClick={this.undoTrash.bind(this, file, true)}>
+                            <Button
+                                className={`btn btn-sm m-1 ${!isPermitted(this.props.user.role, ROLES.MANAGE_FILES) ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                data={file}
+                                onClick={this.undoTrash.bind(this, file, true)}>
                                 <i className="fa fa-undo" /> Undo Trash
                             </Button>
                         }
@@ -156,7 +169,7 @@ class DriveList extends React.Component {
     render() {
         return (
             <div>
-                <table className="table">
+                <table id="drive-list" className="table">
                     <thead className="thead-light">
                         <tr>
                             <th scope="col">
@@ -165,10 +178,16 @@ class DriveList extends React.Component {
                                         <button className="btn btn-sm btn-success" onClick={this.browse.bind(this, 'root')}>Back</button> : null
                                 }
                             </th>
-                            <th scope="col">Name</th>
+                            <th scope="col sort" onClick={this.toggleSortOrderBy.bind(this, 0)}>
+                                Name <i className={this.props.sortOrderBy === 0 ? `fa fa-sort${this.props.sortOrder === 0 ? '-up' : '-down'} text-primary` : `fa fa-sort text-secondary`} />
+                            </th>
                             <th scope="col">Trashed</th>
-                            <th scope="col">Last Modified</th>
-                            <th scope="col">File size</th>
+                            <th scope="col sort" onClick={this.toggleSortOrderBy.bind(this, 1)}>
+                                Last Modified <i className={this.props.sortOrderBy === 1 ? `fa fa-sort${this.props.sortOrder === 0 ? '-up' : '-down'} text-primary` : `fa fa-sort text-secondary`} />
+                            </th>
+                            <th scope="col sort" onClick={this.toggleSortOrderBy.bind(this, 2)}>
+                                File size <i className={this.props.sortOrderBy === 2 ? `fa fa-sort${this.props.sortOrder === 0 ? '-up' : '-down'} text-primary` : `fa fa-sort text-secondary`} />
+                            </th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
@@ -225,7 +244,10 @@ DriveList.propTypes = {
     user: PropTypes.object,
     getFiles: PropTypes.func,
     browse: PropTypes.func,
-    parent: PropTypes.string
+    parent: PropTypes.string,
+    toggleSortOrderBy: PropTypes.func,
+    sortOrder: PropTypes.number,
+    sortOrderBy: PropTypes.number,
 };
 
 export default withTracker(() => {

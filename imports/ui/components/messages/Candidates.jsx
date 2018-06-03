@@ -62,9 +62,21 @@ class Candidates extends React.Component {
                     <div className="col-md-12">
                         <label className="sr-only" htmlFor="inlineFormInputGroupUsername2">Username</label>
                         <form className="input-group mb-2 mr-sm-2" onSubmit={this.props.searchCandidate}>
-                            <input type="text" className="form-control" placeholder="Search" name="search" value={this.props.search} onChange={this.props.changeSearch} />
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search"
+                                name="search"
+                                value={this.props.search}
+                                onChange={this.props.changeSearch}
+                            />
                             <div className="input-group-prepend">
-                                <Button type="submit" className="btn btn-primary input-group-text"><i className="fa fa-search" /></Button>
+                                <Button
+                                    type="submit"
+                                    className="btn btn-primary input-group-text"
+                                >
+                                    <i className="fa fa-search" />
+                                </Button>
                             </div>
                         </form>
                     </div>
@@ -74,7 +86,13 @@ class Candidates extends React.Component {
                                 <h5>Inbox</h5>
                             </div>
                             <div className="col-md-9 p-0" data-tip data-for={"selected_options"}>
-                                <DropdownSelectDup name='filter' options={this.props.displayOptions} value={this.props.display} onChange={this.props.changeDisplay} className='no-highlight' />
+                                <DropdownSelectDup
+                                    name='filter'
+                                    options={this.props.displayOptions}
+                                    value={this.props.display}
+                                    onChange={this.props.changeDisplay}
+                                    className='no-highlight'
+                                />
                             </div>
                         </div>
                         {this.props.tooltip}
@@ -110,7 +128,8 @@ Candidates.propTypes = {
     searchCandidate: PropTypes.func,
     viewMore: PropTypes.func,
     selectCandidate: PropTypes.func,
-    Candidate: PropTypes.object
+    Candidate: PropTypes.object,
+    tooltip: PropTypes.any
 };
 
 export default withTracker((props) => {

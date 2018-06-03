@@ -100,21 +100,51 @@ class Global extends Component {
                                         Minutes:
                                     </div>
                                     <div className="col-md-3">
-                                        <input type="number" min="0" step="1" value={this.state.min} name="min" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Minutes" required />
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="1"
+                                            value={this.state.min}
+                                            name="min"
+                                            className="mb-1 form-control"
+                                            onChange={this.handleChangeInput}
+                                            placeholder="Minutes"
+                                            required
+                                        />
                                     </div>
                                     <div className="col-md-3">
                                         Seconds:
                                     </div>
                                     <div className="col-md-3">
-                                        <input type="number" min="0" step="1" value={this.state.sec} name="sec" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Seconds" required />
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="1"
+                                            value={this.state.sec}
+                                            name="sec"
+                                            className="mb-1 form-control"
+                                            onChange={this.handleChangeInput}
+                                            placeholder="Seconds"
+                                            required
+                                        />
                                     </div>
                                 </div>
                                 Country:
-                                <select value={this.state.country} name="country" className="mb-1 form-control" onChange={this.handleChangeInput} placeholder="Country" required>
+                                <select
+                                    value={this.state.country}
+                                    name="country"
+                                    className="mb-1 form-control"
+                                    onChange={this.handleChangeInput}
+                                    placeholder="Country"
+                                    required
+                                >
                                     <option value={null} disabled>Select Country</option>
                                     {this.renderCountries()}
                                 </select><br />
-                                {this.state.save && <Button className="btn btn-warning" type="submit" processing={this.state.processing}>Save</Button>}
+                                {
+                                    this.state.save &&
+                                    <Button className="btn btn-warning" type="submit" processing={this.state.processing}>Save</Button>
+                                }
                             </form>
                         </div>
                     </div>
