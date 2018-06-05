@@ -4,6 +4,7 @@ import { DRIVE, ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
+import Modal from '../extras/Modal/components/Modal';
 
 class Drive extends React.Component {
     constructor(props) {
@@ -39,7 +40,8 @@ class Drive extends React.Component {
             token: null,
             search: '',
             sortOrderBy: 0,
-            sortOrder: 0
+            sortOrder: 0,
+            signin: !props.user.google
         };
         this.changeDisplay = this.changeDisplay.bind(this);
         this.getQuery = this.getQuery.bind(this);
@@ -49,6 +51,22 @@ class Drive extends React.Component {
         this.browse = this.browse.bind(this);
         this.toggleSortOrderBy = this.toggleSortOrderBy.bind(this);
         this.updateProgress = this.updateProgress.bind(this);
+        this.onClose = this.onClose.bind(this);
+        this.signIn = this.signIn.bind(this);
+        this.styleSet = {
+            overlay: {
+                zIndex: '8888',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            },
+            content: {
+                maxWidth: '300px',
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '320px',
+                margin: '1% auto',
+                padding: '0px'
+            }
+        };
     }
     componentDidMount() {
         this.getToken();
@@ -224,6 +242,23 @@ class Drive extends React.Component {
         this.setState({ uploadProgress: progress });
     }
 
+
+    onClose() {
+        this.setState({
+            signin: false
+        });
+    }
+
+    signIn() {
+        Meteor.signInWithGoogle({}, function (error, mergedUserId) {
+            // mergedUsers is set if a merge occured
+            console.log(error, mergedUserId);
+            if (mergedUserId) {
+                console.log(mergedUserId, 'merged with', Meteor.userId());
+            }
+        });
+    }
+
     render() {
         return (
             <div id="drive" className="pull-left">
@@ -303,6 +338,27 @@ class Drive extends React.Component {
                             </div>
                     }
                 </div>
+                <Modal isOpen={this.state.signin} contentLabel="SignInModal" style={this.styleSet}>
+                    <div className="panel panel-primary">
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Sign In
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.onClose}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+
+                            </div>
+                        </div>
+                        <div className="panel-body p-2 text-center">
+                            <button type="button" className="btn btn-success" onClick={this.signIn}>
+                                <i className="fa fa-google"></i> Sign in with Google
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
             </div>
         );
     }
@@ -313,6 +369,7 @@ Drive.propTypes = {
     user: PropTypes.object
 };
 
-export default withTracker(() => {
+export default withTracker((props) => {
+    console.log(props);
     return {};
 })(Drive);

@@ -57,5 +57,11 @@
     "twilioCreds": {
         "accountSid": "AC450dc0f41d83b5f520a8ea1f2d6fa790",
         "authToken": "004ba684c9f618cf33bea42f97a92b31"
+    },
+    "oAuth": {
+        "google": {
+            "clientId": "567385721334-bhp1teu7vqtemafgieihqto0e0ji11un.apps.googleusercontent.com",
+            "secret": "HmXMrk__DjdoBIhKRJTE65ei"
+        }
     }
 }
