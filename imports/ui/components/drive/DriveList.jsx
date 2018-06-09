@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Util from '../../../api/classes/Utilities';
 import Modal from '../extras/Modal/components/Modal';
+import ItemEllipsis from '../extras/ItemEllipsis';
 
 class DriveList extends React.Component {
     constructor(props) {
@@ -13,12 +14,18 @@ class DriveList extends React.Component {
             preview: false,
             share: false,
             trash: false,
+            rename: false,
             file: null,
-            email: ''
+            email: '',
+            role: 'writer',
+            name: '',
+            processing: false
         };
         this.onClose = this.onClose.bind(this);
         this.trash = this.trash.bind(this);
         this.remove = this.remove.bind(this);
+        this.sharing = this.sharing.bind(this);
+        this.renaming = this.renaming.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.styleSet = {
             overlay: {
@@ -43,7 +50,7 @@ class DriveList extends React.Component {
                 maxWidth: '300px',
                 width: 'auto',
                 height: 'auto',
-                maxHeight: '160px',
+                maxHeight: '190px',
                 margin: '1% auto',
                 padding: '0px'
             }
@@ -60,8 +67,52 @@ class DriveList extends React.Component {
     preview(file) {
         this.setState({ preview: true, file });
     }
+    rename(file) {
+        this.setState({ rename: true, file, name: file.name });
+    }
     share(file) {
         this.setState({ share: true, file });
+    }
+    sharing(e) {
+        e.preventDefault();
+        this.setState({ processing: true });
+        let reqOptions = {
+            'method': 'POST',
+            'path': '/drive/v3/files/' + this.state.file.id + '/permissions',
+            'params': {
+                'fileId': this.state.file.id,
+                'sendNotificationEmails': false
+            },
+            'body': {
+                'role': this.state.role,
+                'type': 'user',
+                'emailAddress': this.state.email
+            }
+        };
+        let request = window.gapi.client.request(reqOptions);
+        request.execute(() => {
+            this.setState({ processing: false, share: false });
+            this.props.getFiles(null, true);
+        });
+    }
+    renaming(e) {
+        e.preventDefault();
+        this.setState({ processing: true });
+        let reqOptions = {
+            'method': 'PATCH',
+            'path': '/drive/v3/files/' + this.state.file.id,
+            'params': {
+                'fileId': this.state.file.id
+            },
+            'body': {
+                'name': this.state.name
+            }
+        };
+        let request = window.gapi.client.request(reqOptions);
+        request.execute(() => {
+            this.setState({ processing: false, rename: false });
+            this.props.getFiles(null, true);
+        });
     }
     trash(file) {
         this.setState({ trash: true }, () => {
@@ -74,7 +125,8 @@ class DriveList extends React.Component {
         this.setState({
             preview: false,
             share: false,
-            trash: false
+            trash: false,
+            rename: false
         });
     }
     undoTrash(file) {
@@ -126,6 +178,9 @@ class DriveList extends React.Component {
     }
     toggleSortOrderBy(val) {
         this.props.toggleSortOrderBy(val);
+    }
+    selectFile(file) {
+        this.props.selectFile(file);
     }
     renderFiles() {
         return this.props.files.map((file, index) => {
@@ -199,15 +254,29 @@ class DriveList extends React.Component {
                         <a href={file.webContentLink} target="_blank" className={`btn btn-sm m-1 ${!file.webContentLink ? 'btn-secondary disabled' : 'btn-primary'}`}>
                             <i className="fa fa-arrow-circle-down" /> Download
                         </a>
-                        <a href={file.webViewLink} target="_blank" className={`btn btn-sm m-1 ${!file.webViewLink ? 'btn-secondary disabled' : 'btn-primary'}`}>
-                            <i className="fa fa-pencil" /> Edit
-                        </a>
-                        <button
-                            disabled={!file.capabilities.canShare}
-                            className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
-                            onClick={this.share.bind(this, file)}>
-                            <i className="fa fa-user-plus" /> Share
-                        </button>
+                        <ItemEllipsis index={index}>
+                            <a href={file.webViewLink} target="_blank" className={`btn btn-sm m-1 ${!file.webViewLink ? 'btn-secondary disabled' : 'btn-primary'}`}>
+                                <i className="fa fa-pencil" /> Edit
+                            </a>
+                            <a href="#" className='btn btn-sm m-1 btn-primary' onClick={this.rename.bind(this, file)}>
+                                <i className="fa fa-pencil" /> Rename
+                            </a>
+                            {
+                                this.props.selectedFile === file ?
+                                    <a href="#" className={`btn btn-sm m-1 btn-secondary`}>
+                                        <i className="fa fa-check" /> Copied
+                                </a> :
+                                    <a href="#" className={`btn btn-sm m-1 btn-primary`} onClick={this.selectFile.bind(this, file)}>
+                                        <i className="fa fa-copy" /> Copy
+                                </a>
+                            }
+                            <button
+                                disabled={!file.capabilities.canShare}
+                                className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
+                                onClick={this.share.bind(this, file)}>
+                                <i className="fa fa-user-plus" /> Share
+                            </button>
+                        </ItemEllipsis>
                     </td>
                 </tr>
             );
@@ -275,16 +344,36 @@ class DriveList extends React.Component {
 
                             </div>
                         </div>
-                        <div className="panel-body p-2">
+                        <form className="panel-body p-2" onSubmit={this.sharing}>
                             Email Address:
-                            <input type="text" value={this.state.email} name="email" onChange={this.handleInput} className="form-control mt-1 mb-2" />
+                            <input type="text" value={this.state.email} name="email" onChange={this.handleInput} className="form-control mt-1 mb-2" required />
                             Role:
-                            <select value={this.state.role} name="role" onChange={this.handleInput} className="form-control mt-1 mb-2">
+                            <select value={this.state.role} name="role" onChange={this.handleInput} className="form-control mt-1 mb-2" required >
                                 <option value={'writer'}>Writer</option>
                                 <option value={'reader'}>Reader</option>
                             </select>
-                            <Button className="form-control btn btn-warning mt-1 mb-2">Share</Button>
+                            <Button type="submit" processing={this.state.processing} className="form-control btn btn-warning mt-1 mb-2">Share</Button>
+                        </form>
+                    </div>
+                </Modal>
+                <Modal isOpen={this.state.rename} contentLabel="RenameModal" style={this.styleSetSmall}>
+                    <div className="panel panel-primary">
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Renaming
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.onClose}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+                            </div>
                         </div>
+                        <form className="panel-body p-2" onSubmit={this.renaming}>
+                            New Name:
+                            <input type="text" value={this.state.name} name="name" onChange={this.handleInput} className="form-control mt-1 mb-2" required />
+                            <Button type="submit" processing={this.state.processing} className="form-control btn btn-warning mt-1 mb-2">Rename</Button>
+                        </form>
                     </div>
                 </Modal>
                 <Modal isOpen={this.state.trash} contentLabel="SettingsModal" style={this.styleSetSmall}>
@@ -322,6 +411,8 @@ DriveList.propTypes = {
     toggleSortOrderBy: PropTypes.func,
     sortOrder: PropTypes.number,
     sortOrderBy: PropTypes.number,
+    selectedFile: PropTypes.object,
+    selectFile: PropTypes.func
 };
 
 export default withTracker(() => {

@@ -6,10 +6,11 @@ export const DriveGetFiles = 'drive_get_files';
 export const DriveGetToken = 'drive_get_token';
 export const DriveInsertPermission = 'drive_insert_permission';
 export const DriveRemoveFile = 'drive_remove_file';
-export const DriveAddFolder = 'drive_create_folder';
+export const DriveAddFolder = 'drive_add_folder';
 export const DriveMoveToFolder = 'drive_move_to_folder';
 export const DriveInitiateUpload = 'drive_initiate_upload';
 export const DriveGetAccessToken = 'drive_get_access_token';
+export const DriveCreateFolder = 'drive_create_folder';
 
 if (Meteor.isServer) {
     functions[DriveMoveToFolder] = function (fileId, folderId) {
@@ -21,8 +22,15 @@ if (Meteor.isServer) {
     functions[DriveGetToken] = function () {
         return server.getDrive().getToken();
     }
-    functions[DriveAddFolder] = function (name) {
-        return server.getDrive().createFolder(name);
+    functions[DriveAddFolder] = function (name, email) {
+        return server.getDrive().createFolder(name, email);
+    }
+    functions[DriveCreateFolder] = function (email) {
+        check(this.userId, String);
+        let folder = functions[DriveAddFolder].call(this, Meteor.user().username, email);
+        if (folder)
+            return Meteor.users.update({ _id: this.userId }, { $set: { 'profile.drive': folder.id } });
+        return 1;
     }
     functions[DriveInsertPermission] = function (file, value, type, role) {
         try {

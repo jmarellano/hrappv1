@@ -153,7 +153,6 @@ if (Meteor.isServer) {
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.VIEW_TEAMS)) {
                 Meteor.users.update({ _id: id }, { $set: { 'profile.role': parseInt(role) } });
-                Meteor.users.update({ _id: id }, { $set: { 'profile.drive': functions[DriveAddFolder].call(this, Meteor.users.findOne({ _id: id }).username).id } });
                 return ('Changed Role!');
             }
             throw new Meteor.Error(403, "Not authorized");

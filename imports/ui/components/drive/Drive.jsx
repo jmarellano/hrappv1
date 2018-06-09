@@ -1,23 +1,34 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { DRIVE, ROLES, ROUTES } from '../../../api/classes/Const';
+import { DRIVE, ROUTES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
+import ReactTooltip from 'react-tooltip';
+import TeamDrive from '../../../api/classes/TeamDrive';
 
 class Drive extends React.Component {
     constructor(props) {
         super(props);
-        let display = [DRIVE.ALL, DRIVE.DOCUMENTS, DRIVE.PDF, DRIVE.SHEETS, DRIVE.FILES, DRIVE.AUDIO, DRIVE.IMAGES, DRIVE.VIDEOS];
+        let display = [
+            DRIVE.ALL,
+            DRIVE.DOCUMENTS,
+            DRIVE.PDF,
+            DRIVE.SHEETS,
+            DRIVE.FILES,
+            DRIVE.AUDIO,
+            DRIVE.IMAGES,
+            DRIVE.VIDEOS
+        ];
         this.state = {
-            parent: ['root'],
+            parent: ['1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn'],
             parentName: ['root'],
             uploading: false,
             uploadProgress: 0,
             files: [],
-            q: `trashed=false and 'root' in parents`,
+            q: `trashed=false and '1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn' in parents`,
             fields: 'nextPageToken, files',
             pageToken: '',
             pageSize: 20,
@@ -41,7 +52,10 @@ class Drive extends React.Component {
             sortOrderBy: 0,
             sortOrder: 0,
             signin: !props.user.google,
-            sync: false
+            sync: false,
+            creatingFolder: false,
+            selectedFile: null,
+            pasting: false
         };
         this.changeDisplay = this.changeDisplay.bind(this);
         this.getQuery = this.getQuery.bind(this);
@@ -56,6 +70,9 @@ class Drive extends React.Component {
         this.goBack = this.goBack.bind(this);
         this.back = this.back.bind(this);
         this.updateSigninStatus = this.updateSigninStatus.bind(this);
+        this.newFolder = this.newFolder.bind(this);
+        this.selectFile = this.selectFile.bind(this);
+        this.paste = this.paste.bind(this);
         this.styleSet = {
             overlay: {
                 zIndex: '8888',
@@ -72,52 +89,50 @@ class Drive extends React.Component {
         };
     }
     componentDidMount() {
-        $.getScript('https://apis.google.com/js/api.js', () => {
-            this.initGapi();
-            this.getToken();
-            //this.getFiles();
-            if (this.props.Drive.drive_uploading) {
-                this.props.Drive.setOnProgress(this.updateProgress);
-                this.setState({ uploading: true, uploadProgress: this.props.Drive.drive_uploading });
-            }
-        });
-    }
-    initGapi() {
-        let self = this;
-        window.gapi.load('client:auth2', () => {
-            window.gapi.client.init({
-                apiKey: Meteor.settings.public.oAuth.google.apiKey,
-                clientId: Meteor.settings.public.oAuth.google.clientId,
-                discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-                scope: 'https://www.googleapis.com/auth/drive'
-            }).then(() => {
-                window.gapi.auth2.getAuthInstance().isSignedIn.listen(self.updateSigninStatus);
-                self.updateSigninStatus(window.gapi.auth2.getAuthInstance().isSignedIn.get());
-            });
+        TeamDrive.init(() => {
+            TeamDrive.auth.isSignedIn.listen(this.updateSigninStatus);
+            this.updateSigninStatus(TeamDrive.auth.isSignedIn.get());
         });
     }
     updateSigninStatus(isSignedIn) {
         if (isSignedIn) {
             this.setState({ signin: false });
-            this.sync();
-            this.getFiles();
+            TeamDrive.setEmail(this.props.user, this.props.Drive);
+            let intervalCheck = () => {
+                this.setState({ processing: true });
+                TeamDrive.setDrive(this.props.Drive, (err, res) => {
+                    if (res) {
+                        this.sync();
+                        setTimeout(() => {
+                            this.getFiles();
+                        }, 1000);
+                    } else
+                        intervalCheck();
+                });
+            }
+            intervalCheck();
         } else
             this.setState({ signin: true });
+    }
+    newFolder() {
+        this.setState({ creatingFolder: true });
+        let oldFiles = this.state.files;
+        TeamDrive.newFolder(this.state.parent, () => {
+            let intervalCheck = () => {
+                this.getFiles(null, true, (files) => {
+                    if (files.length !== oldFiles.length)
+                        this.setState({ creatingFolder: false });
+                    else
+                        intervalCheck();
+                });
+            };
+            intervalCheck();
+        });
     }
     viewMore() {
         this.getFiles();
     }
-    getToken() {
-        this.setState({ processing: true });
-        this.props.Drive.getToken((err, token) => {
-            if (err)
-                Bert.alert(err.reason, 'danger', 'growl-top-right');
-            else if (this.state)
-                this.setState({ token: token.access_token });
-            this.setState({ processing: false });
-        })
-    }
-    getFiles(e, changeFilter) {
+    getFiles(e, changeFilter, callback) {
         if (e)
             e.preventDefault();
         this.setState({ processing: true });
@@ -153,25 +168,32 @@ class Drive extends React.Component {
         };
         let request = window.gapi.client.request(reqOptions);
         request.execute((response) => {
-            console.log(response.files);
+            let files = fileList.concat(response.files);
             if (this.state)
-                this.setState({ files: fileList.concat(response.files), pageToken: request.nextPageToken || '' });
+                this.setState({ files, pageToken: request.nextPageToken || '' });
             this.setState({ processing: false });
+            if (callback)
+                callback(files);
         });
-
-        // this.props.Drive.getFiles(options, (err, data) => {
-        //     if (err)
-        //         Bert.alert(err.reason, 'danger', 'growl-top-right');
-        //     else
-        //         if (this.state)
-        //             this.setState({ files: err ? data.files : fileList.concat(data.files), pageToken: data.pageToken || '' });
-        //     this.setState({ processing: false });
-        // })
     }
 
     changeDisplay(display) {
         this.setState({ display }, () => {
             this.getQuery();
+        });
+    }
+
+    selectFile(file) {
+        this.setState({ selectedFile: file });
+    }
+
+    paste() {
+        this.setState({ pasting: true });
+        let file = this.state.selectedFile,
+            parent = this.state.parent;
+        TeamDrive.paste(file, parent, () => {
+            this.setState({ selectedFile: null, pasting: false });
+            this.getFiles(null, true);
         });
     }
 
@@ -302,11 +324,11 @@ class Drive extends React.Component {
     }
 
     signIn() {
-        window.gapi.auth2.getAuthInstance().signIn();
+        TeamDrive.auth.signIn();
     }
 
     signOut(callback) {
-        window.gapi.auth2.getAuthInstance().signOut();
+        TeamDrive.auth.signOut();
         callback();
     }
 
@@ -316,74 +338,9 @@ class Drive extends React.Component {
 
     sync() {
         this.setState({ sync: true });
-        let pageToken = '';
-        let syncFunc = () => {
-            let options = {
-                'method': 'GET',
-                'path': '/drive/v3/files',
-                'params': {
-                    'fields': 'files, nextPageToken',
-                    'q': 'trashed=false',
-                    'pageSize': 1000,
-                    'pageToken': pageToken
-                }
-            };
-            let request = window.gapi.client.request(options);
-            request.execute((response) => {
-                pageToken = response.nextPageToken;
-                let files = response.files.filter((item) => item.ownedByMe).map((item) => {
-                    return { id: item.id, name: item.name };
-                });
-                let count = 0;
-                if (files.length)
-                    files.forEach((file) => {
-                        let fileOptions = {
-                            'method': 'POST',
-                            'path': '/drive/v3/files/' + file.id + '/permissions',
-                            'params': {
-                                'fileId': file.id,
-                                'sendNotificationEmails': false
-                            },
-                            'body': {
-                                "role": "writer",
-                                "type": "user",
-                                "emailAddress": Meteor.settings.public.oAuth.google.owner
-                            }
-                        };
-                        let fileRequest = window.gapi.client.request(fileOptions);
-                        fileRequest.execute((fileResponse) => {
-                            fileOptions.method = 'PATCH';
-                            fileOptions.path = '/drive/v3/files/' + file.id + '/permissions/' + fileResponse.id;
-                            fileOptions.params = {
-                                'fileId': file.id,
-                                'permissionId': fileResponse.id,
-                                'transferOwnership': true,
-                                'sendNotificationEmails': false
-                            };
-                            fileOptions.body = {
-                                'role': 'owner'
-                            };
-                            let permissionRequest = window.gapi.client.request(fileOptions);
-                            permissionRequest.execute(() => {
-                                count++;
-                                if (count === files.length) {
-                                    this.setState({ sync: false });
-                                    if (pageToken)
-                                        syncFunc();
-                                    else
-                                        setTimeout(() => {
-                                            pageToken = '';
-                                            syncFunc();
-                                        }, parseInt(Meteor.settings.public.oAuth.google.interval) || 60000);
-                                }
-                            });
-                        });
-                    });
-                else
-                    this.setState({ sync: false });
-            });
-        };
-        syncFunc();
+        TeamDrive.sync(() => {
+            this.setState({ sync: false });
+        });
     }
 
     renderCrumbs() {
@@ -430,6 +387,34 @@ class Drive extends React.Component {
                                             <i className="fa fa-spin fa-circle-o-notch" /> Syncing...
                                         </li>
                                     }
+                                    {!this.state.uploading && this.state.selectedFile &&
+                                        <li className="mr-2 mt-1">
+                                            {
+                                                this.state.pasting ?
+                                                    <a href="#" className="btn-file nav-link" data-tip="Paste">
+                                                        <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+                                                    </a> :
+                                                    <a href="#" className="btn-file nav-link" data-tip="Paste" onClick={this.paste}>
+                                                        <i className="fa fa-2x fa-paste" aria-hidden="true" />
+                                                    </a>
+                                            }
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {!this.state.uploading &&
+                                        <li className="mr-2 mt-1">
+                                            {
+                                                this.state.creatingFolder ?
+                                                    <a href="#" className="btn-file nav-link" data-tip="Create New folder">
+                                                        <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+                                                    </a> :
+                                                    <a href="#" className="btn-file nav-link" data-tip="Create New folder" onClick={this.newFolder}>
+                                                        <i className="fa fa-2x fa-folder" aria-hidden="true" />
+                                                    </a>
+                                            }
+                                            <ReactTooltip />
+                                        </li>
+                                    }
                                     {!this.state.uploading &&
                                         <li className="mr-2 mt-1">
                                             <label className="btn-file nav-link" data-tip="Upload File">
@@ -438,6 +423,7 @@ class Drive extends React.Component {
                                                     type="file"
                                                     onChange={this.handleUpload.bind(this)} />
                                             </label>
+                                            <ReactTooltip />
                                         </li>
                                     }
                                     {this.state.uploading &&
@@ -447,6 +433,7 @@ class Drive extends React.Component {
                                                     Uploading File... {this.state.uploadProgress.toFixed(2)}%
                                                 </span>
                                             </label>
+                                            <ReactTooltip />
                                         </li>
                                     }
                                     {this.state.uploading &&
@@ -454,10 +441,11 @@ class Drive extends React.Component {
                                             <div className="progress">
                                                 <div className="progress-bar" style={{ width: this.state.uploadProgress + "%" }}></div>
                                             </div>
+                                            <ReactTooltip />
                                         </li>
                                     }
                                     {!this.state.uploading &&
-                                        <li className="mr-2 mt-2">
+                                        <li className="mr-2 mt-2 ml-3">
                                             <Button className="btn btn-danger" onClick={this.signOut}><i className="fa fa-google" /> Logout</Button>
                                         </li>
                                     }
@@ -496,6 +484,8 @@ class Drive extends React.Component {
                                         toggleSortOrderBy={this.toggleSortOrderBy}
                                         sortOrder={this.state.sortOrder}
                                         sortOrderBy={this.state.sortOrderBy}
+                                        selectFile={this.selectFile}
+                                        selectedFile={this.state.selectedFile}
                                     />
                                     {this.state.pageToken && <button className="btn btn-default" onClick={this.viewMore}>View More</button>}
                                 </div>
@@ -519,6 +509,7 @@ class Drive extends React.Component {
                         </div>
                     </div>
                 </Modal>
+                <ReactTooltip />
             </div>
         );
     }

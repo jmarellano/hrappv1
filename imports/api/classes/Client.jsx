@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
-import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder } from '../drive';
+import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
@@ -120,6 +120,12 @@ class Drive {
             callback(err, data);
         });
     }
+    insertAdminPermission(data, value, type, role, callback) {
+        console.log(data);
+        Meteor.call(DriveInsertPermission, data, value, type, role, (err, result) => {
+            callback(err, result);
+        });
+    }
     insertPermission(data, callback) {
         Meteor.call(DriveInsertPermission, data, null, 'anyone', 'reader', (err, result) => {
             callback(err, result);
@@ -159,6 +165,11 @@ class Drive {
     }
     setOnProgress(func) {
         this.setProgress = func;
+    }
+    addFolder(email, callback) {
+        Meteor.call(DriveCreateFolder, email, (err, result) => {
+            callback(err, result);
+        });
     }
 }
 
