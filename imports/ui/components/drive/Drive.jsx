@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { DRIVE, ROUTES } from '../../../api/classes/Const';
+import { DRIVE, ROUTES, ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
@@ -22,13 +22,14 @@ class Drive extends React.Component {
             DRIVE.IMAGES,
             DRIVE.VIDEOS
         ];
+        let folder = props.user.role === ROLES.ADMINS || props.user.role === ROLES.SUPERUSER ? Meteor.settings.public.oAuth.google.folder : props.user.drive;
         this.state = {
-            parent: ['1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn'],
+            parent: [folder],
             parentName: ['root'],
             uploading: false,
             uploadProgress: 0,
             files: [],
-            q: `trashed=false and '1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn' in parents`,
+            q: `trashed=false and '${folder}' in parents`,
             fields: 'nextPageToken, files',
             pageToken: '',
             pageSize: 20,
@@ -105,6 +106,7 @@ class Drive extends React.Component {
                         this.sync();
                         setTimeout(() => {
                             this.getFiles();
+                            this.getToken();
                         }, 1000);
                     } else
                         intervalCheck();
@@ -113,6 +115,16 @@ class Drive extends React.Component {
             intervalCheck();
         } else
             this.setState({ signin: true });
+    }
+    getToken() {
+        this.setState({ processing: true });
+        this.props.Drive.getToken((err, token) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                this.setState({ token: token.access_token });
+            this.setState({ processing: false });
+        })
     }
     newFolder() {
         this.setState({ creatingFolder: true });
@@ -190,10 +202,18 @@ class Drive extends React.Component {
     paste() {
         this.setState({ pasting: true });
         let file = this.state.selectedFile,
-            parent = this.state.parent;
-        TeamDrive.paste(file, parent, () => {
-            this.setState({ selectedFile: null, pasting: false });
-            this.getFiles(null, true);
+            parent = this.state.parent,
+            oldFiles = this.state.files;
+        TeamDrive.paste(file, [parent[parent.length - 1]], () => {
+            let intervalCheck = () => {
+                this.getFiles(null, true, (files) => {
+                    if (files.length !== oldFiles.length)
+                        this.setState({ selectedFile: null, pasting: false });
+                    else
+                        intervalCheck();
+                });
+            };
+            intervalCheck();
         });
     }
 
@@ -246,6 +266,10 @@ class Drive extends React.Component {
     handleUpload(e) {
         let self = this,
             reader = new FileReader();
+        let parent = [self.props.user.drive];
+        let stateParent = this.state.parent;
+        if (stateParent.indexOf(self.props.user.drive) > -1)
+            parent = [stateParent[stateParent.length - 1]];
         self.setState({ uploading: true });
         if (e.currentTarget.files && e.currentTarget.files[0]) {
             let file = e.currentTarget.files[0];
@@ -255,7 +279,7 @@ class Drive extends React.Component {
                     'Content-Type': file.type,
                     'Content-Length': file.size,
                     'name': name,
-                    'parents': [self.props.user.drive] // TODO
+                    'parents': parent
                 };
                 self.props.Drive.initiateUpload({
                     file: file,
@@ -269,13 +293,17 @@ class Drive extends React.Component {
                     onComplete: function (response) {
                         response = JSON.parse(response);
                         self.props.Drive.insertPermission(response, (err) => {
-                            if (err)
+                            if (err) {
                                 Bert.alert(err.reason, 'danger', 'growl-top-right');
-                            else {
-                                Bert.alert('File is successfully uploaded.', 'success', 'growl-top-right');
-                                self.getQuery();
+                                self.setState({ uploadProgress: 0, uploading: false });
                             }
-                            self.setState({ uploadProgress: 0, uploading: false });
+                            else {
+                                setTimeout(() => {
+                                    self.setState({ uploadProgress: 0, uploading: false });
+                                    Bert.alert('File is successfully uploaded.', 'success', 'growl-top-right');
+                                    self.getQuery();
+                                }, 1000);
+                            }
                         });
                     },
                     params: {

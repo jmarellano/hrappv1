@@ -123,7 +123,7 @@ class Drive {
             data: {
                 'name': name,
                 'mimeType': 'application/vnd.google-apps.folder',
-                'parents': ['1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn']
+                'parents': [Meteor.settings.public.oAuth.google.folder]
             }
         };
         let search = {
@@ -131,7 +131,7 @@ class Drive {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
             },
             params: {
-                'q': "name contains '" + name + "' and '1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn' in parents",
+                'q': "name contains '" + name + "' and '" + Meteor.settings.public.oAuth.google.folder + "' in parents",
                 'fields': 'files',
                 'pageSize': 1
             }
@@ -156,8 +156,7 @@ class Drive {
                     myFuture.throw(new Meteor.Error(error.message));
                 }
                 self.insertPermission({ id: response.data.id }, email, 'user', 'writer');
-                self.insertPermission({ id: response.data.id }, 'officialtronixhub@gmail.com', 'user', 'writer');
-                //self.insertPermission({ id: response.data.id }, Meteor.settings.public.oAuth.google.owner, 'user', 'writer');
+                self.insertPermission({ id: response.data.id }, Meteor.settings.public.oAuth.google.owner, 'user', 'writer');
                 myFuture.return(response.data);
             });
         else return false;

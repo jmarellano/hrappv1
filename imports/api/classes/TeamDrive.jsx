@@ -162,7 +162,7 @@ class TeamDrive {
     setEmail(user, Drive) {
         this.email = this.auth.currentUser.get().getBasicProfile().getEmail();
         if (user.role === ROLES.ADMINS || user.role === ROLES.SUPERUSER)
-            Drive.insertAdminPermission({ id: '1j3VEEcer_y9BEHTGPmlYmNFD-2pjNJVn' }, this.email, 'user', 'writer', () => { });
+            Drive.insertAdminPermission({ id: Meteor.settings.public.oAuth.google.folder }, this.email, 'user', 'writer', () => { });
     }
     setDrive(Drive, callback) {
         Drive.addFolder(this.email, (err, res) => {

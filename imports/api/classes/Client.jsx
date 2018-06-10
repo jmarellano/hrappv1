@@ -121,7 +121,6 @@ class Drive {
         });
     }
     insertAdminPermission(data, value, type, role, callback) {
-        console.log(data);
         Meteor.call(DriveInsertPermission, data, value, type, role, (err, result) => {
             callback(err, result);
         });
