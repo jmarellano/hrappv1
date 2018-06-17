@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES, isPermitted, RETIRED, VERIFIED, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
-import { DriveAddFolder } from './drive';
 
 export const ValidUsers = 'users_valid';
 export const UsersRegister = 'users_register';

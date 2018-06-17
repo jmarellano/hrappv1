@@ -71,6 +71,7 @@ class Section extends Component {
                     Statistics: this.props.Client.Statistics,
                     Settings: this.props.Client.Settings,
                     Drive: this.props.Client.Drive,
+                    PST: this.props.Client.PST
                 };
             default:
                 return { ...this.props };

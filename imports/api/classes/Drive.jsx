@@ -61,7 +61,7 @@ class Drive {
         });
         return future.wait();
     }
-    removeFile(id, userId, undo = false) {
+    removeFile(id, userId, undo) {
         this.getToken();
         let myFuture = server.createFuture();
         let options = {

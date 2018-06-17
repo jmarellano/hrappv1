@@ -130,6 +130,7 @@ if (Meteor.isServer) {
                 });
                 newDoc.max = count;
                 newDoc.form = FormsDB.findOne({ _id: doc.form_id }).name;
+                newDoc.formId = doc.form_id;
                 return newDoc;
             });
         } catch (err) {

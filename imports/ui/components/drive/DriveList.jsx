@@ -1,6 +1,5 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { ROLES, isPermitted } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Util from '../../../api/classes/Utilities';
@@ -92,24 +91,15 @@ class DriveList extends React.Component {
         let request = window.gapi.client.request(reqOptions);
         request.execute(() => {
             this.setState({ processing: false, share: false });
+            Bert.alert('File successfuly shared!', 'success', 'growl-top-right');
             this.props.getFiles(null, true);
         });
     }
     renaming(e) {
         e.preventDefault();
         this.setState({ processing: true });
-        let reqOptions = {
-            'method': 'PATCH',
-            'path': '/drive/v3/files/' + this.state.file.id,
-            'params': {
-                'fileId': this.state.file.id
-            },
-            'body': {
-                'name': this.state.name
-            }
-        };
-        let request = window.gapi.client.request(reqOptions);
-        request.execute(() => {
+        this.props.Drive.rename({ name: this.state.name, fileId: this.state.file.id }, (err) => {
+            console.log(err);
             this.setState({ processing: false, rename: false });
             this.props.getFiles(null, true);
         });
@@ -134,44 +124,19 @@ class DriveList extends React.Component {
             file
         }, () => {
             this.remove(null, true);
-            // this.props.Drive.removeFile({ id: this.state.file.id }, true, (err) => {
-            //     if (err)
-            //         Bert.alert(err.reason, 'danger', 'growl-top-right');
-            //     else
-            //         Bert.alert('File Undo Trashed', 'success', 'growl-top-right');
-            //     this.props.getFiles(false, true);
-            // });
         });
     }
     remove(callback, undo = false) {
-        let options = {
-            'method': 'PATCH',
-            'path': '/drive/v3/files/' + this.state.file.id,
-            'params': {
-                'fileId': this.state.file.id
-            },
-            'body': {
-                'trashed': !undo
-            }
-        };
-        let request = window.gapi.client.request(options);
-        request.execute((response) => {
-            if (response)
+        this.props.Drive.removeFile({ id: this.state.file.id }, undo, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
                 Bert.alert('File removed', 'success', 'growl-top-right');
             if (callback)
                 callback();
-            this.props.getFiles(false, true);
             this.setState({ trash: false });
+            this.props.getFiles(false, true);
         });
-        // this.props.Drive.removeFile({ id: this.state.file.id }, false, (err) => {
-        //     if (err)
-        //         Bert.alert(err.reason, 'danger', 'growl-top-right');
-        //     else
-        //         Bert.alert('File removed', 'success', 'growl-top-right');
-        //     callback();
-        //     this.props.getFiles(false, true);
-        //     this.setState({ trash: false });
-        // });
     }
     browse(id, name) {
         this.props.browse(id, name);
@@ -184,6 +149,8 @@ class DriveList extends React.Component {
     }
     renderFiles() {
         return this.props.files.map((file, index) => {
+            if (!file)
+                return null;
             if (file.mimeType === 'application/vnd.google-apps.folder')
                 return (
                     <tr key={index}>
@@ -196,8 +163,7 @@ class DriveList extends React.Component {
                             {
                                 !file.trashed &&
                                 <button
-                                    disabled={!file.capabilities.canDelete}
-                                    className={`btn btn-sm m-1 ${!file.capabilities.canDelete ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                    className='btn btn-sm m-1 btn-danger'
                                     onClick={this.trash.bind(this, file)}>
                                     <i className="fa fa-trash" /> Trash
                                 </button>
@@ -205,8 +171,7 @@ class DriveList extends React.Component {
                             {
                                 file.trashed &&
                                 <Button
-                                    disabled={!file.capabilities.canDelete}
-                                    className={`btn btn-sm m-1 ${!file.capabilities.canDelete ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                    className='btn btn-sm m-1 btn-danger'
                                     data={file}
                                     onClick={this.undoTrash.bind(this, file, true)}>
                                     <i className="fa fa-undo" /> Undo Trash
@@ -215,6 +180,17 @@ class DriveList extends React.Component {
                             <button className={`btn btn-sm m-1 ${file.trashed ? 'btn-secondary disabled' : 'btn-success'}`} onClick={file.trashed ? null : this.browse.bind(this, file.id, file.name)}>
                                 <i className="fa fa-folder-open" /> Browse
                             </button>
+                            <ItemEllipsis index={index}>
+                                <a href="#" className='btn btn-sm m-1 btn-primary' onClick={this.rename.bind(this, file)}>
+                                    <i className="fa fa-pencil" /> Rename
+                                </a>
+                                <button
+                                    disabled={!file.capabilities.canShare}
+                                    className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
+                                    onClick={this.share.bind(this, file)}>
+                                    <i className="fa fa-user-plus" /> Share
+                                </button>
+                            </ItemEllipsis>
                         </td>
                     </tr>
                 );
@@ -229,11 +205,10 @@ class DriveList extends React.Component {
                         {
                             !file.trashed &&
                             <button
-                                disabled={!file.capabilities.canDelete}
-                                className={`btn btn-sm m-1 ${!file.capabilities.canDelete ? 'btn-secondary disabled' : 'btn-danger'}`}
+                                className='btn btn-sm m-1 btn-danger'
                                 onClick={this.trash.bind(this, file)}>
                                 <i className="fa fa-trash" /> Trash
-                            </button>
+                                </button>
                         }
                         {
                             file.trashed &&
@@ -391,7 +366,7 @@ class DriveList extends React.Component {
                         </div>
                         <div className="panel-body p-2">
                             You are going to remove a file. Continue? <br />
-                            <Button className="btn btn-danger" onClick={this.remove}>Yes</Button>
+                            <Button className="btn btn-danger" type="button" onClick={this.remove}>Yes</Button>
                         </div>
                     </div>
                 </Modal>

@@ -1,11 +1,13 @@
 import { Accounts } from 'meteor/accounts-base';
+import { ROLES } from './Const';
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
-import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder } from '../drive';
+import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveSyncMain, DriveRenameFile, DriveCopyFile, DriveNewFolder } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
+import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
 
 export default class Client {
@@ -19,6 +21,7 @@ export default class Client {
         this.Candidate = new Candidate();
         this.Statistics = new Statistics();
         this.Settings = new Settings();
+        this.PST = new PST();
     }
 }
 
@@ -109,6 +112,162 @@ class Drive {
     constructor() {
         this.drive_uploading = null;
         this.setProgress = null;
+        this.apiKey = Meteor.settings.public.oAuth.google.apiKey;
+        this.clientId = Meteor.settings.public.oAuth.google.clientId;
+        this.discoveryDocs = ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'];
+        this.scope = 'https://www.googleapis.com/auth/drive';
+        this.auth = null;
+        this.api = null;
+        this.client = null;
+        this.email = '';
+    }
+    init(callback) {
+        $.getScript('https://apis.google.com/js/api.js', () => {
+            this.api = window.gapi;
+            this.api.load('client:auth2', () => {
+                this.client = window.gapi.client;
+                this.client.init({
+                    apiKey: this.apiKey,
+                    clientId: this.clientId,
+                    discoveryDocs: this.docs,
+                    scope: this.scope
+                }).then(() => {
+                    this.auth = this.api.auth2.getAuthInstance();
+                    callback();
+                });
+            });
+        });
+    }
+    sync(drive, callback) {
+        let pageToken = '';
+        let syncFunc = () => {
+            let options = {
+                'method': 'GET',
+                'path': '/drive/v3/files',
+                'params': {
+                    'fields': 'files, nextPageToken',
+                    'q': `trashed=false and not appProperties has { key='synced' and value='true' }`,
+                    'pageSize': 1000,
+                    'pageToken': pageToken
+                }
+            };
+            let request = this.client.request(options);
+            request.execute((response) => {
+                pageToken = response.nextPageToken;
+                if (response.files) {
+                    let files = response.files.filter((file) => file.ownedByMe);
+                    if (files.length) {
+                        let i = 0;
+                        let interval = setInterval(() => {
+                            if (i < files.length) {
+                                let file = files[i];
+                                i++;
+                                this.syncToMain(file.id, file.name, [drive]);
+                            }
+                        }, 1000);
+                    }
+                    else {
+                        if (pageToken)
+                            setTimeout(() => {
+                                syncFunc();
+                            }, Meteor.settings.public.oAuth.google.interval);
+                        else
+                            callback();
+                    }
+                }
+                callback();
+            });
+        };
+        syncFunc();
+    }
+    syncToMain(fileId, name, parents) {
+        let reqOptions = {
+            'method': 'POST',
+            'path': `/drive/v3/files/${fileId}/copy`,
+            'params': {
+                fileId
+            },
+            'body': {
+                name,
+                parents
+            }
+        };
+        let request = this.client.request(reqOptions);
+        request.execute((res) => {
+            console.log('copy 1', res);
+            if (res.id) {
+                reqOptions = {
+                    'method': 'PATCH',
+                    'path': `/drive/v3/files/${fileId}`,
+                    'params': {
+                        fileId: fileId
+                    },
+                    'body': {
+                        appProperties: {
+                            synced: true
+                        }
+                    }
+                };
+                request = this.client.request(reqOptions);
+                request.execute((patchResult) => {
+                    console.log('patch 1', patchResult);
+                    Meteor.call(DriveCopyFile, res.id, res.name, parents, (err, result) => {
+                        console.log('copy 2', result.data);
+                        if (!err) {
+                            reqOptions = {
+                                'method': 'DELETE',
+                                'path': `/drive/v3/files/${res.id}`,
+                                'params': {
+                                    fileId: res.id
+                                }
+                            };
+                            request = this.client.request(reqOptions);
+                            request.execute((deleteResult) => {
+                                console.log('delete 1', deleteResult);
+                                reqOptions = {
+                                    'method': 'PATCH',
+                                    'path': `/drive/v3/files/${result.data.id}`,
+                                    'params': {
+                                        fileId: result.data.id
+                                    },
+                                    'body': {
+                                        appProperties: {
+                                            synced: true
+                                        }
+                                    }
+                                };
+                                request = this.client.request(reqOptions);
+                                request.execute((permissionResult) => {
+                                    console.log('patch 2', permissionResult);
+                                });
+                            });
+                        }
+                    });
+                });
+            }
+        });
+    }
+    newFolder(parent, callback) {
+        Meteor.call(DriveNewFolder, 'New Folder', [parent[parent.length - 1]], 'application/vnd.google-apps.folder', (err, result) => {
+            callback(err, result);
+        });
+    }
+    paste(file, parent, callback) {
+        Meteor.call(DriveCopyFile, file.id, `Copy of ${file.name}`, parent, (err, result) => {
+            callback(err, result);
+        });
+    }
+    setEmail(user) {
+        this.email = this.auth.currentUser.get().getBasicProfile().getEmail();
+        if (user.role === ROLES.ADMIN || user.role === ROLES.SUPERUSER)
+            this.insertAdminPermission({ id: Meteor.settings.public.oAuth.google.folder }, this.email, 'user', 'writer', () => { });
+        if (user.role === ROLES.SUPERVISOR)
+            this.insertSupervisorPermission(this.email, 'user', 'writer', () => { });
+    }
+    setDrive(callback) {
+        this.addFolder(this.email, (err, res) => {
+            callback(err, res);
+        });
     }
     getFiles(data, callback) {
         Meteor.call(DriveGetFiles, data, (err, result) => {
@@ -118,6 +277,11 @@ class Drive {
     getToken(callback) {
         Meteor.call(DriveGetToken, (err, data) => {
             callback(err, data);
+        });
+    }
+    insertSupervisorPermission(value, type, role, callback) {
+        Meteor.call(DriveSupervisorPermission, value, type, role, (err, result) => {
+            callback(err, result);
         });
     }
     insertAdminPermission(data, value, type, role, callback) {
@@ -169,6 +333,65 @@ class Drive {
         Meteor.call(DriveCreateFolder, email, (err, result) => {
             callback(err, result);
         });
+    }
+    rename(data, callback) {
+        Meteor.call(DriveRenameFile, data.name, data.fileId, (err, result) => {
+            callback(err, result);
+        });
+    }
+}
+
+class PST {
+    constructor() {
+        this.pst_uploading = null;
+        this.setProgress = null;
+    }
+    initiateUpload(data) {
+        // let uploader = new MediaUploader({
+        //     file: data.file,
+        //     token: data.token,
+        //     metadata: data.metadata,
+        //     onError: data.onError,
+        //     onComplete: data.onComplete,
+        //     onProgress: (event) => {
+        //         let progress = (event.loaded / event.total * 100);
+        //         data.onProgress(progress);
+        //         this.updateUploading(progress);
+        //         if (this.setProgress)
+        //             this.setProgress(progress);
+        //     },
+        //     params: {
+        //         convert: false,
+        //         ocr: false
+        //     }
+        // });
+        // uploader.upload();
+        PSTFiles.insert({
+            file: data.file,
+            onStart: data.onStart,
+            onUploaded: data.onUploaded,
+            onAbort: data.onAbort,
+            onError: data.onError,
+            onProgress: (progress) => {
+                data.onProgress(progress);
+                this.updateUploading(progress);
+                if (this.setProgress)
+                    this.setProgress(progress);
+            },
+            onBeforeUpload: () => {
+                if (/pst/i.test(data.file.extension))
+                    return true;
+                else {
+                    return 'Invalid file type';
+                }
+            }
+        });
+    }
+    updateUploading(progress) {
+        this.pst_uploading = progress;
+    }
+    setOnProgress(func) {
+        this.setProgress = func;
     }
 }
 

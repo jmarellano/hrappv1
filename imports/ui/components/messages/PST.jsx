@@ -1,6 +1,5 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { PSTFiles } from '../../../api/files';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 
@@ -27,6 +26,14 @@ class PST extends Component {
             }
         };
         this.toggleModal = this.toggleModal.bind(this);
+        this.updateProgress = this.updateProgress.bind(this);
+    }
+
+    componentDidMount() {
+        if (this.props.PST.pst_uploading) {
+            this.props.PST.setOnProgress(this.updateProgress);
+            this.setState({ uploading: true, uploadProgress: this.props.PST.pst_uploading });
+        }
     }
 
     toggleModal() {
@@ -41,7 +48,7 @@ class PST extends Component {
     handleUpload(e) {
         if (e.currentTarget.files && e.currentTarget.files[0]) {
             let file = e.currentTarget.files[0];
-            PSTFiles.insert({
+            this.props.PST.initiateUpload({
                 file,
                 onStart: () => {
                     this.setState({ uploading: true });
@@ -62,18 +69,13 @@ class PST extends Component {
                     Bert.alert(err.reason, 'danger', 'growl-top-right');
                     this.setState({ uploading: false, pst: false });
                 },
-                onProgress: (progress) => {
-                    this.setState({ uploadProgress: progress });
-                },
-                onBeforeUpload: () => {
-                    if (/pst/i.test(file.extension))
-                        return true;
-                    else {
-                        return 'Invalid file type';
-                    }
-                }
+                onProgress: this.updateProgress
             });
         }
+    }
+
+    updateProgress(progress) {
+        this.setState({ uploadProgress: progress });
     }
 
     render() {
@@ -130,7 +132,8 @@ class PST extends Component {
 
 PST.propTypes = {
     Message: PropTypes.object,
-    user: PropTypes.object
+    user: PropTypes.object,
+    PST: PropTypes.object
 };
 
 export default withTracker(() => {

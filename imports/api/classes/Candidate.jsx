@@ -166,5 +166,9 @@ class Candidate {
         let user = Meteor.users.findOne({ _id: this.claimed });
         return user ? user.username : 'N\\A';
     }
+
+    getAddressURI() {
+        return encodeURIComponent(this.address + ' ' + this.city + ' ' + this.country);
+    }
 }
 export default Candidate;
