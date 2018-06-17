@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 import ReCAPTCHA from "react-google-recaptcha";
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
+import FormMain from '../forms/FormMain';
+import ReactTooltip from 'react-tooltip';
 
 class FormViewer extends React.Component {
     constructor(props) {
@@ -179,16 +181,22 @@ class FormViewer extends React.Component {
                                             </p>
                                         </div>
                                 }
-                                <button className="btn btn-secondary pull-left" onClick={this.routeMessages}>
+                                <button className="btn btn-secondary pull-left form-control mb-1" onClick={this.routeMessages}>
                                     <i className="fa fa-arrow-left " /> Go Home
                                 </button>
                                 {
+                                    this.props.user && isPermitted(this.props.user.role, ROLES.STAFFS) &&
+                                    <div className="btn btn-secondary pull-right mb-1 form-control p-0 m-0" data-tip="Forms">
+                                        <FormMain {...this.props} />
+                                    </div>
+                                }
+                                {
                                     this.props.user && isPermitted(this.props.user.role, ROLES.STAFFS) ?
-                                        <button type="button" className="btn btn-secondary pull-right mb-1"
+                                        <button type="button" className="btn btn-secondary pull-right mb-1 form-control"
                                             onClick={this.toggleModal}>
                                             <i className="fa fa-share-alt" /> Share
                                     </button> :
-                                        <button type="button" className="btn btn-default disabled pull-right mb-1">
+                                        <button type="button" className="btn btn-default disabled pull-right mb-1 form-control">
                                             <i className="fa fa-share-alt" /> Share
                                     </button>
                                 }
@@ -203,12 +211,13 @@ class FormViewer extends React.Component {
                                     />
                                 }
                             </div>
+                            <ReactTooltip />
                             <ul id="tmq-form-builder-center" className="text-center" />
                         </div>
                     </div>
                 </form>
                 <Modal isOpen={this.state.share} contentLabel="FormShareModal" style={this.styleSet}>
-                    <div className="panel panel-primary" onSubmit={this.save}>
+                    <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
                                 Share form to a candidate

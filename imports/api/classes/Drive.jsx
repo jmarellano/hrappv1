@@ -61,7 +61,7 @@ class Drive {
         });
         return future.wait();
     }
-    removeFile(id, userId, undo = false) {
+    removeFile(id, userId, undo) {
         this.getToken();
         let myFuture = server.createFuture();
         let options = {
@@ -100,18 +100,20 @@ class Drive {
         let params = {
             'fileId': file.id,
             'resource': body,
+            'sendNotificationEmails': false,
             auth: this.jwt
         };
         if (value !== null) {
             body.emailAddress = value;
         }
         let future = server.createFuture();
-        this.drive.permissions.create(params, function () {
-            future.return(true);
+        this.drive.permissions.create(params, function (err, response) {
+            future.return(response.data);
         });
         return future.wait();
     }
-    createFolder(name) {
+    createFolder(name, email) {
+        let self = this;
         this.getToken();
         let myFuture = server.createFuture();
         let options = {
@@ -120,7 +122,8 @@ class Drive {
             },
             data: {
                 'name': name,
-                'mimeType': 'application/vnd.google-apps.folder'
+                'mimeType': 'application/vnd.google-apps.folder',
+                'parents': [Meteor.settings.public.oAuth.google.folder]
             }
         };
         let search = {
@@ -128,7 +131,7 @@ class Drive {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
             },
             params: {
-                'q': "name contains '" + name + "'",
+                'q': "name contains '" + name + "' and '" + Meteor.settings.public.oAuth.google.folder + "' in parents",
                 'fields': 'files',
                 'pageSize': 1
             }
@@ -152,8 +155,11 @@ class Drive {
                     console.error(error);
                     myFuture.throw(new Meteor.Error(error.message));
                 }
+                self.insertPermission({ id: response.data.id }, email, 'user', 'writer');
+                self.insertPermission({ id: response.data.id }, Meteor.settings.public.oAuth.google.owner, 'user', 'writer');
                 myFuture.return(response.data);
             });
+        else return false;
         return myFuture.wait();
     }
     moveToFolder(fileId, folderId) {

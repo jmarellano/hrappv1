@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES, isPermitted, RETIRED, VERIFIED, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
-import { DriveAddFolder } from './drive';
 
 export const ValidUsers = 'users_valid';
 export const UsersRegister = 'users_register';
@@ -153,7 +152,6 @@ if (Meteor.isServer) {
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.VIEW_TEAMS)) {
                 Meteor.users.update({ _id: id }, { $set: { 'profile.role': parseInt(role) } });
-                Meteor.users.update({ _id: id }, { $set: { 'profile.drive': functions[DriveAddFolder].call(this, Meteor.users.findOne({ _id: id }).username).id } });
                 return ('Changed Role!');
             }
             throw new Meteor.Error(403, "Not authorized");

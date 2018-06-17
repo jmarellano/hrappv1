@@ -4,20 +4,31 @@ import { DRIVE, ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
+import Modal from '../extras/Modal/components/Modal';
+import Button from '../extras/Button';
+import ReactTooltip from 'react-tooltip';
 
 class Drive extends React.Component {
     constructor(props) {
         super(props);
-        let q = props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ?
-            `trashed=false and mimeType = 'application/vnd.google-apps.folder'` :
-            `trashed=false and '${props.user.drive}' in parents`;
-        let display = [DRIVE.ALL, DRIVE.DOCUMENTS, DRIVE.PDF, DRIVE.SHEETS, DRIVE.FILES, DRIVE.AUDIO, DRIVE.IMAGES, DRIVE.VIDEOS];
+        let display = [
+            DRIVE.ALL,
+            DRIVE.DOCUMENTS,
+            DRIVE.PDF,
+            DRIVE.SHEETS,
+            DRIVE.FILES,
+            DRIVE.AUDIO,
+            DRIVE.IMAGES,
+            DRIVE.VIDEOS
+        ];
+        let folder = props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ? Meteor.settings.public.oAuth.google.folder : props.user.drive;
         this.state = {
-            parent: props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ? 'root' : props.user.drive,
+            parent: [folder],
+            parentName: ['root'],
             uploading: false,
             uploadProgress: 0,
             files: [],
-            q,
+            q: `trashed=false and '${folder}' in parents`,
             fields: 'nextPageToken, files',
             pageToken: '',
             pageSize: 20,
@@ -39,7 +50,12 @@ class Drive extends React.Component {
             token: null,
             search: '',
             sortOrderBy: 0,
-            sortOrder: 0
+            sortOrder: 0,
+            signin: !props.user.google,
+            sync: false,
+            creatingFolder: false,
+            selectedFile: null,
+            pasting: false
         };
         this.changeDisplay = this.changeDisplay.bind(this);
         this.getQuery = this.getQuery.bind(this);
@@ -49,17 +65,60 @@ class Drive extends React.Component {
         this.browse = this.browse.bind(this);
         this.toggleSortOrderBy = this.toggleSortOrderBy.bind(this);
         this.updateProgress = this.updateProgress.bind(this);
+        this.signIn = this.signIn.bind(this);
+        this.signOut = this.signOut.bind(this);
+        this.goBack = this.goBack.bind(this);
+        this.back = this.back.bind(this);
+        this.updateSigninStatus = this.updateSigninStatus.bind(this);
+        this.newFolder = this.newFolder.bind(this);
+        this.selectFile = this.selectFile.bind(this);
+        this.paste = this.paste.bind(this);
+        this.styleSet = {
+            overlay: {
+                zIndex: '8888',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            },
+            content: {
+                maxWidth: '300px',
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '150px',
+                margin: '1% auto',
+                padding: '0px'
+            }
+        };
     }
     componentDidMount() {
-        this.getToken();
-        this.getFiles();
+        let drive = this.props.Drive;
+        drive.init(() => {
+            drive.auth.isSignedIn.listen(this.updateSigninStatus);
+            this.updateSigninStatus(drive.auth.isSignedIn.get());
+        });
         if (this.props.Drive.drive_uploading) {
             this.props.Drive.setOnProgress(this.updateProgress);
             this.setState({ uploading: true, uploadProgress: this.props.Drive.drive_uploading });
         }
     }
-    viewMore() {
-        this.getFiles();
+    updateSigninStatus(isSignedIn) {
+        let drive = this.props.Drive;
+        if (isSignedIn) {
+            this.setState({ signin: false });
+            drive.setEmail(this.props.user);
+            let intervalCheck = () => {
+                this.setState({ processing: true });
+                drive.setDrive((err, res) => {
+                    if (res) {
+                        this.sync(this.props.user.drive);
+                        this.getToken();
+                        this.getFiles(null, true);
+                    }
+                    //} else
+                    //   intervalCheck();
+                });
+            }
+            intervalCheck();
+        } else
+            this.setState({ signin: true });
     }
     getToken() {
         this.setState({ processing: true });
@@ -71,7 +130,25 @@ class Drive extends React.Component {
             this.setState({ processing: false });
         })
     }
-    getFiles(e, changeFilter) {
+    newFolder() {
+        this.setState({ creatingFolder: true });
+        let oldFiles = this.state.files;
+        this.props.Drive.newFolder(this.state.parent, () => {
+            let intervalCheck = () => {
+                this.getFiles(null, true, (files) => {
+                    if (files.length !== oldFiles.length)
+                        this.setState({ creatingFolder: false });
+                    else
+                        intervalCheck();
+                });
+            };
+            intervalCheck();
+        });
+    }
+    viewMore() {
+        this.getFiles();
+    }
+    getFiles(e, changeFilter, callback) {
         if (e)
             e.preventDefault();
         this.setState({ processing: true });
@@ -100,13 +177,15 @@ class Drive extends React.Component {
         let fileList = this.state.files;
         if (changeFilter)
             fileList = [];
-        this.props.Drive.getFiles(options, (err, data) => {
-            if (err)
-                Bert.alert(err.reason, 'danger', 'growl-top-right');
-            else
-                this.setState({ files: err ? data.files : fileList.concat(data.files), pageToken: data.pageToken || '' });
+        console.log(options);
+        this.props.Drive.getFiles(options, (err, result) => {
+            let files = fileList.concat(result.files);
+            if (this.state)
+                this.setState({ files, pageToken: result.nextPageToken || '' });
             this.setState({ processing: false });
-        })
+            if (callback)
+                callback(files);
+        });
     }
 
     changeDisplay(display) {
@@ -115,9 +194,31 @@ class Drive extends React.Component {
         });
     }
 
+    selectFile(file) {
+        this.setState({ selectedFile: file });
+    }
+
+    paste() {
+        this.setState({ pasting: true });
+        let file = this.state.selectedFile,
+            parent = this.state.parent,
+            oldFiles = this.state.files;
+        this.props.Drive.paste(file, [parent[parent.length - 1]], () => {
+            let intervalCheck = () => {
+                this.getFiles(null, true, (files) => {
+                    if (files.length !== oldFiles.length)
+                        this.setState({ selectedFile: null, pasting: false });
+                    else
+                        intervalCheck();
+                });
+            };
+            intervalCheck();
+        });
+    }
+
     getQuery() {
         let q = [];
-        let mimetypes = [];
+        let mimetypes = ["mimeType contains 'application/vnd.google-apps.folder'"];
         let display = this.state.display;
         if (display.indexOf(DRIVE.DOCUMENTS) > -1)
             mimetypes.push("mimeType contains 'document'");
@@ -143,10 +244,8 @@ class Drive extends React.Component {
             q.push("trashed=true");
         else
             q.push("trashed=false");
-        q.push(`'${this.state.parent}' in parents`);
+        q.push(`'${this.state.parent[this.state.parent.length - 1]}' in parents`);
         let mime = mimetypes.length ? " and (" + mimetypes.join(" or ") + ")" : '';
-        if (this.state.parent === 'root')
-            mime = " and mimeType = 'application/vnd.google-apps.folder'";
         let search = this.state.search.length ? " and name contains '" + this.state.search.trim() + "'" : '';
         q = q.join(" and ") + mime + search;
         this.setState({ q }, () => {
@@ -166,6 +265,10 @@ class Drive extends React.Component {
     handleUpload(e) {
         let self = this,
             reader = new FileReader();
+        let parent = [self.props.user.drive];
+        let stateParent = this.state.parent;
+        if (stateParent.indexOf(self.props.user.drive) > -1)
+            parent = [stateParent[stateParent.length - 1]];
         self.setState({ uploading: true });
         if (e.currentTarget.files && e.currentTarget.files[0]) {
             let file = e.currentTarget.files[0];
@@ -175,7 +278,7 @@ class Drive extends React.Component {
                     'Content-Type': file.type,
                     'Content-Length': file.size,
                     'name': name,
-                    'parents': [self.props.user.drive]
+                    'parents': parent
                 };
                 self.props.Drive.initiateUpload({
                     file: file,
@@ -189,13 +292,17 @@ class Drive extends React.Component {
                     onComplete: function (response) {
                         response = JSON.parse(response);
                         self.props.Drive.insertPermission(response, (err) => {
-                            if (err)
+                            if (err) {
                                 Bert.alert(err.reason, 'danger', 'growl-top-right');
-                            else {
-                                Bert.alert('File is successfully uploaded.', 'success', 'growl-top-right');
-                                self.getQuery();
+                                self.setState({ uploadProgress: 0, uploading: false });
                             }
-                            self.setState({ uploadProgress: 0, uploading: false });
+                            else {
+                                setTimeout(() => {
+                                    self.setState({ uploadProgress: 0, uploading: false });
+                                    Bert.alert('File is successfully uploaded.', 'success', 'growl-top-right');
+                                    self.getQuery();
+                                }, 1000);
+                            }
                         });
                     },
                     params: {
@@ -208,8 +315,27 @@ class Drive extends React.Component {
         }
     }
 
-    browse(id) {
-        this.setState({ parent: id }, () => {
+    browse(id, name) {
+        let parent = this.state.parent;
+        let parentName = this.state.parentName;
+        parent.push(id);
+        parentName.push(name);
+        this.setState({ parent, parentName }, () => {
+            this.getQuery();
+        });
+    }
+
+    back(index = null) {
+        let parent = this.state.parent;
+        let parentName = this.state.parentName;
+        if (index > -1) {
+            parent.length = index + 1;
+            parentName.length = index + 1;
+        } else {
+            parent.pop();
+            parentName.pop();
+        }
+        this.setState({ parent, parentName }, () => {
             this.getQuery();
         });
     }
@@ -224,85 +350,218 @@ class Drive extends React.Component {
         this.setState({ uploadProgress: progress });
     }
 
+    signIn() {
+        this.props.Drive.auth.signIn();
+    }
+
+    signOut(callback) {
+        this.props.Drive.auth.signOut();
+        callback();
+    }
+
+    goBack() {
+        this.setState({
+            uploading: false,
+            uploadProgress: 0,
+        });
+        Meteor.logout();
+        //this.props.history.replace(ROUTES.MESSAGES);
+    }
+
+    sync(drive) {
+        this.setState({ sync: true });
+        this.props.Drive.sync(drive, () => {
+            this.setState({ sync: false });
+        });
+    }
+
+    renderCrumbs() {
+        return this.state.parentName.map((item, index) => {
+            if (this.state.parentName.length === index + 1)
+                return <li className="breadcrumb-item active" aria-current="page" key={index}>{item}</li>;
+            return <li className="breadcrumb-item" key={index}><a href="#" onClick={this.back.bind(this, index)}>{item}</a></li>;
+        });
+    }
+
     render() {
         return (
             <div id="drive" className="pull-left">
-                <div className="container bg-secondary">
-                    <div className="row pl-2 pr-2">
-                        <div className="col-sm-4 pt-3">
-                            <div className="row mb-2">
-                                <DropdownSelect name='dselect2' options={this.state.displayOptions} value={this.state.display}
-                                    onChange={this.changeDisplay}
-                                    className='col-sm-6 p-0 no-highlight' />
-                                <div className="input-group col-sm-6">
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        name="search"
-                                        placeholder="Search for..."
-                                        value={this.state.search}
-                                        onChange={this.handleChangeInput}
-                                    />
-                                    <span className="input-group-btn">
-                                        <button className="btn btn-primary" type="button" onClick={this.getQuery}>
-                                            <i className="fa fa-search" />
-                                        </button>
-                                    </span>
+                {
+                    !this.state.signin &&
+                    <div className="container bg-secondary">
+                        <div className="row pl-2 pr-2">
+                            <div className="col-sm-4 pt-3">
+                                <div className="row mb-2">
+                                    <DropdownSelect name='dselect2' options={this.state.displayOptions} value={this.state.display}
+                                        onChange={this.changeDisplay}
+                                        className='col-sm-6 p-0 no-highlight' />
+                                    <div className="input-group col-sm-6">
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            name="search"
+                                            placeholder="Search for..."
+                                            value={this.state.search}
+                                            onChange={this.handleChangeInput}
+                                        />
+                                        <span className="input-group-btn">
+                                            <button className="btn btn-primary" type="button" onClick={this.getQuery}>
+                                                <i className="fa fa-search" />
+                                            </button>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-sm-8 pull-right">
-                            <ul className="nav pt-2 text-light">
-                                {!this.state.uploading &&
-                                    <li className="mr-2">
-                                        <label className="btn-file nav-link" data-tip="Upload File">
-                                            <i className="fa fa-2x fa-cloud-upload" aria-hidden="true" />
-                                            <input id="my-file-selector"
-                                                type="file"
-                                                onChange={this.handleUpload.bind(this)} />
-                                        </label>
-                                    </li>
-                                }
-                                {this.state.uploading &&
-                                    <li className="mr-2 mt-3">
-                                        <label>
-                                            <span className="drive-upload-percentage">
-                                                Uploading File... {this.state.uploadProgress.toFixed(2)}%
-                                            </span>
-                                        </label>
-                                    </li>
-                                }
-                                {this.state.uploading &&
-                                    <li className="mr-2 mt-3">
-                                        <div className="progress">
-                                            <div className="progress-bar" style={{ width: this.state.uploadProgress + "%" }}></div>
-                                        </div>
-                                    </li>
-                                }
-                            </ul>
+                            <div className="col-sm-8 pull-right">
+                                <ul className="nav pt-2 text-light">
+                                    {!this.state.uploading && this.state.sync &&
+                                        < li className="mr-2 mt-3 p-0">
+                                            <i className="fa fa-spin fa-circle-o-notch" /> Syncing...
+                                        </li>
+                                    }
+                                    {!this.state.uploading && !this.state.sync &&
+                                        <li className="mr-2 mt-1">
+                                            {
+                                                this.state.processing ?
+                                                    <a href="#" className="btn-file nav-link" data-tip="Refresh">
+                                                        <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+                                                    </a> :
+                                                    <a href="#" className="btn-file nav-link" data-tip="Refresh" onClick={this.getQuery}>
+                                                        <i className="fa fa-2x fa-refresh" aria-hidden="true" />
+                                                    </a>
+                                            }
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {!this.state.uploading && this.state.selectedFile &&
+                                        <li className="mr-2 mt-1">
+                                            {
+                                                this.state.pasting ?
+                                                    <a href="#" className="btn-file nav-link" data-tip="Paste">
+                                                        <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+                                                    </a> :
+                                                    <a href="#" className="btn-file nav-link" data-tip="Paste" onClick={this.paste}>
+                                                        <i className="fa fa-2x fa-paste" aria-hidden="true" />
+                                                    </a>
+                                            }
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {
+                                        !this.state.uploading &&
+                                        (
+                                            this.props.user.role === ROLES.ADMIN ||
+                                            this.props.user.role === ROLES.SUPERUSER ||
+                                            this.props.user.role === ROLES.SUPERVISOR
+                                        ) &&
+                                        <li className="mr-2 mt-1">
+                                            {
+                                                this.state.creatingFolder ?
+                                                    <a href="#" className="btn-file nav-link" data-tip="Create New folder">
+                                                        <i className="fa fa-spin fa-spinner" aria-hidden="true" />
+                                                    </a> :
+                                                    <a href="#" className="btn-file nav-link" data-tip="Create New folder" onClick={this.newFolder}>
+                                                        <i className="fa fa-2x fa-folder" aria-hidden="true" />
+                                                    </a>
+                                            }
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {!this.state.uploading &&
+                                        <li className="mr-2 mt-1">
+                                            <label className="btn-file nav-link" data-tip="Upload File">
+                                                <i className="fa fa-2x fa-cloud-upload" aria-hidden="true" />
+                                                <input id="my-file-selector"
+                                                    type="file"
+                                                    onChange={this.handleUpload.bind(this)} />
+                                            </label>
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {this.state.uploading &&
+                                        <li className="mr-2 mt-3">
+                                            <label>
+                                                <span className="drive-upload-percentage">
+                                                    Uploading File... {this.state.uploadProgress.toFixed(2)}%
+                                                </span>
+                                            </label>
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {this.state.uploading &&
+                                        <li className="mr-2 mt-3">
+                                            <div className="progress">
+                                                <div className="progress-bar" style={{ width: this.state.uploadProgress + "%" }}></div>
+                                            </div>
+                                            <ReactTooltip />
+                                        </li>
+                                    }
+                                    {!this.state.uploading &&
+                                        <li className="mr-2 mt-2 ml-3">
+                                            <Button className="btn btn-danger" onClick={this.signOut}><i className="fa fa-google" /> Logout</Button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="mt-2 mb-2 p-0 container">
-                    {
-                        this.state.processing ?
-                            <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> :
-                            <div>
-                                <DriveList
-                                    files={this.state.files}
-                                    user={this.props.user}
-                                    Drive={this.props.Drive}
-                                    getFiles={this.getFiles}
-                                    browse={this.browse}
-                                    parent={this.state.parent}
-                                    toggleSortOrderBy={this.toggleSortOrderBy}
-                                    sortOrder={this.state.sortOrder}
-                                    sortOrderBy={this.state.sortOrderBy}
-                                />
-                                {this.state.pageToken && <button className="btn btn-default" onClick={this.viewMore}>View More</button>}
+                }
+                {
+                    !this.state.signin &&
+                    <div className="mt-2 mb-2 p-0 container">
+                        <div className="row pl-3 pr-3">
+                            <nav aria-label="breadcrumb">
+                                <ol className="breadcrumb">
+                                    {this.renderCrumbs()}
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                }
+                {
+                    !this.state.signin &&
+                    <div className="mt-2 mb-2 p-0 container">
+                        {
+                            this.state.processing ?
+                                <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> :
+                                <div>
+                                    <DriveList
+                                        files={this.state.files}
+                                        user={this.props.user}
+                                        Drive={this.props.Drive}
+                                        getFiles={this.getFiles}
+                                        browse={this.browse}
+                                        back={this.back}
+                                        parent={this.state.parent}
+                                        toggleSortOrderBy={this.toggleSortOrderBy}
+                                        sortOrder={this.state.sortOrder}
+                                        sortOrderBy={this.state.sortOrderBy}
+                                        selectFile={this.selectFile}
+                                        selectedFile={this.state.selectedFile}
+                                    />
+                                    {this.state.pageToken && <button className="btn btn-default" onClick={this.viewMore}>View More</button>}
+                                </div>
+                        }
+                    </div>
+                }
+                <Modal isOpen={this.state.signin} contentLabel="SignInModal" style={this.styleSet}>
+                    <div className="panel panel-primary">
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Sign In
                             </div>
-                    }
-                </div>
+                        </div>
+                        <div className="panel-body p-2 text-center">
+                            <button type="button" className="btn btn-success form-control mb-2" onClick={this.signIn}>
+                                <i className="fa fa-google" /> Sign in with Google
+                            </button>
+                            <button type="button" className="btn btn-primary form-control" onClick={this.goBack}>
+                                <i className="fa fa-arrow-left"></i> Go Home
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+                <ReactTooltip />
             </div>
         );
     }
@@ -310,7 +569,8 @@ class Drive extends React.Component {
 
 Drive.propTypes = {
     Drive: PropTypes.object,
-    user: PropTypes.object
+    user: PropTypes.object,
+    history: PropTypes.object
 };
 
 export default withTracker(() => {

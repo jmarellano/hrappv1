@@ -26,7 +26,18 @@
         "collections": {},
         "twilioNumbers": [
             "+15164693486"
-        ]
+        ],
+        "oAuth": {
+            "google": {
+                "clientId": "1055163649143-g1i51u3fvg4omggfq3jj0ut18vdk1ab2.apps.googleusercontent.com",
+                "secret": "jeJ_vsK9WBKphrd7QYQiNyBk",
+                "apiKey": "AIzaSyDAOoOR3VBGxijpFbcFy5K-yOxoU6TjtZM",
+                "owner": "secondtronixhub@gmail.com",
+                "interval": "60000",
+                "folder": "13Cc4dHHwqfQxB30T9O6yML2Mg6SUUCpR",
+                "acc": "hrapp-235@hrapp-207205.iam.gserviceaccount.com"
+            }
+        }
     },
     "config": {
         "email": {
@@ -51,8 +62,8 @@
         }
     },
     "drive": {
-        "acc": "hrapp-660@hrapp-204004.iam.gserviceaccount.com",
-        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9BCX8mIsk7PAE\nMA2pJ9GM4L7D8yZabs9zSbeWMi6xSpBovCxKGTyboqnkwzzlyc/eeFPo1uohcm9Q\ntcbM4fhoHnbPdRq/nQsg1ttBqjo66t+WXx3i/n//YRNbBwyZX6xTxcPh/MguQ36L\nFEv6x0OQN/aE+lg1uWQFW3+PXxNH+jwdf4GdLp/0PC6beQPS5vJiiCN6jIlJad8R\nxgBwbanoyZibNbtbGATFaN7pujEryJjD3t+8XCeEMdBkqMAv3gZU0RprX0KrAd1R\n+VtOM+uffbfruULT/aHICgYotT0sVxd4CSHisi095iXheb5z1ix9kO2j2lluJVtJ\n0ZKdb9FJAgMBAAECggEAQ3SCDAHyknR+ebgef/JGbgTc/7g8RUTLgyTZQGBbWok2\nPTJ+idk00IQ+JnZouscJiKcfpvZf6xzYThD5SDASwzGwC/yKVby5dnhHGkmia1lb\n/uGmHFbgHicqTa+X1vqWWPU4oWNhm2UZ+Y9+SBqp6YOXVkCzj0TAxcqwHN381xAA\npM6TOTx0GpYSzmXOcGJZNCcEYIBVfm56LkmfnCJUn/x4MKTUuBXUE4O/cZMBMYXz\nQZu2beDRC0CjrmEyxYPQG3pEqWuIbSTuwDJQdgt6sXDZDz0sakCoJQ/JIIKgWpkN\nYIMmZqVbyyQmoDIJdrk53ruRySijjOMLcIKoyFq7MwKBgQDvj8Q+OOHZBMwmuYZe\nl8tDrCSYlrx49/7YvrohfbgDVnt8pv29BbyPaGO0dQ5RUefthPBd9gmgqrsehktg\niFgvyPDlr0pGDbtuh2chbtwHIJWzjygJcVGMa0mndpKHWFewscakF8fffAV0Lo5E\nBj68Fi1TD5dImQbwDPRFcD0nYwKBgQDJ/HtNdrmM3P4PubSNmOy91AhOOr1woAHn\nBGkDXz8NhDNjoTJNpVMujYb90Pb/C6w9/f9ePpQUnCk9RVuz6pc6rbcgNbC8+DIl\ndzQlt740F7d5OIbJMFrO8ntbLHGhEULMiNamuzHRMQZgckByYVjNWTRNa+VGyc45\nBkGLB5ryYwKBgQCeoNANc5T5IxgbvFWhZVoPIXnKIGYEpBJ4azLM4nZqn2V9kQYL\nmDTXsQP0hl5Isrekq5aOYVDWtrbY64wWC7J5UdFSBdRktssZ0UcU+Fdx0L3P/EdC\nmWqqVJCc9wLn5DOMqOsj1StgbLsfx4Qkvw3jdbvleDlwtQPHCIznPf8AiQKBgEyA\nelsOmpyFnxxpo771qsUDJ9opWVLs54uOGhAS5RjDd4tGpHzQHz9Ej1pW6RYUX7pj\nF3OklAVyWBRCzsbIFVs+LFvguf34q1WRXojinQGx8eXRyQsua1ZydNJFdQwiM4Cw\nW0xvHiEzRk0FOO+Zez7biHnCYeZ7zMXAXta/nKotAoGAKD0RQ9PbGEycK4S8N8Ml\nrvruZNFvGSf22giEf6T+NEPv+ZqqG5mRBjUULoXWX+Gkmo8+0vHCVlnPvKlwUOFu\n91nn9LnocqOvJJZGrMIttuwkutVeudpb5ewJNxNbrcICvcjuXmcJyD6Fe1P1aRs1\n+UKzpnXI52izfw1HMrKp92k=\n-----END PRIVATE KEY-----\n"
+        "acc": "hrapp-235@hrapp-207205.iam.gserviceaccount.com",
+        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCuqlzDOgkujtQM\nuQS7BndfLHnqAvHZshl1MxY8Z8zKDRtvUswh7hla3/grBbpBrS1CialuDmN+upt1\nCp/Asx8P8yU/TU+K3PDj4fWmW2UR9KQiyIRrDqTnXeLYNt98T0nDXl31E2ds7IS1\nlvW4FQHy1VSnKrMkdr8XKwxg0649LGRfNqh83C9km1AXo+eqvKP8d4fpmQygiSCd\nbtlyr4OxLk3tF4KK4sI0EYG4d/JgObT2cpTHrQSvKeIfAoYoVGKuYPXnqNTdd/2K\nxnVEudWouSLCguaI280xNhMkyMFVrbEoViRXuVkdZemmjtZFfRkf+vDEdT/Qx1XY\nT0aFb6t7AgMBAAECggEAJySYu0ujSSLLFLrV+4/caqDOBYp5Zr8KA4DaZ9kfRNyh\nHFai1qvEVOBCfmm/Lv6/WNz+8mIZHAp30kf6OzYpLOrhmwkZXVZcScWWxpxOzzJT\nIlRrkI5smEkrECdj+DjQoA7i4Yxirj9nEkbtdD6I/EGgwgHIudA+zNNh58UolB6i\nGr95DbP7kysQPRe87YloVd/ZOIrHPAwh3bYhswJx3SQ3x+JvPZZ9StAOadfk9yJK\nQzgIx9AK8tyOn5pA3vAzY7v/bdiMbLHWygV+DPc0Z2FdZd9XxSoqFrrIy6TCmulG\nGU3d0CkqbrgQAW7bVEzZ1bMEOi9nKR5Q59MUyNquWQKBgQDxKkRJv4Lkqz+kbjW5\nIYQ9tnUl94aAq0SLA/X/Ev6Mg7X7ROGXiT5m/m77PXHc/f6CLeQbH+/HXO4yVSa7\ndx7KSl5FcTkIteuVrhHN4kvD3476cSy958w2EY7ctxC9zy8s/hOgOBUECLLTL9K0\n3Qt6c/ko92wMuFzQJ4s+lIcp/QKBgQC5aOWLdoLXUJuZHPoPawHzAF8psOIByl2H\nXJID7ORsFyPorbcBVZdoWMS4Q3NJx2j/nctt5HPKxTrgXTwNL4+ZnKcJmrWwR3ED\nn1iIdHu+8kl3YLb0sfgxwBofOKaqjItul/edn6+VAAS8iCZ1wDhXWsiyf1rss9Er\nWKw+0CGI1wKBgQCCCbJsubFQr+5PMYYSXzo5NIsSf9esxazd8LLSaWGMTvDvngKu\nfTiCvKsHGeitqt9zPl+DKMNYEon15ehOqTqXBWaztwtz4PQ473V2OJF1+rPT4van\nJ7f7Z5hK9wM19eOQNShL+jGKzU3vhhftokswKhyttEw0x6x0KP5yLhB72QKBgQCW\nZaF1rG9cCvX8kIXDBfEx1YZcAjCCdU3C5HNJHdr4Vxj4wBjnyy8jJIaGVahqG4hv\neOcwQBUxUSV+JAL3SzI3z9urLcTdtkXVQ2eEYMCUVmMDo/8kpEyIxqQp2UFQrOrZ\njgn84TCDM92jtOlFsOPC8FBGgooV4ZL1j1tBJIFfRwKBgCdk024/wmdOHntTxOfe\n0jxJK2GD0wyBBuADDfNtjdn020qq0K2AQ1xgKbCBfSG+ydXptr6Q1yfYNaThF3g+\n99xlzVaMXUZW4ZDsXdGrldf5VKD3Dl5XoKJj/YFbHqx2jv5a2O79PUM4YBhfdRc+\nGSOKE577NPFGpShkgvkslXt8\n-----END PRIVATE KEY-----\n"
     },
     "twilioCreds": {
         "accountSid": "AC450dc0f41d83b5f520a8ea1f2d6fa790",

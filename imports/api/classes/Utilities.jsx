@@ -7,7 +7,7 @@ class Utilities {
 
     }
     formatDate(date) {
-        return moment(date).format('MM/DD/YYYY hh:mm:ss A');
+        return moment(date).format('MMMM DD, YYYY hh:mm A');
     }
     trunc(text, max) {
         return text.substr(0, max - 1) + (text.length > max ? '...' : '');
