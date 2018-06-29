@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { DRIVE, ROLES } from '../../../api/classes/Const';
+import { DRIVE, ROLES, ROUTES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import DropdownSelect from '../extras/DropdownSelect';
 import DriveList from './DriveList';
@@ -360,12 +360,12 @@ class Drive extends React.Component {
     }
 
     goBack() {
-        this.setState({
-            uploading: false,
-            uploadProgress: 0,
-        });
-        Meteor.logout();
-        //this.props.history.replace(ROUTES.MESSAGES);
+        //this.setState({
+        //    uploading: false,
+        //    uploadProgress: 0,
+        //});
+        //Meteor.logout();
+        this.props.history.replace(ROUTES.MESSAGES);
     }
 
     sync(drive) {

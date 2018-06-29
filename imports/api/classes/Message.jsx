@@ -24,7 +24,7 @@ class Message {
     }
 
     getDateTime() {
-        return moment(this.createdAt).format('MM/DD/YYYY HH:mm A');
+        return moment(this.createdAt).format('MMMM DD, YYYY HH:mm A');
     }
 }
 export default Message;

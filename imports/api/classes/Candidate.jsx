@@ -121,7 +121,7 @@ class Candidate {
     }
 
     getDateJoined() {
-        return moment(this.createdAt).format('MM/DD/YYYY hh:mm:ss A');
+        return moment(this.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
     }
 
     getLastMessageDate() {

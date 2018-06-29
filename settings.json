@@ -29,8 +29,8 @@
         ],
         "oAuth": {
             "google": {
-                "clientId": "1055163649143-g1i51u3fvg4omggfq3jj0ut18vdk1ab2.apps.googleusercontent.com",
-                "secret": "jeJ_vsK9WBKphrd7QYQiNyBk",
+                "clientId": "1055163649143-349cab60i3pi5frcdfn8bt01o7rv4r1r.apps.googleusercontent.com",
+                "secret": "vZ71S6O6X6njDeqis0ZBQJRY",
                 "apiKey": "AIzaSyDAOoOR3VBGxijpFbcFy5K-yOxoU6TjtZM",
                 "owner": "secondtronixhub@gmail.com",
                 "interval": "60000",

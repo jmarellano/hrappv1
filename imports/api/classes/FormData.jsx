@@ -16,7 +16,7 @@ class FormData {
     }
 
     getDate() {
-        return moment(this.createdAt).format("MM/DD/YYYY");
+        return moment(this.createdAt).format("MMMM DD, YYYY");
     }
 
     getTime() {
