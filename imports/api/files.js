@@ -31,7 +31,11 @@ let PSTFiles = new FilesCollection({
     permissions: '0774',
     parentDirPermissions: '0774',
     allowClientCode: true,
-    storagePath: PATH.UPLOAD
+    storagePath: PATH.UPLOAD,
+    responseHeaders: {
+        Connection: 'keep-alive',
+        'Access-Control-Allow-Origin': '*'
+    }
 });
 if (Meteor.isServer) {
     EmailFiles.allowClient();

@@ -140,6 +140,7 @@ class Drive {
     }
     sync(drive, callback) {
         let pageToken = '';
+        let syncI = 0;
         let syncFunc = () => {
             let options = {
                 'method': 'GET',
@@ -147,7 +148,7 @@ class Drive {
                 'params': {
                     'fields': 'files, nextPageToken',
                     'q': `trashed=false and not appProperties has { key='synced' and value='true' }`,
-                    'pageSize': 1000,
+                    'pageSize': 1, //1000
                     'pageToken': pageToken
                 }
             };
@@ -169,6 +170,8 @@ class Drive {
                     else {
                         if (pageToken)
                             setTimeout(() => {
+                                syncI++;
+                                console.log("Syncing #"+syncI);
                                 syncFunc();
                             }, Meteor.settings.public.oAuth.google.interval);
                         else
@@ -308,7 +311,11 @@ class Drive {
             token: data.token,
             metadata: data.metadata,
             onError: data.onError,
-            onComplete: data.onComplete,
+            onComplete: (response)=>{
+                data.onComplete(response);
+                this.setProgress = null;
+                this.drive_uploading = null;
+            },
             onProgress: (event) => {
                 let progress = (event.loaded / event.total * 100);
                 data.onProgress(progress);

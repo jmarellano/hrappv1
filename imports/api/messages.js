@@ -30,8 +30,10 @@ export const MessagesDeleteTemplate = 'messages_templates_delete';
 
 let databaseName = Meteor.settings.public.collections.messages || 'messages';
 let databaseName2 = Meteor.settings.public.collections.templates || 'templates';
+let databaseAppointments = Meteor.settings.public.collections.appointments || 'appointments';
 export const TemplatesDB = new Mongo.Collection(databaseName2, { idGeneration: 'MONGO' });
 export const MessagesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
+export const AppointmentDB = new Mongo.Collection(databaseAppointments, { idGeneration: 'MONGO' });
 export const IncomingDB = new Mongo.Collection(Meteor.settings.public.collections.incoming || 'incoming_logs', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {

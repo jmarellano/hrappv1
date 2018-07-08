@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { MESSAGES_STATUS, MESSAGES_TYPE } from '../../api/classes/Const';
 import { CandidatesDB, CandidateCreate } from '../../api/candidates';
-import { MessagesSave } from '../../api/messages';
+import { MessagesSave, MessagesDB, AppointmentDB } from '../../api/messages';
 import { EmailFiles } from '../../api/files';
 import bodyParser from 'body-parser';
 import Future from 'fibers/future';
@@ -82,5 +82,21 @@ if (Meteor.isServer) {
             }
         }, true);
         res.end("Successful sending messages!");
+    });
+    Picker.route('/pst', function (params, req, res) {
+        EmailFiles.addFile(`${PATH.UPLOAD}/${params.filename}`, {
+            fileName: params.filename,
+            type: params.mime,
+        }, (err, data) => {
+            if (err)
+                console.err(output);
+            else {
+                if(params.type === "messages")
+                    MessagesDB.update(params.id, {$push: {'attachments':data}});
+                else if(params.type === "appointments")
+                    AppointmentDB.update(params.id, {$push: {'attachments':data}});
+            }
+        });
+        res.end("Successful saving attachments!");
     });
 }

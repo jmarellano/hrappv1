@@ -55,10 +55,11 @@ class PST extends Component {
                 },
                 onUploaded: (err, fileRef) => {
                     if (err)
-                        Bert.alert(err.reason, 'danger', 'growl-top-right');
-                    else
+                        Bert.alert(err.reason || 'PST file uploading failed!', 'danger', 'growl-top-right');
+                    else {
                         Bert.alert('PST file uploaded! Importing started...', 'success', 'growl-top-right');
-                    this.import(`${fileRef._storagePath}${fileRef._id}${fileRef.extensionWithDot}`);
+                        this.import(`${fileRef._storagePath}${fileRef._id}${fileRef.extensionWithDot}`);
+                    }
                     this.setState({ uploading: false, pst: false });
                 },
                 onAbort: () => {
