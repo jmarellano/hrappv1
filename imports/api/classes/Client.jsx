@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES } from './Const';
 import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
-import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveSyncMain, DriveRenameFile, DriveCopyFile, DriveNewFolder } from '../drive';
+import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
@@ -119,6 +119,7 @@ class Drive {
         this.auth = null;
         this.api = null;
         this.client = null;
+        this.pickerApiLoaded = null;
         this.email = '';
     }
     init(callback) {
@@ -136,7 +137,37 @@ class Drive {
                     callback();
                 });
             });
+            this.api.load('picker', () => {
+                this.pickerApiLoaded = true;
+            });
         });
+    }
+    createPicker(token, failCallback, successCallback) {
+        if (this.pickerApiLoaded && token) {
+            let google = window.google;
+            let picker = new google.picker.PickerBuilder().
+                addView(google.picker.ViewId.DOCS).
+                setOAuthToken(token).
+                setDeveloperKey(this.apiKey).
+                setCallback(
+                    (data) => {
+                        if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+                            let doc = data[google.picker.Response.DOCUMENTS][0];
+                            if (/\.(gdrive)$/i.test(doc.name))
+                                Meteor.call(DrivePST, doc, (err) => {
+                                    if (err)
+                                        failCallback('Problem on uploading PST File');
+                                    else
+                                        successCallback('PST file selected! Importing started...');
+                                });
+                            else
+                                failCallback('Invalid File Type!');
+                        }
+                    }
+                ).
+                build();
+            picker.setVisible(true);
+        }
     }
     sync(drive, callback) {
         let pageToken = '';
@@ -164,14 +195,15 @@ class Drive {
                                 let file = files[i];
                                 i++;
                                 this.syncToMain(file.id, file.name, [drive]);
-                            }
+                            } else
+                                clearInterval(interval);
                         }, 1000);
                     }
                     else {
                         if (pageToken)
                             setTimeout(() => {
                                 syncI++;
-                                console.log("Syncing #"+syncI);
+                                console.log("Syncing #" + syncI);
                                 syncFunc();
                             }, Meteor.settings.public.oAuth.google.interval);
                         else
@@ -197,7 +229,6 @@ class Drive {
         };
         let request = this.client.request(reqOptions);
         request.execute((res) => {
-            console.log('copy 1', res);
             if (res.id) {
                 reqOptions = {
                     'method': 'PATCH',
@@ -311,7 +342,7 @@ class Drive {
             token: data.token,
             metadata: data.metadata,
             onError: data.onError,
-            onComplete: (response)=>{
+            onComplete: (response) => {
                 data.onComplete(response);
                 this.setProgress = null;
                 this.drive_uploading = null;

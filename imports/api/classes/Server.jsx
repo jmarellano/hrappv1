@@ -7,6 +7,7 @@ import Drive from './Drive';
 import WebShot from './WebShot';
 import clamscan from 'clamscan';
 import twilio from 'twilio';
+import fs from 'fs';
 import { MessagesAddListener } from '../messages';
 
 export default class Server {
@@ -29,6 +30,10 @@ export default class Server {
 
     getFiber(data) {
         return Fiber(data);
+    }
+
+    getFileSystem() {
+        return fs;
     }
 
     getNodemailer() {

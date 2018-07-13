@@ -15,8 +15,12 @@ export const DriveSyncMain = 'drive_sync_main';
 export const DriveRenameFile = 'drive_rename_file';
 export const DriveCopyFile = 'drive_copy_file';
 export const DriveNewFolder = 'drive_new_folder';
+export const DrivePST = 'drive_pst';
 
 if (Meteor.isServer) {
+    functions[DrivePST] = function (doc) {
+        return server.getDrive().downloadPST(doc, this.userId, Meteor.users);
+    }
     functions[DriveNewFolder] = function (name, parent, mimeType) {
         return server.getDrive().newFolder(name, parent, mimeType);
     }

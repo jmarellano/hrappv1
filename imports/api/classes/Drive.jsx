@@ -1,5 +1,9 @@
 import { google } from 'googleapis';
 import { HTTP } from 'meteor/http';
+import { VALUE } from './Const';
+import moment from 'moment';
+import crypto from 'crypto';
+import MessageManager from './MessageManager';
 
 class Drive {
     constructor() {
@@ -181,6 +185,121 @@ class Drive {
             this.drive.files.update(params2);
             future.return(true);
         });
+        return future.wait();
+    }
+    downloadPST(doc, userId, UserDB) {
+        this.getToken();
+        let id = '',
+            size = 0,
+            md5Checksum = '',
+            extension = '';
+        let myFuture = server.createFuture();
+        let search = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            params: {
+                fileId: doc.id,
+                fields: 'size, md5Checksum, fileExtension'
+            }
+        };
+        HTTP.call('GET', 'https://www.googleapis.com/drive/v3/files/' + doc.id, search, Meteor.bindEnvironment((err, res) => {
+            if (err && err !== null)
+                myFuture.throw(new Meteor.Error(err.message));
+            else {
+                UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
+                id = doc.id;
+                size = res.data.size;
+                md5Checksum = res.data.md5Checksum,
+                    extension = res.data.fileExtension;
+                let bytes = 0;
+                let endBytes = size;
+                let array = [];
+                let i = 0;
+                let max = 102400;
+                while ((bytes + max) <= size) {
+                    array.push({ i, start: bytes, end: bytes + max, max });
+                    bytes += (max + 1);
+                    endBytes -= (max + 1);
+                    i++;
+                }
+                array.push({ i, start: bytes, end: bytes + endBytes, max: endBytes });
+                bytes += endBytes;
+                bytes = 0;
+                for (let j = 0; j < 10; j++) {
+                    Meteor.defer(() => {
+                        let dest = null;
+                        let download = () => {
+                            let item = array.shift();
+                            if (item) {
+                                dest = server.getFileSystem().createWriteStream(PATH.UPLOAD + id + '_PST_' + item.i + '.tmp');
+                                let partial = () => {
+                                    if (this.partialDownload(item.start, item.end, dest, id)) {
+                                        dest.end();
+                                        bytes += (item.max + 1);
+                                        console.log('Thread #' + (j + 1), item);
+                                        console.log('PST Uploading Progress: ', (((bytes - 1) / size) * 100) + '%', bytes - 1, size, md5Checksum);
+                                        download();
+                                        if ((((bytes - 1) / size) * 100) === 100) {
+                                            let time = moment().valueOf();
+                                            for (let k = 0; k <= i; k++) {
+                                                let content = server.getFileSystem().readFileSync(PATH.UPLOAD + id + '_PST_' + k + '.tmp');
+                                                server.getFileSystem().appendFileSync(PATH.UPLOAD + id + time + '.' + extension, content);
+                                                server.getFileSystem().unlinkSync(PATH.UPLOAD + id + '_PST_' + k + '.tmp');
+                                            }
+                                            let hash = crypto.createHash('md5');
+                                            let stream = server.getFileSystem().createReadStream(PATH.UPLOAD + id + time + '.' + extension);
+                                            stream.on('data', function (data) {
+                                                hash.update(data, 'utf8');
+                                            });
+                                            stream.on('end', Meteor.bindEnvironment(() => {
+                                                if (md5Checksum === hash.digest('hex')) {
+                                                    server.getFileSystem().renameSync(PATH.UPLOAD + id + time + '.' + extension, PATH.UPLOAD + id + time + '.pst');
+                                                    console.log('tews', userId);
+                                                    MessageManager.import(PATH.UPLOAD + id + time + '.pst', userId, UserDB);
+                                                } else
+                                                    console.log('not matched!'); //TODO update importing status 'file is corrupt, retry...'
+                                            }));
+                                        }
+                                    } else
+                                        setTimeout(() => {
+                                            partial();
+                                        }, 2000);
+                                };
+                                partial();
+                            }
+                        };
+                        download();
+                    });
+                }
+                myFuture.return(true);
+            }
+        }));
+        return myFuture.wait();
+    }
+    partialDownload(startBytes, endBytes, dest, fileId) {
+        let future = server.createFuture();
+        let req = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token,
+                'Range': `bytes=${startBytes}-${endBytes}`
+            },
+            params: {
+                fileId,
+                alt: 'media'
+            },
+            npmRequestOptions: { encoding: null }
+        };
+        HTTP.call('GET', 'https://www.googleapis.com/drive/v3/files/' + fileId, req, Meteor.bindEnvironment((err, res) => {
+            if (err && err !== null) {
+                console.log('Error during download', err);
+                future.return(false);
+            }
+            else {
+                dest.write(res.content);
+                future.return(true);
+            }
+        }));
         return future.wait();
     }
 }

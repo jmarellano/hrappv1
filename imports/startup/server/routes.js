@@ -84,17 +84,18 @@ if (Meteor.isServer) {
         res.end("Successful sending messages!");
     });
     Picker.route('/pst', function (params, req, res) {
-        EmailFiles.addFile(`${PATH.UPLOAD}/${params.filename}`, {
-            fileName: params.filename,
-            type: params.mime,
+        EmailFiles.addFile(`${PATH.UPLOAD}/${params.query.filename}`, {
+            fileName: params.query.filename,
+            type: params.query.mime,
         }, (err, data) => {
             if (err)
                 console.err(output);
             else {
-                if(params.type === "messages")
-                    MessagesDB.update(params.id, {$push: {'attachments':data}});
-                else if(params.type === "appointments")
-                    AppointmentDB.update(params.id, {$push: {'attachments':data}});
+                console.log('adding attachment', 'id: ' + params.query.id);
+                if (params.query.type === "messages")
+                    console.log('result: ' + MessagesDB.update({ _id: new Mongo.ObjectID(params.query.id) }, { $push: { 'attachments': data } }));
+                else if (params.query.type === "appointments")
+                    console.log('result: ' + AppointmentDB.update({ _id: new Mongo.ObjectID(params.query.id) }, { $push: { 'attachments': data } }));
             }
         });
         res.end("Successful saving attachments!");
