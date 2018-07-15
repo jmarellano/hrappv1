@@ -163,6 +163,10 @@ if (Meteor.isServer) {
             }
             if (candidate.filter.indexOf(SEARCH.CATEGORIES) > -1)
                 or.push({ category: { $regex: searchString, $options: 'i' } });
+            if (candidate.filter.indexOf(SEARCH.CONTEXT) > -1)
+                or.push({ 'lastMessage.text': { $regex: searchString, $options: 'i' } });
+            if (candidate.filter.indexOf(SEARCH.TITLE) > -1)
+                or.push({ 'lastMessage.subject': { $regex: searchString, $options: 'i' } });
             if (!(or.length && searchString.length))
                 or = [];
             if (candidate.filter.indexOf(SEARCH.CLAIMED) > -1) {

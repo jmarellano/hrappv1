@@ -21,7 +21,7 @@ class Messages extends React.Component {
             SEARCH.EMAIL,
             SEARCH.NUMBER,
             SEARCH.CLAIMER,
-            SEARCH.ASSIGNED
+            SEARCH.ASSIGNED,
         ];
         this.state = {
             display,
@@ -32,7 +32,9 @@ class Messages extends React.Component {
                         { value: SEARCH.CLAIMER, label: 'Claimer' },
                         { value: SEARCH.EMAIL, label: 'Email' },
                         { value: SEARCH.NUMBER, label: 'Mobile' },
-                        { value: SEARCH.NAME, label: 'Name' }
+                        { value: SEARCH.NAME, label: 'Name' },
+                        { value: SEARCH.TITLE, label: 'Title' },
+                        { value: SEARCH.CONTEXT, label: 'Message Context' }
                     ]
                 },
                 {
