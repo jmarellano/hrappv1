@@ -18,6 +18,7 @@ export const CandidatesAddInfo = 'candidates_add_info';
 export const CandidatesAddFileStats = 'candidates_add_file_stats';
 export const CandidatesRemoveFileStats = 'candidates_remove_file_stats';
 export const MessagesUnreadCountPub = 'candidates_messages_read';
+export const CandidatesInterview = 'candidates_interview';
 
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
@@ -60,6 +61,16 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
             return CandidateManager.claimCandidate(id, '');
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[CandidatesInterview] = function (id, flag) {
+        try {
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            return CandidateManager.interviewCandidate(id, flag);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -179,6 +190,8 @@ if (Meteor.isServer) {
                 or1.push({ claimed: this.userId });
             if (candidate.filter.indexOf(SEARCH.FOLLOWING) > -1)
                 or1.push({ 'followers.id': this.userId });
+            if (candidate.filter.indexOf(SEARCH.LINTERVIEW) > -1)
+                or1.push({ interview: true });
 
             if (candidate.filter.indexOf(SEARCH.resume) > -1)
                 query['resume'] = { $gte: 5 };

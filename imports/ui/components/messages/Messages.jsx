@@ -31,10 +31,10 @@ class Messages extends React.Component {
                         { value: SEARCH.CATEGORIES, label: 'Category' },
                         { value: SEARCH.CLAIMER, label: 'Claimer' },
                         { value: SEARCH.EMAIL, label: 'Email' },
+                        { value: SEARCH.CONTEXT, label: 'Message Context' },
                         { value: SEARCH.NUMBER, label: 'Mobile' },
                         { value: SEARCH.NAME, label: 'Name' },
-                        { value: SEARCH.TITLE, label: 'Title' },
-                        { value: SEARCH.CONTEXT, label: 'Message Context' }
+                        { value: SEARCH.TITLE, label: 'Title' }
                     ]
                 },
                 {
@@ -43,6 +43,7 @@ class Messages extends React.Component {
                         { value: SEARCH.CLAIMED, label: 'Claimed', element: <span>{'Claimed'}<span className="pull-right mt-1 badge badge-warning">{props.claimed}</span></span> },
                         { value: SEARCH.FOLLOWING, label: 'Following' },
                         { value: SEARCH.UNCLAIMED, label: 'Unclaim', element: <span>{'Unclaimed'}<span className="pull-right mt-1 badge badge-warning">{props.unclaimed}</span></span> },
+                        { value: SEARCH.LINTERVIEW, label: 'Interview' }
                     ]
                 },
                 {

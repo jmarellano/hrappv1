@@ -118,7 +118,7 @@ class Followers extends Component {
 
     render() {
         return (
-            <button className="link badge badge-primary text-light pull-right ml-1 mr-1" data-tip="View followers" onClick={this.toggleModal}>
+            <button className="link badge badge-success text-light pull-right ml-1 mr-1" data-tip="View followers" onClick={this.toggleModal}>
                 <i className="fa fa-eye" />&nbsp;
                 {this.props.candidate.followers ? this.props.candidate.followers.length : 0} Followers
                 <Modal isOpen={this.state.follow} contentLabel="FollowModal" style={this.styleSet}>

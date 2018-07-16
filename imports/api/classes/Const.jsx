@@ -83,6 +83,7 @@ export const SEARCH = {
     UNCLAIMED: 10,
     TITLE: 11,
     CONTEXT: 12,
+    LINTERVIEW: 13,
     resume: 'resume',
     portfolio: 'portfolio',
     disc: 'disc',

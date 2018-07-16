@@ -31,7 +31,8 @@ class Candidates extends React.Component {
                     <div className="list-item p-1" onClick={this.selectCandidate.bind(this, candidate)}>
                         <div className="row">
                             <div className="col-sm-12">
-                                {candidate.getCategory()}
+                                {candidate.getCategory()}&nbsp;
+                                {candidate.onInterview()}&nbsp;
                                 <b>
                                     {candidate.getContact()}
                                     <span className="pull-right">

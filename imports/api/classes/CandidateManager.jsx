@@ -108,6 +108,13 @@ export default class CandidateManager {
             }
         });
     }
+    static interviewCandidate(id, flag) {
+        return CandidatesDB.update({ _id: id }, {
+            $set: {
+                'interview': flag
+            }
+        });
+    }
     static getId(email) {
         let candidate = CandidatesDB.findOne({ $or: [{ contact: email }, { email }] });
         if (candidate)
