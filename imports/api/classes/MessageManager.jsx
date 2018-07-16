@@ -30,7 +30,6 @@ export default class MessageManager {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
             let spawn = child_process.spawn;
             const ls = spawn('java', [ '-jar', '/data/JavaPST.jar', file ]);
-            console.log(wakanda);
             ls.stdout.on('data', (data) => {
                 //console.log(`stdout: ${data}`);
             });
