@@ -91,8 +91,8 @@ class Account {
             callback(err);
         });
     }
-    retire(id, callback) {
-        Meteor.call(UsersRetire, id, (err) => {
+    retire(id, unRetire, callback) {
+        Meteor.call(UsersRetire, id, unRetire, (err) => {
             callback(err);
         });
     }
@@ -519,8 +519,11 @@ class Message {
     read(data) {
         Meteor.call(MessagesRead, data);
     }
-    import(file) {
-        Meteor.call(MessagesImport, file);
+    import(file, callback) {
+        Meteor.call(MessagesImport, file, (err, result) => {
+            if(err && callback)
+                callback(err, result);
+        });
     }
     saveTemplate(data, callback) {
         Meteor.call(MessagesSaveTemplate, data.id, data.name, data.template, (err, result) => {
