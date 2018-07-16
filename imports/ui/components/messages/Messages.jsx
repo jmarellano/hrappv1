@@ -3,7 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { Meteor } from 'meteor/meteor';
 import { NotificationsDB, NotifPub } from '../../../api/notifications';
 import { CandidatesDB, MessagesUnreadCountPub } from '../../../api/candidates';
-import { SEARCH } from '../../../api/classes/Const';
+import { SEARCH, CANDIDATE_STATUS } from '../../../api/classes/Const';
 import Candidates from './Candidates';
 import CandidatesContent from './CandidatesContent';
 import Notif from '../../../api/classes/Notif';
@@ -22,12 +22,35 @@ class Messages extends React.Component {
             SEARCH.NUMBER,
             SEARCH.CLAIMER,
             SEARCH.ASSIGNED,
+            CANDIDATE_STATUS.NA,
+            CANDIDATE_STATUS.ABANDONED,
+            CANDIDATE_STATUS.DEV_METEOR,
+            CANDIDATE_STATUS.DEV_LT,
+            CANDIDATE_STATUS.DQ_FOREIGNER,
+            CANDIDATE_STATUS.DQ_GREY,
+            CANDIDATE_STATUS.DQ_ECO,
+            CANDIDATE_STATUS.DQ_SAL,
+            CANDIDATE_STATUS.DQ_NOT_FIT,
+            CANDIDATE_STATUS.FAILED_INT,
+            CANDIDATE_STATUS.FAILED_METEOR,
+            CANDIDATE_STATUS.HIRED,
+            CANDIDATE_STATUS.INC,
+            CANDIDATE_STATUS.INQ,
+            CANDIDATE_STATUS.INT,
+            CANDIDATE_STATUS.NO_RESPONSE,
+            CANDIDATE_STATUS.NO_SHOW,
+            CANDIDATE_STATUS.QUALIFIED,
+            CANDIDATE_STATUS.REDIRECT,
+            CANDIDATE_STATUS.RESCHEDULED,
+            CANDIDATE_STATUS.SCHED_INT,
+            CANDIDATE_STATUS.SCHED_LT,
+            CANDIDATE_STATUS.WITHDREW
         ];
         this.state = {
             display,
             displayOptions: [
                 {
-                    label: 'ALL TEXT', value: SEARCH.ALL, options: [
+                    label: 'ALL TEXT', value: 'all_text', options: [
                         { value: SEARCH.CATEGORIES, label: 'Category' },
                         { value: SEARCH.CLAIMER, label: 'Claimer' },
                         { value: SEARCH.EMAIL, label: 'Email' },
@@ -38,16 +61,42 @@ class Messages extends React.Component {
                     ]
                 },
                 {
-                    label: 'ALL STATUS', value: SEARCH.ALL, options: [
+                    label: 'ALL STATUS', value: 'all_status', options: [
                         { value: SEARCH.ASSIGNED, label: 'Assigned' },
                         { value: SEARCH.CLAIMED, label: 'Claimed', element: <span>{'Claimed'}<span className="pull-right mt-1 badge badge-warning">{props.claimed}</span></span> },
                         { value: SEARCH.FOLLOWING, label: 'Following' },
                         { value: SEARCH.UNCLAIMED, label: 'Unclaim', element: <span>{'Unclaimed'}<span className="pull-right mt-1 badge badge-warning">{props.unclaimed}</span></span> },
-                        { value: SEARCH.LINTERVIEW, label: 'Interview' }
                     ]
                 },
                 {
-                    label: 'ALL STATS', value: SEARCH.ALL, options: [
+                    label: 'ALL CANDIDATES', value: 'all_candidates', options: [
+                        { value: CANDIDATE_STATUS.NA, label: 'N/A Status' },
+                        { value: CANDIDATE_STATUS.ABANDONED, label: 'ABANDONED' },
+                        { value: CANDIDATE_STATUS.DEV_METEOR, label: 'DEV_METEOR' },
+                        { value: CANDIDATE_STATUS.DEV_LT, label: 'DEV_LT' },
+                        { value: CANDIDATE_STATUS.DQ_FOREIGNER, label: 'DQ_FOREIGNER' },
+                        { value: CANDIDATE_STATUS.DQ_GREY, label: 'DQ_GREY' },
+                        { value: CANDIDATE_STATUS.DQ_ECO, label: 'DQ_ECO' },
+                        { value: CANDIDATE_STATUS.DQ_SAL, label: 'DQ_SAL' },
+                        { value: CANDIDATE_STATUS.DQ_NOT_FIT, label: 'DQ_NOT_FIT' },
+                        { value: CANDIDATE_STATUS.FAILED_INT, label: 'FAILED_INT' },
+                        { value: CANDIDATE_STATUS.FAILED_METEOR, label: 'FAILED_METEOR' },
+                        { value: CANDIDATE_STATUS.HIRED, label: 'HIRED' },
+                        { value: CANDIDATE_STATUS.INC, label: 'INC' },
+                        { value: CANDIDATE_STATUS.INQ, label: 'INQ' },
+                        { value: CANDIDATE_STATUS.INT, label: 'INT' },
+                        { value: CANDIDATE_STATUS.NO_RESPONSE, label: 'NO_RESPONSE' },
+                        { value: CANDIDATE_STATUS.NO_SHOW, label: 'NO_SHOW' },
+                        { value: CANDIDATE_STATUS.QUALIFIED, label: 'QUALIFIED' },
+                        { value: CANDIDATE_STATUS.REDIRECT, label: 'REDIRECT' },
+                        { value: CANDIDATE_STATUS.RESCHEDULED, label: 'RESCHEDULED' },
+                        { value: CANDIDATE_STATUS.SCHED_INT, label: 'SCHED_INT' },
+                        { value: CANDIDATE_STATUS.SCHED_LT, label: 'SCHED_LT' },
+                        { value: CANDIDATE_STATUS.WITHDREW, label: 'WITHDREW' }
+                    ]
+                },
+                {
+                    label: 'ALL STATS', value: 'all_stats', options: [
                         { value: SEARCH.resume, label: 'resume', element: <span>{'resume'}<span className="pull-right mt-1 badge badge-secondary">{'> 5'}</span></span> },
                         { value: SEARCH.portfolio, label: 'portfolio', element: <span>{'portfolio'}<span className="pull-right mt-1 badge badge-secondary">{'> 5'}</span></span> },
                         { value: SEARCH.disc, label: 'disc', element: <span>{'disc'}<span className="pull-right mt-1 badge badge-secondary">{'> 5'}</span></span> },

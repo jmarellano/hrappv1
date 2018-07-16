@@ -114,7 +114,7 @@ class Candidate {
         this.TEST_SIMULATION_history = obj.TEST_SIMULATION_history;
         this.others_history = obj.others_history;
         this.claimed = obj.claimed;
-        this.interview = obj.interview;
+        this.status = obj.status;
     }
 
     isRetired() {
@@ -153,13 +153,6 @@ class Candidate {
 
     getCategory() {
         return <div className="badge badge-warning mr-1 text-light">{this.category}</div>;
-    }
-
-    onInterview() {
-        if (this.interview)
-            return <div className="badge badge-success mr-1 text-light">Interview</div>;
-        else
-            return null;
     }
 
     getDisplayName() {

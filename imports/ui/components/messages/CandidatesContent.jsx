@@ -11,7 +11,7 @@ import Info from './Info';
 import Stats from './Stats';
 import CandidateForms from './CandidateForms';
 import Transfer from './Transfer';
-import Interview from './Interview';
+import Status from './Status';
 import Claim from './Claim';
 import Followers from './Followers';
 import CandidateMessages from './CandidateMessages';
@@ -76,7 +76,7 @@ class CandidatesContent extends React.Component {
                             <Transfer {...this.props} />
                             <Claim {...this.props} />
                             <Followers {...this.props} />
-                            <Interview {...this.props} />
+                            <Status {...this.props} />
                         </div>
                         <hr />
                     </div>

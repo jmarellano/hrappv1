@@ -108,10 +108,10 @@ export default class CandidateManager {
             }
         });
     }
-    static interviewCandidate(id, flag) {
+    static status(id, flag) {
         return CandidatesDB.update({ _id: id }, {
             $set: {
-                'interview': flag
+                'status': flag
             }
         });
     }

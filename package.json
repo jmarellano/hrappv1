@@ -11,7 +11,6 @@
     "body-parser": "^1.18.2",
     "buffer-concat": "^1.0.0",
     "clamscan": "^0.8.4",
-    "crypto": "^1.0.1",
     "exenv": "^1.2.2",
     "ext-name": "^5.0.0",
     "fibers": "^2.0.2",

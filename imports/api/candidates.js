@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { ROLES, isPermitted, VALUE, SEARCH } from './classes/Const';
+import { ROLES, isPermitted, VALUE, SEARCH, CANDIDATE_STATUS } from './classes/Const';
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import Util from './classes/Utilities';
@@ -18,7 +18,7 @@ export const CandidatesAddInfo = 'candidates_add_info';
 export const CandidatesAddFileStats = 'candidates_add_file_stats';
 export const CandidatesRemoveFileStats = 'candidates_remove_file_stats';
 export const MessagesUnreadCountPub = 'candidates_messages_read';
-export const CandidatesInterview = 'candidates_interview';
+export const CandidatesStatus = 'candidates_status';
 
 let databaseName = Meteor.settings.public.collections.candidates || 'candidates';
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
@@ -66,11 +66,11 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesInterview] = function (id, flag) {
+    functions[CandidatesStatus] = function (id, flag) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
-            return CandidateManager.interviewCandidate(id, flag);
+            return CandidateManager.status(id, flag);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -161,6 +161,7 @@ if (Meteor.isServer) {
             let query = { 'retired': VALUE.FALSE };
             let or = [];
             let or1 = [];
+            let or2 = [];
             let searchString = candidate.search;
             if (candidate.filter.indexOf(SEARCH.NAME) > -1)
                 or.push({ name: { $regex: searchString, $options: 'i' } });
@@ -190,8 +191,53 @@ if (Meteor.isServer) {
                 or1.push({ claimed: this.userId });
             if (candidate.filter.indexOf(SEARCH.FOLLOWING) > -1)
                 or1.push({ 'followers.id': this.userId });
-            if (candidate.filter.indexOf(SEARCH.LINTERVIEW) > -1)
-                or1.push({ interview: true });
+
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.NA) > -1)
+                or2.push({ 'status': { $exists: false } });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.ABANDONED) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.ABANDONED + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DEV_METEOR) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DEV_METEOR + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DEV_LT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DEV_LT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DQ_FOREIGNER) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DQ_FOREIGNER + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DQ_GREY) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DQ_GREY + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DQ_ECO) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DQ_ECO + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DQ_SAL) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DQ_SAL + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.DQ_NOT_FIT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.DQ_NOT_FIT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.FAILED_INT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.FAILED_INT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.FAILED_METEOR) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.FAILED_METEOR + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.HIRED) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.HIRED + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.INC) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.INC + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.INQ) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.INQ + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.INT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.INT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.NO_RESPONSE) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.NO_RESPONSE + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.NO_SHOW) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.NO_SHOW + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.QUALIFIED) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.QUALIFIED + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.REDIRECT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.REDIRECT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.RESCHEDULED) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.RESCHEDULED + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.SCHED_INT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.SCHED_INT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.SCHED_LT) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.SCHED_LT + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.WITHDREW) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.WITHDREW + '' });
 
             if (candidate.filter.indexOf(SEARCH.resume) > -1)
                 query['resume'] = { $gte: 5 };
@@ -228,12 +274,22 @@ if (Meteor.isServer) {
             if (candidate.filter.indexOf(SEARCH.others) > -1)
                 query['others'] = { $gte: 10 };
 
-            if (or.length && or1.length)
-                query['$and'] = [{ '$or': or }, { '$or': or1 }];
+            let andQ = [];
+            if (or.length)
+                andQ.push({ '$or': or });
+            if (or1.length)
+                andQ.push({ '$or': or1 });
+            if (or2.length)
+                andQ.push({ '$or': or2 });
+            if (andQ.length > 1)
+                query['$and'] = andQ;
             else if (or.length)
                 query['$or'] = or;
             else if (or1.length)
                 query['$or'] = or1;
+            else if (or2.length)
+                query['$or'] = or2;
+            console.log(query);
             let count = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 } }).count();
             let cursor = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 }, limit: candidate.limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {

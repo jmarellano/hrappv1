@@ -5,7 +5,7 @@ import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, D
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
-import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesInterview } from '../candidates';
+import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesStatus } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
 import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
@@ -610,8 +610,8 @@ class Candidate {
         });
     }
 
-    interview(id, flag, callback) {
-        Meteor.call(CandidatesInterview, id, flag, (err, result) => {
+    status(id, flag, callback) {
+        Meteor.call(CandidatesStatus, id, flag, (err, result) => {
             callback(err, result);
         });
     }

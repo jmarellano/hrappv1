@@ -32,7 +32,6 @@ class Candidates extends React.Component {
                         <div className="row">
                             <div className="col-sm-12">
                                 {candidate.getCategory()}&nbsp;
-                                {candidate.onInterview()}&nbsp;
                                 <b>
                                     {candidate.getContact()}
                                     <span className="pull-right">

@@ -83,7 +83,6 @@ export const SEARCH = {
     UNCLAIMED: 10,
     TITLE: 11,
     CONTEXT: 12,
-    LINTERVIEW: 13,
     resume: 'resume',
     portfolio: 'portfolio',
     disc: 'disc',
@@ -121,6 +120,32 @@ export const MESSAGES_STATUS = {
     SENT: 2,
     FAILED: 3,
 };
+
+export const CANDIDATE_STATUS = {
+    NA: false,
+    ABANDONED: 90,
+    DEV_METEOR: 91,
+    DEV_LT: 92,
+    DQ_FOREIGNER: 93,
+    DQ_GREY: 94,
+    DQ_ECO: 95,
+    DQ_SAL: 96,
+    DQ_NOT_FIT: 97,
+    FAILED_INT: 98,
+    FAILED_METEOR: 99,
+    HIRED: 910,
+    INC: 911,
+    INQ: 912,
+    INT: 913,
+    NO_RESPONSE: 914,
+    NO_SHOW: 915,
+    QUALIFIED: 916,
+    REDIRECT: 917,
+    RESCHEDULED: 918,
+    SCHED_INT: 919,
+    SCHED_LT: 920,
+    WITHDREW: 921
+}
 
 export const REQUEST = {
     PENDING: 0,
