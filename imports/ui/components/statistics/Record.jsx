@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ValidCategories, CategoriesDB } from '../../../api/categories';
-import {JOB_SITES} from '../../../api/classes/Const';
+import { JOB_SITES } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
 import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
