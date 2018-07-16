@@ -5,6 +5,8 @@ import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
 import User from '../../../api/classes/User';
+import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Teams extends React.Component {
     constructor() {
@@ -41,6 +43,9 @@ class Teams extends React.Component {
         this.retire = this.retire.bind(this);
         this.remove = this.remove.bind(this);
         this.removeModal = this.removeModal.bind(this);
+        this.userRole = this.userRole.bind(this);
+        this.userAction = this.userAction.bind(this);
+        this.userUnRetireAction = this.userUnRetireAction.bind(this);
     }
 
     componentDidMount() {
@@ -82,7 +87,7 @@ class Teams extends React.Component {
             else
                 Bert.alert('Member retired!', 'success', 'growl-top-right');
             this.getRetiredUsers();
-            this.setState({ retire: false });
+            this.setState({ retire: false, selectedUserRole: null, unRetire: false });
         });
     }
 
@@ -101,107 +106,86 @@ class Teams extends React.Component {
     }
 
     retireModal(user, unRetire, role) {
-        this.setState({ retire: !this.state.retire, user, unRetire, selectedUserRole : role });
+        this.setState({ retire: !this.state.retire, user, unRetire, selectedUserRole : unRetire ? role : null});
     }
 
     removeModal(user) {
         this.setState({ remove: !this.state.remove, user });
     }
 
+    userRole(cell, user){
+        let role = user.role || ROLES.GUESTS;
+        return (
+            <div>
+                <select ref={ "role" + user.index } className="form-control"
+                        value={ role }
+                        onChange={ this.selectRole.bind(this, user) }>
+                    <option value={ ROLES.ADMIN }>admin</option>
+                    <option value={ ROLES.STAFFS }>staff</option>
+                    <option value={ ROLES.GUESTS }>guest</option>
+                </select>
+            </div>
+        );
+    }
+
+    userAction(cell, user){
+        let role = user.role || ROLES.GUESTS;
+        return  (
+            <div>
+                {(role === ROLES.GUESTS) &&
+                <a href="#removeModal m-r-sm"
+                   data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
+                {(role !== ROLES.GUESTS) &&
+                <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, false, role)} className="btn btn-warning">Retire</a>}
+            </div>
+        );
+    }
+
+    userUnRetireAction(cell, user){
+        let role = user.role || ROLES.GUESTS;
+        let role_ = null;
+        switch(role){
+            case ROLES.ADMIN:
+                role_ = "ADMIN";
+                break;
+            case ROLES.STAFFS:
+                role_ = "STAFF";
+                break;
+            case ROLES.GUESTS:
+                role_ = "GUEST";
+                break;
+        }
+        return (
+            <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, true, role_)} className="btn btn-warning">Un-Retire</a>
+        )
+    }
+
     render() {
+        console.log("state: ", this.state);
         let userObj = this.state.user || { username: "" };
         return (
             <div className="pull-left main">
                 <div className="table-responsive">
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Members</th>
-                                <th scope="col">First Name</th>
-                                <th scope="col">Last Name</th>
-                                <th scope="col">Email Add</th>
-                                <th scope="col">Date Joined</th>
-                                <th scope="col">Roles</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.props.users.map((user, index) => {
-                                let role = user.role || ROLES.GUESTS;
-                                return (
-                                    <tr key={index}>
-                                        <td>{user.username}</td>
-                                        <td>{user.firstName}</td>
-                                        <td>{user.lastName}</td>
-                                        <td>{user.getPrimaryEmail().address}</td>
-                                        <td>{user.getDateJoined()}</td>
-                                        <td>
-                                            <div>
-                                                <select ref={"role" + index} className="form-control"
-                                                    value={role}
-                                                    onChange={this.selectRole.bind(this, user)}>
-                                                    <option value={ROLES.ADMIN}>admin</option>
-                                                    <option value={ROLES.STAFFS}>staff</option>
-                                                    <option value={ROLES.GUESTS}>guest</option>
-                                                </select>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div>
-                                                {(role === ROLES.GUESTS) &&
-                                                    <a href="#removeModal m-r-sm"
-                                                        data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
-                                                {(role !== ROLES.GUESTS) &&
-                                                    <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, false, role)} className="btn btn-warning">Retire</a>}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                    <BootstrapTable data={this.props.users} striped hover>
+                        <TableHeaderColumn isKey dataField='username' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } } >Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a First Name' } }>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } }>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Email Add' } }>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Joined' } }>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='select' dataFormat={this.userRole} >Roles</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} >Actions</TableHeaderColumn>
+                    </BootstrapTable>
                     <h3 className="ml-1">
                         Retired Users
                     </h3>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Members</th>
-                                <th scope="col">First Name</th>
-                                <th scope="col">Last Name</th>
-                                <th scope="col">Email Add</th>
-                                <th scope="col">Date Joined</th>
-                                <th scope="col"/>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {this.state.retiredUsers.map((user, index) => {
-                                let role = user.role || ROLES.GUESTS;
-                                let role_ = null;
-                                switch(role){
-                                    case ROLES.ADMIN:
-                                        role_ = "ADMIN";
-                                        break;
-                                    case ROLES.STAFFS:
-                                        role_ = "STAFF";
-                                        break;
-                                    case ROLES.GUESTS:
-                                        role_ = "GUEST";
-                                        break;
-                                }
-                                return (
-                                    <tr key={index}>
-                                        <td>{user.username}</td>
-                                        <td>{user.firstName}</td>
-                                        <td>{user.lastName}</td>
-                                        <td>{user.getPrimaryEmail().address}</td>
-                                        <td>{user.getDateJoined()}</td>
-                                        <td><a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, true, role_)} className="btn btn-warning">Un-Retire</a></td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                    <BootstrapTable data={this.state.retiredUsers} striped hover>
+                        <TableHeaderColumn isKey dataField='username' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } } >Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a First Name' } }>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } }>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Email Add' } }>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Joined' } }>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userUnRetireAction} >Actions</TableHeaderColumn>
+                    </BootstrapTable>
                     {this.state.retrieving && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
                 </div>
                 <Modal

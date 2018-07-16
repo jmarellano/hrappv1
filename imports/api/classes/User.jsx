@@ -7,8 +7,11 @@ class User {
 
     constructor(obj, index) {
         this.id = obj._id;
+        this.index = obj.index;
         this.username = obj.username;
         this.emails = obj.emails;
+        this.email = obj.email;
+        this.dateJoined = obj.dateJoined;
         this.connectedEmails = obj.profile.emails || [];
         this.role = obj.profile.role;
         this.team = obj.profile.team;
