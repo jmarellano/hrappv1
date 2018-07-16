@@ -44,7 +44,8 @@ class Messages extends React.Component {
             CANDIDATE_STATUS.RESCHEDULED,
             CANDIDATE_STATUS.SCHED_INT,
             CANDIDATE_STATUS.SCHED_LT,
-            CANDIDATE_STATUS.WITHDREW
+            CANDIDATE_STATUS.WITHDREW,
+            CANDIDATE_STATUS.PRE_QUALIFIED
         ];
         this.state = {
             display,
@@ -92,7 +93,8 @@ class Messages extends React.Component {
                         { value: CANDIDATE_STATUS.RESCHEDULED, label: 'RESCHEDULED' },
                         { value: CANDIDATE_STATUS.SCHED_INT, label: 'SCHED_INT' },
                         { value: CANDIDATE_STATUS.SCHED_LT, label: 'SCHED_LT' },
-                        { value: CANDIDATE_STATUS.WITHDREW, label: 'WITHDREW' }
+                        { value: CANDIDATE_STATUS.WITHDREW, label: 'WITHDREW' },
+                        { value: CANDIDATE_STATUS.PRE_QUALIFIED, label: 'PRE_QUALIFIED' }
                     ]
                 },
                 {

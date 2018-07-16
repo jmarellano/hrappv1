@@ -144,7 +144,8 @@ export const CANDIDATE_STATUS = {
     RESCHEDULED: 918,
     SCHED_INT: 919,
     SCHED_LT: 920,
-    WITHDREW: 921
+    WITHDREW: 921,
+    PRE_QUALIFIED: 922
 }
 
 export const REQUEST = {

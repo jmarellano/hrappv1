@@ -7,11 +7,21 @@ export const SettingsPub = 'settings';
 export const SettingsSave = 'settings_save';
 export const RecordJob = 'record-job';
 export const GetPostingStat = 'posting-stat';
+export const GetReports = 'get-reports';
 export const SettingsDB = new Mongo.Collection(Meteor.settings.public.collections.settings || 'settings', { idGeneration: 'MONGO' });
 export const PostingDB = new Mongo.Collection(Meteor.settings.public.collections.posts || 'posts', { idGeneration: 'MONGO' });
 
 
 if (Meteor.isServer) {
+    functions[GetReports] = function () {
+        try {
+            check(this.userId, String);
+            return SettingManager.getReports();
+        } catch (err) {
+            console.log(err);
+            throw new Meteor.Error(403, 'Not authorized');
+        }
+    }
     functions[RecordJob] = function (data) {
         this.unblock();
         try {

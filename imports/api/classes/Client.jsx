@@ -6,7 +6,7 @@ import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../for
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesStatus } from '../candidates';
-import { RecordJob, GetPostingStat, SettingsSave } from '../settings';
+import { RecordJob, GetPostingStat, SettingsSave, GetReports } from '../settings';
 import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
 
@@ -521,7 +521,7 @@ class Message {
     }
     import(file, callback) {
         Meteor.call(MessagesImport, file, (err, result) => {
-            if(err && callback)
+            if (err && callback)
                 callback(err, result);
         });
     }
@@ -667,6 +667,10 @@ class Statistics {
         });
     }
 
+    setData(data) {
+        this.barChart.setData(data);
+    }
+
     recordPosting(data) {
         if (!this.recording) {
             this.recording = true;
@@ -676,6 +680,12 @@ class Statistics {
                     console.log(err);
             });
         }
+    }
+
+    getReports(callback) {
+        Meteor.call(GetReports, (err, data) => {
+            callback(err, data);
+        });
     }
 }
 

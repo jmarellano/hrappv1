@@ -55,6 +55,7 @@ class Status extends Component {
                 <option value={CANDIDATE_STATUS.SCHED_INT}>Sched for INT</option>
                 <option value={CANDIDATE_STATUS.SCHED_LT}>Sched for LT</option>
                 <option value={CANDIDATE_STATUS.WITHDREW}>Withdrew Application</option>
+                <option value={CANDIDATE_STATUS.PRE_QUALIFIED}>Pre-Qualified</option>
             </select>
         );
     }

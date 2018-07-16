@@ -238,6 +238,8 @@ if (Meteor.isServer) {
                 or2.push({ 'status': CANDIDATE_STATUS.SCHED_LT + '' });
             if (candidate.filter.indexOf(CANDIDATE_STATUS.WITHDREW) > -1)
                 or2.push({ 'status': CANDIDATE_STATUS.WITHDREW + '' });
+            if (candidate.filter.indexOf(CANDIDATE_STATUS.PRE_QUALIFIED) > -1)
+                or2.push({ 'status': CANDIDATE_STATUS.PRE_QUALIFIED + '' });
 
             if (candidate.filter.indexOf(SEARCH.resume) > -1)
                 query['resume'] = { $gte: 5 };

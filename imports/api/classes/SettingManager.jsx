@@ -1,5 +1,8 @@
 import { Mongo } from 'meteor/mongo';
+import { CategoriesDB } from '../categories';
+import { CandidatesDB } from '../candidates';
 import { SettingsDB, PostingDB } from '../settings';
+import { CANDIDATE_STATUS } from './Const';
 import moment from 'moment-timezone';
 
 export default class SettingManager {
@@ -33,6 +36,37 @@ export default class SettingManager {
             category: new Mongo.ObjectID(data.category),
             postedBy: userId
         });
+    }
+    static getReports() {
+        let categories = CategoriesDB.find().fetch();
+        let lastMonth = moment().subtract(1, 'month').add(1, 'day');
+        let endLastMonth = lastMonth.add(1, 'month').subtract(1, 'day');
+        let row = [],
+            row2 = [];
+        categories.forEach((category) => {
+            let posts = PostingDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).count();
+            let newApplicants = CandidatesDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).fetch();
+            let applicants = 0,
+                preQualified = 0,
+                interviewed = 0,
+                qualified = 0,
+                hired = 0;
+            newApplicants.forEach((applicant) => {
+                applicants++;
+                if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED)
+                    preQualified++;
+                if (applicant.status === CANDIDATE_STATUS.INT)
+                    interviewed++;
+                if (applicant.status === CANDIDATE_STATUS.QUALIFIED)
+                    qualified++;
+                if (applicant.status === CANDIDATE_STATUS.HIRED)
+                    hired++;
+            });
+            let percentage = (newApplicants / posts) * 100;
+            row.push({ post: category.category, jobPosts: posts, new: applicants, percentage: isNaN(percentage) ? 0 : percentage });
+            row2.push({ post: category.category, new: applicants, preQualified, interviewed, qualified, hired });
+        });
+        return [row, row2];
     }
     static getPostingStat(opt) {
         let retval = {};
