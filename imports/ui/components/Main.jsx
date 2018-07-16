@@ -37,17 +37,19 @@ Main.propTypes = {
 export default withTracker(props => {
     let isReady = Accounts.loginServicesConfigured(),
         user = Meteor.user();
+    Meteor.subscribe(ValidUsers);
     if (user)
         user = new User(user, 0);
+    let users = db['#users'].find({}, { sort: { username_sort: 1 } }).fetch().map((item, index) => new User(item, index));
     if (isReady && user) {
-        isReady = Meteor.subscribe(ValidUsers).ready() && Meteor.subscribe(SettingsPub).ready();
+        isReady = users.length && Meteor.subscribe(SettingsPub).ready();
     }
     return {
         component: props.match.params.component || '',
         title: Meteor.settings.public.config.title,
         isReady,
         user,
-        users: Meteor.users.find({}, { sort: { username_sort: 1 } }).fetch().map((item, index) => new User(item, index)),
+        users: users,
         settings: SettingsDB.findOne()
     };
 })(Main);

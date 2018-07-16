@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES, isPermitted, RETIRED, VERIFIED, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
+import Util from './classes/Utilities';
+import moment from "moment-timezone";
 
 export const ValidUsers = 'users_valid';
 export const UsersRegister = 'users_register';
@@ -194,7 +196,15 @@ if (Meteor.isServer) {
     functions[UsersGetRetired] = function () {
         try {
             check(this.userId, String);
-            return Meteor.users.find({ 'profile.retired': VALUE.TRUE }, { sort: { username_sort: 1 } }).fetch();
+            return Meteor.users.find({ 'profile.retired': VALUE.TRUE }, { sort: { username_sort: 1 } }).fetch().map((user, index) => {
+                if(user.services)
+                    delete user.services;
+                if(user.emails && user.emails[0].address)
+                    user.email = user.emails[0].address;
+                if(user.createdAt)
+                    user.dateJoined = moment(user.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
+                return user;
+            });
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -202,7 +212,18 @@ if (Meteor.isServer) {
     };
     Meteor.publish(ValidUsers, function () {
         try {
-            return Meteor.users.find({ 'profile.retired': VALUE.FALSE, 'emails.0.verified': true }, { sort: { username_sort: 1 } });
+            let cursor = Meteor.users.find({ 'profile.retired': VALUE.FALSE, 'emails.0.verified': true }, { sort: { username_sort: 1 } });
+            Util.setupHandler(this, "#users", cursor, (doc) => {
+                //setup doc
+               let newDoc = doc;
+               if(doc.services)
+                   delete doc.services;
+               if(doc.emails && doc.emails[0].address)
+                   newDoc.email = doc.emails[0].address;
+               if(doc.createdAt)
+                   doc.dateJoined = moment(doc.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
+               return newDoc;
+            });
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
