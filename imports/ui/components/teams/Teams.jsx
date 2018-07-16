@@ -167,13 +167,14 @@ class Teams extends React.Component {
             <div className="pull-left main">
                 <div className="table-responsive">
                     <BootstrapTable data={this.props.users} striped hover>
-                        <TableHeaderColumn isKey dataField='username' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } } >Members</TableHeaderColumn>
-                        <TableHeaderColumn dataField='firstName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a First Name' } }>First Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } }>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='username' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } } width={150}>Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a First Name' } } width={130}>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } } width={130}>Last Name</TableHeaderColumn>
                         <TableHeaderColumn dataField='email' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Email Add' } }>Email Add</TableHeaderColumn>
                         <TableHeaderColumn dataField='dateJoined' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Joined' } }>Date Joined</TableHeaderColumn>
-                        <TableHeaderColumn dataField='select' dataFormat={this.userRole} >Roles</TableHeaderColumn>
-                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} >Actions</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastLoggedInDt' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Time' } }>Last Logged In Date and Time</TableHeaderColumn>
+                        <TableHeaderColumn dataField='select' dataFormat={this.userRole} width={120} >Roles</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} width={90} >Actions</TableHeaderColumn>
                     </BootstrapTable>
                     <h3 className="ml-1">
                         Retired Users

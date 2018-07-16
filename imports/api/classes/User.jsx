@@ -13,6 +13,7 @@ class User {
         this.email = obj.email;
         this.dateJoined = obj.dateJoined;
         this.connectedEmails = obj.profile.emails || [];
+        this.lastLoggedInDt = obj.lastLoggedInDt;
         this.role = obj.profile.role;
         this.team = obj.profile.team;
         this.settings = obj.profile.settings;
