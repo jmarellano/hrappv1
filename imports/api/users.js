@@ -161,17 +161,16 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[UsersRetire] = function (id) {
+    functions[UsersRetire] = function (id, unRetire) {
         try {
             check(this.userId, String);
             check(id, String);
             let user = Meteor.user();
             if (user && isPermitted(user.profile.role, ROLES.VIEW_TEAMS)) {
-                Meteor.users.update({ _id: id }, { $set: { 'profile.retired': VALUE.TRUE } })
+                Meteor.users.update({ _id: id }, { $set: { 'profile.retired': unRetire ? VALUE.FALSE : VALUE.TRUE } });
                 return ('User Retired!');
             }
             throw new Meteor.Error(403, "Not authorized");
-
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

@@ -16,7 +16,9 @@ class Teams extends React.Component {
             retire: false,
             remove: false,
             permitted: false,
+            unRetire: false,
             retiredUsers: [],
+            selectedUserRole: null,
             retrieving: true
         };
         this.styleSet = {
@@ -74,7 +76,7 @@ class Teams extends React.Component {
     }
 
     retire() {
-        this.props.Account.retire(this.state.user.id, (err) => {
+        this.props.Account.retire(this.state.user.id, this.state.unRetire, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
@@ -98,8 +100,8 @@ class Teams extends React.Component {
         this.setState({ role: !this.state.role, user });
     }
 
-    retireModal(user) {
-        this.setState({ retire: !this.state.retire, user });
+    retireModal(user, unRetire, role) {
+        this.setState({ retire: !this.state.retire, user, unRetire, selectedUserRole : role });
     }
 
     removeModal(user) {
@@ -150,7 +152,7 @@ class Teams extends React.Component {
                                                     <a href="#removeModal m-r-sm"
                                                         data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
                                                 {(role !== ROLES.GUESTS) &&
-                                                    <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user)} className="btn btn-warning">Retire</a>}
+                                                    <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, false, role)} className="btn btn-warning">Retire</a>}
                                             </div>
                                         </td>
                                     </tr>
@@ -169,10 +171,24 @@ class Teams extends React.Component {
                                 <th scope="col">Last Name</th>
                                 <th scope="col">Email Add</th>
                                 <th scope="col">Date Joined</th>
+                                <th scope="col"/>
                             </tr>
                         </thead>
                         <tbody>
                             {this.state.retiredUsers.map((user, index) => {
+                                let role = user.role || ROLES.GUESTS;
+                                let role_ = null;
+                                switch(role){
+                                    case ROLES.ADMIN:
+                                        role_ = "ADMIN";
+                                        break;
+                                    case ROLES.STAFFS:
+                                        role_ = "STAFF";
+                                        break;
+                                    case ROLES.GUESTS:
+                                        role_ = "GUEST";
+                                        break;
+                                }
                                 return (
                                     <tr key={index}>
                                         <td>{user.username}</td>
@@ -180,6 +196,7 @@ class Teams extends React.Component {
                                         <td>{user.lastName}</td>
                                         <td>{user.getPrimaryEmail().address}</td>
                                         <td>{user.getDateJoined()}</td>
+                                        <td><a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, true, role_)} className="btn btn-warning">Un-Retire</a></td>
                                     </tr>
                                 );
                             })}
@@ -221,7 +238,7 @@ class Teams extends React.Component {
                     <form className="panel panel-primary" onSubmit={this.save}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
-                                Retire User
+                                {this.state.unRetire ? "Un-Retire" : "Retire"} User
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
                                         onClick={this.retireModal}>
@@ -232,7 +249,7 @@ class Teams extends React.Component {
                         </div>
                         <div className="panel-body p-2">
                             <h3>
-                                You are going to set {userObj.username} as RETIRED. Continue?
+                                You are going to set {userObj.username} as {this.state.selectedUserRole ? `${this.state.selectedUserRole} again` : "RETIRED"}. Continue?
                             </h3>
                             <Button onClick={this.retire} className="btn btn-danger">Yes</Button>
                         </div>

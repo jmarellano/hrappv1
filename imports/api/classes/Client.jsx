@@ -91,8 +91,8 @@ class Account {
             callback(err);
         });
     }
-    retire(id, callback) {
-        Meteor.call(UsersRetire, id, (err) => {
+    retire(id, unRetire, callback) {
+        Meteor.call(UsersRetire, id, unRetire, (err) => {
             callback(err);
         });
     }
