@@ -18,6 +18,7 @@ export const UsersGetRetired = 'users_get_retired';
 export const UsersChangeRole = 'users_change_role';
 export const UsersRetire = 'users_retire';
 export const UsersRemove = 'users_remove';
+export const UpdateUserLogin = 'update_user_login';
 
 if (Meteor.isServer) {
     functions[UsersRegister] = function (data) {
@@ -210,6 +211,15 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    functions[UpdateUserLogin] = function(){
+        try {
+            check(this.userId, String);
+            return Meteor.users.update(this.userId, { $set: { lastLoggedInDt: new Date() } });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
     Meteor.publish(ValidUsers, function () {
         try {
             let cursor = Meteor.users.find({ 'profile.retired': VALUE.FALSE, 'emails.0.verified': true }, { sort: { username_sort: 1 } });
@@ -222,6 +232,8 @@ if (Meteor.isServer) {
                    newDoc.email = doc.emails[0].address;
                if(doc.createdAt)
                    doc.dateJoined = moment(doc.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
+               if(doc.lastLoggedInDt)
+                   doc.lastLoggedInDt = moment(doc.lastLoggedInDt).format('MMMM DD, YYYY hh:mm:ss A');
                return newDoc;
             });
         } catch (err) {

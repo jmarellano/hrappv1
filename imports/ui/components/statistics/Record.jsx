@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { ValidCategories, CategoriesDB } from '../../../api/categories';
+import {JOB_SITES} from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
 import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import moment from 'moment-timezone';
+import Select from 'react-select';
 
 class Record extends Component {
     constructor(props) {
@@ -33,7 +35,7 @@ class Record extends Component {
                 maxWidth: '600px',
                 width: 'auto',
                 height: 'auto',
-                maxHeight: '410px',
+                maxHeight: '300px',
                 margin: '1% auto',
                 padding: '0px'
             }
@@ -41,6 +43,16 @@ class Record extends Component {
         this.saveRecord = this.saveRecord.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
+        this.handleSiteChange = this.handleSiteChange.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
+    }
+    handleInputChange(event) {
+        const target = event.target;
+        if (target) {
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            if (this.setState)
+                this.setState({ [target.name]: value });
+        }
     }
     handleChangeInput(event) {
         const target = event.target;
@@ -50,25 +62,23 @@ class Record extends Component {
                 this.setState({ [target.name]: value });
         }
     }
+    handleSiteChange(selected) {
+        this.setState({ site: selected.value });
+    }
     saveRecord(e) {
         e.preventDefault();
         let data = {};
-        let datetime = moment(`${this.state.datePosted} ${this.state.timePosted}`);
-        if (!datetime.isValid()) {
-            Bert.alert('Please select date and time.', 'danger', 'growl-top-right');
-            return;
-        }
         if (!this.state.jobType.length) {
             Bert.alert('Please select a job category.', 'danger', 'growl-top-right');
             return;
         }
         data.site = this.state.site.trim();
         data.link = this.state.link.trim();
-        data.timestamp = datetime.valueOf();
+        data.timestamp = moment().valueOf();
         data.category = this.state.jobType;
         this.setState({ processing: true });
         this.props.Statistics.recordPosting(data);
-        this.setState({ processing: false, isOpen: false, site: '', link: '', jobType: '', datePosted: '', timePosted: '' });
+        this.setState({ processing: false, site: '', link: '', jobType: '', datePosted: '', timePosted: '' });
         Bert.alert('New Job posting has recorded', 'success', 'growl-top-right');
     }
     renderCategories() {
@@ -80,6 +90,13 @@ class Record extends Component {
     }
     toggleModal() {
         this.setState({ isOpen: !this.state.isOpen });
+    }
+    renderJobOptions(){
+        return JOB_SITES.map((item, index) => {
+            return (
+                <option value={item.value} key={index}>{item.label}</option>
+            )
+        })
     }
     render() {
         return (
@@ -103,14 +120,26 @@ class Record extends Component {
                         <div className="panel-body p-2">
                             <div className="mb-1">
                                 Site of Job Ad: <br />
-                                <input
-                                    type="text"
-                                    className="form-control"
+                                <select
+                                    className="form-control mb"
                                     name="site"
                                     value={this.state.site}
-                                    onChange={this.handleChangeInput}
                                     required
-                                />
+                                    onChange={this.handleInputChange}>
+                                    <option value="">---Select---</option>
+                                    {this.renderJobOptions()}
+                                </select>
+                                {/*<Select */}
+                                {/*TODO fix react-select to work here or find other packages*/}
+                                    {/*className="mb"*/}
+                                    {/*classNamePrefix="mb"*/}
+                                    {/*name="form-field-name"*/}
+                                    {/*value={this.state.site}*/}
+                                    {/*onChange={this.handleSiteChange}*/}
+                                    {/*options={JOB_SITES}*/}
+                                    {/*clearable={ false }*/}
+                                    {/*disabled={ this.state.processing }*/}
+                                {/*/>*/}
                             </div>
                             <div className="mb-1">
                                 Link to Job Ad: <br />
@@ -119,25 +148,6 @@ class Record extends Component {
                                     className="form-control"
                                     name="link"
                                     value={this.state.link}
-                                    onChange={this.handleChangeInput}
-                                    required
-                                />
-                            </div>
-                            <div className="mb-1">
-                                Date Posted: <br />
-                                <input
-                                    type="date"
-                                    className="mb-1 pull-left form-control"
-                                    name="datePosted"
-                                    value={this.state.datePosted}
-                                    onChange={this.handleChangeInput}
-                                    required
-                                />
-                                <input
-                                    type="time"
-                                    className="mb-1 pull-right form-control"
-                                    name="timePosted"
-                                    value={this.state.timePosted}
                                     onChange={this.handleChangeInput}
                                     required
                                 />

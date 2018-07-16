@@ -1,6 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES } from './Const';
-import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove } from '../users';
+import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove, UpdateUserLogin } from '../users';
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
@@ -30,6 +30,9 @@ class Auth {
     accountLogin(email, password, callback) {
         Meteor.loginWithPassword(email, password, (err) => {
             callback(err);
+            if(!err){
+                Meteor.call(UpdateUserLogin);
+            }
         });
     }
     sendVerificationLink(data, callback) {
