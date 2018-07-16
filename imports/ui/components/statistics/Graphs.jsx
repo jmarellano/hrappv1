@@ -247,6 +247,12 @@ class Graphs extends Component {
                                 <h6 className="card-subtitle mb-2 text-muted">{moment().subtract(1, 'month').add(1, 'day').format('MMM YYYY')}</h6>
                                 <div className="card-text">
                                     {
+                                        this.state.processing &&
+                                        <div>
+                                            <i className="fa fa-spin fa-spinner" /> Loading...
+                                        </div>
+                                    }
+                                    {
                                         !this.state.processing &&
                                         <table className="table table-bordered">
                                             <thead className="thead-light">
@@ -281,12 +287,6 @@ class Graphs extends Component {
                                             </tbody>
                                         </table>
                                     }
-                                    {
-                                        this.state.processing &&
-                                        <div>
-                                            <i className="fa fa-spin fa-spinner" /> Loading...
-                                        </div>
-                                    }
                                 </div>
                             </div>
                         </div>
@@ -296,19 +296,16 @@ class Graphs extends Component {
                                 <h6 className="card-subtitle mb-2 text-muted">{moment().subtract(1, 'day').format('MMM DD, YYYY')}</h6>
                                 <div className="card-text">
                                     {
-                                        !this.state.processing &&
-                                        <div className="graph-container p-4">
-                                            <div className="page-content">
-                                                <div ref={instance => { this.bgraph2 = instance }} style={{ height: '250px', width: '100%' }} />
-                                            </div>
-                                        </div>
-                                    }
-                                    {
                                         this.state.processing &&
                                         <div>
                                             <i className="fa fa-spin fa-spinner" /> Loading...
                                         </div>
                                     }
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="wakandaporebrer" ref={instance => { this.bgraph2 = instance }} style={{ height: '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
