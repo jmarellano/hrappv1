@@ -109,7 +109,7 @@ class Login extends Component {
                         <form className="mb-1" onSubmit={this.onSubmit} >
                             <input
                                 className="form-control mb-1"
-                                type="email"
+                                type="text"
                                 value={this.state.email}
                                 name="email"
                                 placeholder="Email"
