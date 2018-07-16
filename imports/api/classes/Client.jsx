@@ -519,8 +519,11 @@ class Message {
     read(data) {
         Meteor.call(MessagesRead, data);
     }
-    import(file) {
-        Meteor.call(MessagesImport, file);
+    import(file, callback) {
+        Meteor.call(MessagesImport, file, (err, result) => {
+            if(err && callback)
+                callback(err, result);
+        });
     }
     saveTemplate(data, callback) {
         Meteor.call(MessagesSaveTemplate, data.id, data.name, data.template, (err, result) => {

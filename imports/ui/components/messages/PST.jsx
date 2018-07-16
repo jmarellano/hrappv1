@@ -77,9 +77,9 @@ class PST extends Component {
         this.setState({ pst: !this.state.pst });
     }
 
-    import(file) {
+    import(file, callback) {
         if (!this.props.user.importing)
-            this.props.Message.import(file);
+            this.props.Message.import(file, callback);
     }
 
     handleUpload(e) {
@@ -95,9 +95,14 @@ class PST extends Component {
                         Bert.alert(err.reason || 'PST file uploading failed!', 'danger', 'growl-top-right');
                     else {
                         Bert.alert('PST file uploaded! Importing started...', 'success', 'growl-top-right');
-                        this.import(`${fileRef._storagePath}${fileRef._id}${fileRef.extensionWithDot}`);
+                        this.import(`${fileRef._storagePath}${fileRef._id}${fileRef.extensionWithDot}`, (err, result) => {
+                            if(err) {
+                                Bert.alert(err.reason || 'PST file uploading failed!', 'danger', 'growl-top-right');
+                                this.setState({ uploading: false });
+                            }else
+                                this.setState({ uploading: false, pst: false });
+                        });
                     }
-                    this.setState({ uploading: false, pst: false });
                 },
                 onAbort: () => {
                     Bert.alert('Upload aborted!', 'danger', 'growl-top-right');

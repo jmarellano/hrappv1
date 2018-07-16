@@ -4,6 +4,7 @@ import { CandidatesDB } from '../candidates';
 import { VALUE } from './Const';
 import child_process from 'child_process';
 import moment from 'moment';
+import { Meteor } from "meteor/meteor";
 
 export default class MessageManager {
     constructor(obj = {}) {
@@ -25,28 +26,34 @@ export default class MessageManager {
         return (this.json._id = MessagesDB.insert(this.json));
     }
     static import(file, userId, UserDB = Meteor.users) {
-        UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
-        let spawn = child_process.spawn;
-        const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file]);
-        ls.stdout.on('data', (data) => {
-            //console.log(`stdout: ${data}`);
-        });
-        ls.stderr.on('data', (data) => {
-            //console.log(`stderr: ${data}`);
-        });
-        ls.on('close', Meteor.bindEnvironment(() => {
-            console.log(`close`);
+        try {
+            UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
+            let spawn = child_process.spawn;
+            const ls = spawn('java', [ '-jar', '/data/JavaPST.jar', file ]);
+            console.log(wakanda);
+            ls.stdout.on('data', (data) => {
+                //console.log(`stdout: ${data}`);
+            });
+            ls.stderr.on('data', (data) => {
+                //console.log(`stderr: ${data}`);
+            });
+            ls.on('close', Meteor.bindEnvironment(() => {
+                console.log(`close`);
+                UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
+            }));
+            ls.on('end', Meteor.bindEnvironment(() => {
+                console.log(`end`);
+                UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
+            }));
+            ls.on('exit', Meteor.bindEnvironment(() => {
+                console.log(`exit`);
+                UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
+            }));
+            return true;
+        }catch(err){
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
-        }));
-        ls.on('end', Meteor.bindEnvironment(() => {
-            console.log(`end`);
-            UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
-        }));
-        ls.on('exit', Meteor.bindEnvironment(() => {
-            console.log(`exit`);
-            UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
-        }));
-        return true;
+            throw new Meteor.Error('bad', err.message);
+        }
     }
 
     static remove(id) {
