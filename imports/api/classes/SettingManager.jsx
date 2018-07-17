@@ -42,15 +42,23 @@ export default class SettingManager {
         let lastMonth = moment().subtract(1, 'month').add(1, 'day');
         let endLastMonth = lastMonth.add(1, 'month').subtract(1, 'day');
         let row = [],
-            row2 = [],
-            row3 = [];
+            row2 = [];
         let positions = {};
         let positionsLabel = [];
         let positionsObj = {};
+        let positions2 = {};
+        let positionsLabel2 = [];
+        let positionsObj2 = {};
         categories.forEach((category) => {
-            positions[category._id._str] = category.category;
-            positionsObj[category.category] = 0;
-            positionsLabel.push(category.category);
+            if (category.technical === "true") {
+                positions[category._id._str] = category.category;
+                positionsObj[category.category] = 0;
+                positionsLabel.push(category.category);
+            } else {
+                positions2[category._id._str] = category.category;
+                positionsObj2[category.category] = 0;
+                positionsLabel2.push(category.category);
+            }
             let posts = PostingDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).count();
             let newApplicants = CandidatesDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).fetch();
             let applicants = 0,
@@ -87,6 +95,14 @@ export default class SettingManager {
         let quaData = [];
         let hiredData = [];
         let postLabel = [];
+        let postData2 = [];
+        let newData2 = [];
+        let preData2 = [];
+        let intData2 = [];
+        let quaData2 = [];
+        let hiredData2 = [];
+        let postLabel2 = [];
+
         for (let i = 0; i < 10; i++) {
             let date = dayStart.add(1, 'days').format('MMM-DD-YYYY');
             postLabel.push(date);
@@ -96,27 +112,59 @@ export default class SettingManager {
             intData.push({ date, ...positionsObj });
             quaData.push({ date, ...positionsObj });
             hiredData.push({ date, ...positionsObj });
+            postLabel2.push(date);
+            postData2.push({ date, ...positionsObj2 });
+            newData2.push({ date, ...positionsObj2 });
+            preData2.push({ date, ...positionsObj2 });
+            intData2.push({ date, ...positionsObj2 });
+            quaData2.push({ date, ...positionsObj2 });
+            hiredData2.push({ date, ...positionsObj2 });
         }
         posts2.forEach((post) => {
             let category = positions[post.category._str];
-            let date = moment(post.timestamp).format('MMM-DD-YYYY');
-            let index = postData.map(function (e) { return e.date; }).indexOf(date);
-            postData[index][category]++;
+            if (category) {
+                let date = moment(post.timestamp).format('MMM-DD-YYYY');
+                let index = postData.map(function (e) { return e.date; }).indexOf(date);
+                postData[index][category]++;
+            } else {
+                category = positions2[post.category._str];
+                let date = moment(post.timestamp).format('MMM-DD-YYYY');
+                let index = postData2.map(function (e) { return e.date; }).indexOf(date);
+                postData2[index][category]++;
+            }
         });
         newApplicants2.forEach((applicant) => {
             let date = moment(applicant.createdAt).format('MMM-DD-YYYY');
             let index = newData.map(function (e) { return e.date; }).indexOf(date);
-            newData[index][applicant.category]++;
-            if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
-                preData[index][applicant.category]++;
-            if (applicant.status === CANDIDATE_STATUS.INT.toString())
-                intData[index][applicant.category]++;
-            if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
-                quaData[index][applicant.category]++;
-            if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
-                hiredData[index][applicant.category]++;
+            if (newData[index][applicant.category] > -1) {
+                newData[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
+                    preData[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.INT.toString())
+                    intData[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
+                    quaData[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
+                    hiredData[index][applicant.category]++;
+            } else {
+                index = newData2.map(function (e) { return e.date; }).indexOf(date);
+                newData2[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
+                    preData2[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.INT.toString())
+                    intData2[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
+                    quaData2[index][applicant.category]++;
+                if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
+                    hiredData2[index][applicant.category]++;
+            }
         });
-        return [row, row2, { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel }];
+        return [
+            row,
+            row2,
+            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel },
+            { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2 }
+        ];
     }
     static getPostingStat(opt) {
         let retval = {};

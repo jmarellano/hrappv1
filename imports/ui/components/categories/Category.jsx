@@ -31,7 +31,8 @@ class Category extends React.Component {
             TEST_WEBFLOW: 0,
             TEST_MOCK: 0,
             TEST_SIMULATION: 0,
-            others: 0
+            others: 0,
+            technical: "true"
         };
         this.className = {
             base: 'modal-base',
@@ -102,7 +103,8 @@ class Category extends React.Component {
             TEST_WEBFLOW: this.state.TEST_WEBFLOW,
             TEST_MOCK: this.state.TEST_MOCK,
             TEST_SIMULATION: this.state.TEST_SIMULATION,
-            others: this.state.others
+            others: this.state.others,
+            technical: this.state.technical
         }
         this.props.Category.add(data, (err) => {
             if (err)
@@ -127,7 +129,8 @@ class Category extends React.Component {
                     TEST_WEBFLOW: 0,
                     TEST_MOCK: 0,
                     TEST_SIMULATION: 0,
-                    others: 0
+                    others: 0,
+                    technical: "true"
                 });
                 Bert.alert('New category is created', 'success', 'growl-top-right', 'fa-check');
             }
@@ -218,18 +221,29 @@ class Category extends React.Component {
                                         role="form"
                                         className="form-horizontal mb-1"
                                         onSubmit={this.addCategory}>
-                                        <div className="form-group panel-body pt-2">
-                                            <label className="col-md-2 control-label">Category Name</label>
-                                            <div className="col-md-10">
-                                                <input
-                                                    type="text"
-                                                    placeholder=""
-                                                    value={this.state.category}
-                                                    name="category"
-                                                    className="form-control"
-                                                    onChange={this.handleChangeInput}
-                                                    required
-                                                />
+                                        <div className="form-group panel-body pt-2 row">
+                                            <div className="col-md-6">
+                                                <label className="col-md-12 control-label">Category Name:</label>
+                                                <div className="col-md-12">
+                                                    <input
+                                                        type="text"
+                                                        placeholder=""
+                                                        value={this.state.category}
+                                                        name="category"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-md-6">
+                                                <label className="col-md-12 control-label">Type:</label>
+                                                <div className="col-md-12">
+                                                    <select className="form-control" name="technical" value={this.state.technical} onChange={this.handleChangeInput}>
+                                                        <option value="true">Technical</option>
+                                                        <option value="false">Non-Technical</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
 
