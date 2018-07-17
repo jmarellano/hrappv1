@@ -42,8 +42,15 @@ export default class SettingManager {
         let lastMonth = moment().subtract(1, 'month').add(1, 'day');
         let endLastMonth = lastMonth.add(1, 'month').subtract(1, 'day');
         let row = [],
-            row2 = [];
+            row2 = [],
+            row3 = [];
+        let positions = {};
+        let positionsLabel = [];
+        let positionsObj = {};
         categories.forEach((category) => {
+            positions[category._id._str] = category.category;
+            positionsObj[category.category] = 0;
+            positionsLabel.push(category.category);
             let posts = PostingDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).count();
             let newApplicants = CandidatesDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).fetch();
             let applicants = 0,
@@ -62,11 +69,54 @@ export default class SettingManager {
                 if (applicant.status === CANDIDATE_STATUS.HIRED)
                     hired++;
             });
+
             let percentage = (newApplicants / posts) * 100;
             row.push({ post: category.category, jobPosts: posts, new: applicants, percentage: isNaN(percentage) ? 0 : percentage });
             row2.push({ post: category.category, new: applicants, preQualified, interviewed, qualified, hired });
         });
-        return [row, row2];
+
+        let dayStart = moment().subtract(11, 'days').startOf('day');
+        let dayEnd = moment().startOf('day');
+        let posts2 = PostingDB.find({ timestamp: { $lt: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { timestamp: 1 } }).fetch();
+        let newApplicants2 = CandidatesDB.find({ createdAt: { $lt: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { createdAt: 1 } }).fetch();
+
+        let postData = [];
+        let newData = [];
+        let preData = [];
+        let intData = [];
+        let quaData = [];
+        let hiredData = [];
+        let postLabel = [];
+        for (let i = 0; i < 10; i++) {
+            let date = dayStart.add(1, 'days').format('MMM-DD-YYYY');
+            postLabel.push(date);
+            postData.push({ date, ...positionsObj });
+            newData.push({ date, ...positionsObj });
+            preData.push({ date, ...positionsObj });
+            intData.push({ date, ...positionsObj });
+            quaData.push({ date, ...positionsObj });
+            hiredData.push({ date, ...positionsObj });
+        }
+        posts2.forEach((post) => {
+            let category = positions[post.category._str];
+            let date = moment(post.timestamp).format('MMM-DD-YYYY');
+            let index = postData.map(function (e) { return e.date; }).indexOf(date);
+            postData[index][category]++;
+        });
+        newApplicants2.forEach((applicant) => {
+            let date = moment(applicant.createdAt).format('MMM-DD-YYYY');
+            let index = newData.map(function (e) { return e.date; }).indexOf(date);
+            newData[index][applicant.category]++;
+            if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
+                preData[index][applicant.category]++;
+            if (applicant.status === CANDIDATE_STATUS.INT.toString())
+                intData[index][applicant.category]++;
+            if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
+                quaData[index][applicant.category]++;
+            if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
+                hiredData[index][applicant.category]++;
+        });
+        return [row, row2, { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel }];
     }
     static getPostingStat(opt) {
         let retval = {};
