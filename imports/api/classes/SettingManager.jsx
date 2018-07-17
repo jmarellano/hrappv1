@@ -29,13 +29,18 @@ export default class SettingManager {
         return SettingsDB.update({}, data, { upsert: true });
     }
     static record(data, userId) {
-        return PostingDB.insert({
-            timestamp: data.timestamp,
-            site: data.site,
-            url: data.link,
-            category: new Mongo.ObjectID(data.category),
-            postedBy: userId
-        });
+        return PostingDB.update({ _id: data.selectedJobPost }, {
+            '$set': {
+                timestamp: data.timestamp,
+                site: data.site,
+                url: data.link,
+                category: new Mongo.ObjectID(data.category),
+                postedBy: userId
+            }
+        }, { upsert: true });
+    }
+    static recordDelete(id) {
+        return PostingDB.remove({ _id: id });
     }
     static getReports() {
         let categories = CategoriesDB.find().fetch();
