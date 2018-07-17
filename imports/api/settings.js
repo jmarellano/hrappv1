@@ -4,8 +4,10 @@ import { Mongo } from 'meteor/mongo';
 import SettingManager from './classes/SettingManager';
 
 export const SettingsPub = 'settings';
+export const PostPub = 'posts';
 export const SettingsSave = 'settings_save';
 export const RecordJob = 'record-job';
+export const DeleteJob = 'delete-job';
 export const GetPostingStat = 'posting-stat';
 export const GetReports = 'get-reports';
 export const SettingsDB = new Mongo.Collection(Meteor.settings.public.collections.settings || 'settings', { idGeneration: 'MONGO' });
@@ -27,6 +29,15 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             return SettingManager.record(data, this.userId);
+        } catch (err) {
+            throw new Meteor.Error(403, 'Not authorized');
+        }
+    }
+    functions[DeleteJob] = function (id) {
+        this.unblock();
+        try {
+            check(this.userId, String);
+            return SettingManager.recordDelete(id);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');
         }
@@ -55,6 +66,15 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             return SettingsDB.find(key);
+        } catch (err) {
+            throw new Meteor.Error(403, 'Not authorized');
+        }
+    });
+    Meteor.publish(PostPub, function (key = {}) {
+        this.unblock();
+        try {
+            check(this.userId, String);
+            return PostingDB.find(key);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');
         }

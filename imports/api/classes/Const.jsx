@@ -426,6 +426,7 @@ export const JOB_SITES = [
     { value: 'jobhero.com', label: 'jobhero.com' },
     { value: 'jobs4jobs.com', label: 'jobs4jobs.com' },
     { value: 'jobscloud.net', label: 'jobscloud.net' },
+    { value: 'jobstreet.com', label: 'jobstreet.com' },
     { value: 'juantambayan.com', label: 'juantambayan.com' },
     { value: 'lagunajobs.net', label: 'lagunajobs.net' },
     { value: 'metromanilajobs.net', label: 'metromanilajobs.net' },

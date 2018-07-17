@@ -6,7 +6,7 @@ import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../for
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesStatus } from '../candidates';
-import { RecordJob, GetPostingStat, SettingsSave, GetReports } from '../settings';
+import { RecordJob, GetPostingStat, SettingsSave, GetReports, DeleteJob } from '../settings';
 import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
 
@@ -657,6 +657,7 @@ class Statistics {
     }
 
     createLineGraph(options) {
+        console.log("options: ", options);
         this.lineChart = new Morris.Line({
             data: this.lineData,
             ...options
@@ -683,6 +684,13 @@ class Statistics {
                     console.log(err);
             });
         }
+    }
+
+    deletePosting(id) {
+        Meteor.call(DeleteJob, id, (err) => {
+            if (err)
+                console.log(err);
+        });
     }
 
     getReports(callback) {
