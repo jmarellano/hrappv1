@@ -4,8 +4,10 @@ import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import Util from './classes/Utilities';
 import CandidateManager from './classes/CandidateManager';
+import moment from "moment-timezone";
 
 export const ValidCandidates = 'candidates_valid';
+export const CandidatesPub = 'candidates_pub';
 export const CandidateCreate = 'candidates_create';
 export const CandidatesGetId = 'candidates_get_id';
 export const CandidatesInfo = 'candidates_info';
@@ -156,6 +158,100 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    Meteor.publish(CandidatesPub, function(){
+        try{
+            let cursor = CandidatesDB.find({});
+            Util.setupHandler(this, databaseName, cursor, (doc) => {
+                //setup doc
+                let newDoc = doc;
+                if(doc.createdAt)
+                    newDoc.joinedDt = moment(doc.createdAt).format('MMMM DD, YYYY');
+                if(doc.status){
+                    let friendlyStatus = "";
+                    switch(parseInt(doc.status)){
+                        case CANDIDATE_STATUS.NA :
+                            friendlyStatus = "N/A Status";
+                            break;
+                        case CANDIDATE_STATUS.ABANDONED :
+                            friendlyStatus = "ABANDONED";
+                            break;
+                        case CANDIDATE_STATUS.DEV_METEOR :
+                            friendlyStatus = "DEV_METEOR";
+                            break;
+                        case CANDIDATE_STATUS.DEV_LT :
+                            friendlyStatus = "DEV_LT";
+                            break;
+                        case CANDIDATE_STATUS.DQ_FOREIGNER :
+                            friendlyStatus = "DQ_FOREIGNER";
+                            break;
+                        case CANDIDATE_STATUS.DQ_GREY :
+                            friendlyStatus = "DQ_GREY";
+                            break;
+                        case CANDIDATE_STATUS.DQ_ECO :
+                            friendlyStatus = "DQ_ECO";
+                            break;
+                        case CANDIDATE_STATUS.DQ_SAL :
+                            friendlyStatus = "DQ_SAL";
+                            break;
+                        case CANDIDATE_STATUS.DQ_NOT_FIT :
+                            friendlyStatus = "DQ_NOT_FIT";
+                            break;
+                        case CANDIDATE_STATUS.FAILED_INT :
+                            friendlyStatus = "FAILED_INT";
+                            break;
+                        case CANDIDATE_STATUS.FAILED_METEOR :
+                            friendlyStatus = "FAILED_METEOR";
+                            break;
+                        case CANDIDATE_STATUS.HIRED :
+                            friendlyStatus = "HIRED";
+                            break;
+                        case CANDIDATE_STATUS.INC :
+                            friendlyStatus = "INC";
+                            break;
+                        case CANDIDATE_STATUS.INQ :
+                            friendlyStatus = "INQ";
+                            break;
+                        case CANDIDATE_STATUS.INT :
+                            friendlyStatus = "INT";
+                            break;
+                        case CANDIDATE_STATUS.NO_RESPONSE :
+                            friendlyStatus = "NO_RESPONSE";
+                            break;
+                        case CANDIDATE_STATUS.NO_SHOW :
+                            friendlyStatus = "NO_SHOW";
+                            break;
+                        case CANDIDATE_STATUS.QUALIFIED :
+                            friendlyStatus = "QUALIFIED";
+                            break;
+                        case CANDIDATE_STATUS.REDIRECT :
+                            friendlyStatus = "REDIRECT";
+                            break;
+                        case CANDIDATE_STATUS.RESCHEDULED :
+                            friendlyStatus = "RESCHEDULED";
+                            break;
+                        case CANDIDATE_STATUS.SCHED_INT :
+                            friendlyStatus = "SCHED_INT";
+                            break;
+                        case CANDIDATE_STATUS.SCHED_LT :
+                            friendlyStatus = "SCHED_LT";
+                            break;
+                        case CANDIDATE_STATUS.WITHDREW :
+                            friendlyStatus = "WITHDREW";
+                            break;
+                        case CANDIDATE_STATUS.PRE_QUALIFIED :
+                            friendlyStatus = "PRE_QUALIFIED";
+                            break;
+                    }
+                    newDoc.friendlyStatus = friendlyStatus;
+                }else
+                    newDoc.friendlyStatus = "N/A Status";
+                return newDoc;
+            });
+        }catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    });
     Meteor.publish(ValidCandidates, function (candidate) {
         try {
             let query = { 'retired': VALUE.FALSE };

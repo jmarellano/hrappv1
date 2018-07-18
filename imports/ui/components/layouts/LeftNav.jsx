@@ -22,6 +22,7 @@ class LeftNav extends Component {
         this.routeStatistics = this.routeStatistics.bind(this);
         this.routeDrive = this.routeDrive.bind(this);
         this.routeEmails = this.routeEmails.bind(this);
+        this.routeCandidates = this.routeCandidates.bind(this);
     }
 
     routeMessages() {
@@ -30,6 +31,10 @@ class LeftNav extends Component {
 
     routeTeams() {
         this.props.history.replace(ROUTES.TEAMS);
+    }
+
+    routeCandidates() {
+        this.props.history.replace(ROUTES.CANDIDATES);
     }
 
     routeStatistics() {
@@ -60,13 +65,16 @@ class LeftNav extends Component {
                     <HeaderNav key={2} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_TEAMS}>
                         <a className="nav-link" data-tip="Teams" href="#" onClick={this.routeTeams}><i className="fa fa-2x fa-users" /></a>
                     </HeaderNav>
-                    <HeaderNav key={3} type="navbar">
+                    <HeaderNav key={3} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_TEAMS}>
+                        <a className="nav-link" data-tip="Candidates" href="#" onClick={this.routeCandidates}><i className="fa fa-2x fa-user" /></a>
+                    </HeaderNav>
+                    <HeaderNav key={4} type="navbar">
                         <PST {...this.props} />
                     </HeaderNav>
-                    <HeaderNav key={4} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_STATISTICS}>
+                    <HeaderNav key={5} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_STATISTICS}>
                         <a className="nav-link" data-tip="Statistics" href="#" onClick={this.routeStatistics}><i className="fa fa-2x fa-bar-chart" /></a>
                     </HeaderNav>
-                    <HeaderNav key={5} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
+                    <HeaderNav key={6} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
                         <Record {...this.props} />
                     </HeaderNav>
                     <HeaderNav key={7} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>

@@ -9,6 +9,7 @@ export const ROUTES = {
     FIRST: 'first',
     EMAILS: 'email',
     TEAMS: 'team',
+    CANDIDATES: 'candidates',
     FORMS_CREATOR: 'forms-creator',
     FORMS_VIEWER: 'forms-viewer',
     FORMS_DATA: 'forms-data',
