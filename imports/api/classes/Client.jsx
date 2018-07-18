@@ -686,10 +686,10 @@ class Statistics {
         }
     }
 
-    deletePosting(id) {
+    deletePosting(id, callback) {
         Meteor.call(DeleteJob, id, (err) => {
-            if (err)
-                console.log(err);
+            if (err && callback)
+                callback(err);
         });
     }
 

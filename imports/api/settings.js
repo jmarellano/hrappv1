@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import SettingManager from './classes/SettingManager';
+import { isPermitted, ROLES } from "./classes/Const";
+import MessageManager from "./classes/MessageManager";
 
 export const SettingsPub = 'settings';
 export const PostPub = 'posts';
@@ -37,7 +39,11 @@ if (Meteor.isServer) {
         this.unblock();
         try {
             check(this.userId, String);
-            return SettingManager.recordDelete(id);
+            let user = Meteor.user();
+            if (user && isPermitted(user.profile.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER)) {
+                return SettingManager.recordDelete(id);
+            }
+            throw new Meteor.Error(403, "Not authorized");
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');
         }
