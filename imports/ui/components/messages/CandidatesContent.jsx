@@ -23,10 +23,14 @@ class CandidatesContent extends React.Component {
         super(props);
         this.state = {
             limit: 20,
-            map: false
+            map: false,
+            search: '',
+            start: '',
+            end: ''
         };
         this.viewMore = this.viewMore.bind(this);
         this.toggle = this.toggle.bind(this);
+        this.search = this.search.bind(this);
         this.styleSet = {
             overlay: {
                 zIndex: '8888',
@@ -41,6 +45,10 @@ class CandidatesContent extends React.Component {
                 padding: '0px'
             }
         };
+    }
+
+    search(search, start, end) {
+        this.setState({ search, start, end });
     }
 
     viewMore() {
@@ -87,7 +95,7 @@ class CandidatesContent extends React.Component {
                             isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) ||
                                 this.props.user.id === candidate.claimed ||
                                 (candidate.followers && candidate.followers.filter((item) => item.id === this.props.user.id).length) ?
-                                <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} messages={this.props.messages} /> :
+                                <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} messages={this.props.messages} setSearch={this.search} search={this.state.search.length ? this.state.search : null} start={this.state.start} end={this.state.end} /> :
                                 <div>You need to be follower of this candidate or claim it to view messages.</div>
                         }
                     </div>

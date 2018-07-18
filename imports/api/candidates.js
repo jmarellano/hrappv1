@@ -158,96 +158,103 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    Meteor.publish(CandidatesPub, function(){
-        try{
-            let cursor = CandidatesDB.find({});
+    Meteor.publish(CandidatesPub, function () {
+        try {
+            let cursor = CandidatesDB.find({
+                '$or': [
+                    { name: { $exists: true } },
+                    { email: { $exists: true } },
+                    { number: { $exists: true } },
+                    { address: { $exists: true } },
+                ]
+            }, { sort: { name: 1, createdAt: -1 } });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 //setup doc
                 let newDoc = doc;
-                if(doc.createdAt)
+                if (doc.createdAt)
                     newDoc.joinedDt = moment(doc.createdAt).format('MMMM DD, YYYY');
-                if(doc.status){
+                if (doc.status) {
                     let friendlyStatus = "";
-                    switch(parseInt(doc.status)){
-                        case CANDIDATE_STATUS.NA :
+                    switch (parseInt(doc.status)) {
+                        case CANDIDATE_STATUS.NA:
                             friendlyStatus = "N/A Status";
                             break;
-                        case CANDIDATE_STATUS.ABANDONED :
+                        case CANDIDATE_STATUS.ABANDONED:
                             friendlyStatus = "ABANDONED";
                             break;
-                        case CANDIDATE_STATUS.DEV_METEOR :
+                        case CANDIDATE_STATUS.DEV_METEOR:
                             friendlyStatus = "DEV_METEOR";
                             break;
-                        case CANDIDATE_STATUS.DEV_LT :
+                        case CANDIDATE_STATUS.DEV_LT:
                             friendlyStatus = "DEV_LT";
                             break;
-                        case CANDIDATE_STATUS.DQ_FOREIGNER :
+                        case CANDIDATE_STATUS.DQ_FOREIGNER:
                             friendlyStatus = "DQ_FOREIGNER";
                             break;
-                        case CANDIDATE_STATUS.DQ_GREY :
+                        case CANDIDATE_STATUS.DQ_GREY:
                             friendlyStatus = "DQ_GREY";
                             break;
-                        case CANDIDATE_STATUS.DQ_ECO :
+                        case CANDIDATE_STATUS.DQ_ECO:
                             friendlyStatus = "DQ_ECO";
                             break;
-                        case CANDIDATE_STATUS.DQ_SAL :
+                        case CANDIDATE_STATUS.DQ_SAL:
                             friendlyStatus = "DQ_SAL";
                             break;
-                        case CANDIDATE_STATUS.DQ_NOT_FIT :
+                        case CANDIDATE_STATUS.DQ_NOT_FIT:
                             friendlyStatus = "DQ_NOT_FIT";
                             break;
-                        case CANDIDATE_STATUS.FAILED_INT :
+                        case CANDIDATE_STATUS.FAILED_INT:
                             friendlyStatus = "FAILED_INT";
                             break;
-                        case CANDIDATE_STATUS.FAILED_METEOR :
+                        case CANDIDATE_STATUS.FAILED_METEOR:
                             friendlyStatus = "FAILED_METEOR";
                             break;
-                        case CANDIDATE_STATUS.HIRED :
+                        case CANDIDATE_STATUS.HIRED:
                             friendlyStatus = "HIRED";
                             break;
-                        case CANDIDATE_STATUS.INC :
+                        case CANDIDATE_STATUS.INC:
                             friendlyStatus = "INC";
                             break;
-                        case CANDIDATE_STATUS.INQ :
+                        case CANDIDATE_STATUS.INQ:
                             friendlyStatus = "INQ";
                             break;
-                        case CANDIDATE_STATUS.INT :
+                        case CANDIDATE_STATUS.INT:
                             friendlyStatus = "INT";
                             break;
-                        case CANDIDATE_STATUS.NO_RESPONSE :
+                        case CANDIDATE_STATUS.NO_RESPONSE:
                             friendlyStatus = "NO_RESPONSE";
                             break;
-                        case CANDIDATE_STATUS.NO_SHOW :
+                        case CANDIDATE_STATUS.NO_SHOW:
                             friendlyStatus = "NO_SHOW";
                             break;
-                        case CANDIDATE_STATUS.QUALIFIED :
+                        case CANDIDATE_STATUS.QUALIFIED:
                             friendlyStatus = "QUALIFIED";
                             break;
-                        case CANDIDATE_STATUS.REDIRECT :
+                        case CANDIDATE_STATUS.REDIRECT:
                             friendlyStatus = "REDIRECT";
                             break;
-                        case CANDIDATE_STATUS.RESCHEDULED :
+                        case CANDIDATE_STATUS.RESCHEDULED:
                             friendlyStatus = "RESCHEDULED";
                             break;
-                        case CANDIDATE_STATUS.SCHED_INT :
+                        case CANDIDATE_STATUS.SCHED_INT:
                             friendlyStatus = "SCHED_INT";
                             break;
-                        case CANDIDATE_STATUS.SCHED_LT :
+                        case CANDIDATE_STATUS.SCHED_LT:
                             friendlyStatus = "SCHED_LT";
                             break;
-                        case CANDIDATE_STATUS.WITHDREW :
+                        case CANDIDATE_STATUS.WITHDREW:
                             friendlyStatus = "WITHDREW";
                             break;
-                        case CANDIDATE_STATUS.PRE_QUALIFIED :
+                        case CANDIDATE_STATUS.PRE_QUALIFIED:
                             friendlyStatus = "PRE_QUALIFIED";
                             break;
                     }
                     newDoc.friendlyStatus = friendlyStatus;
-                }else
+                } else
                     newDoc.friendlyStatus = "N/A Status";
                 return newDoc;
             });
-        }catch (err) {
+        } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
@@ -387,7 +394,6 @@ if (Meteor.isServer) {
                 query['$or'] = or1;
             else if (or2.length)
                 query['$or'] = or2;
-            console.log(query);
             let count = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 } }).count();
             let cursor = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 }, limit: candidate.limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {

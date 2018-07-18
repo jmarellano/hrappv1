@@ -9,7 +9,6 @@ export const ROUTES = {
     FIRST: 'first',
     EMAILS: 'email',
     TEAMS: 'team',
-    CANDIDATES: 'candidates',
     FORMS_CREATOR: 'forms-creator',
     FORMS_VIEWER: 'forms-viewer',
     FORMS_DATA: 'forms-data',
@@ -17,7 +16,8 @@ export const ROUTES = {
     TEMPLATES_CREATOR: 'templates-creator',
     TEMPLATES_NOT_FOUND: 'templates-not-found',
     STATISTICS: 'statistics',
-    FILES: 'files'
+    FILES: 'files',
+    CANDIDATES: 'candidates',
 };
 
 let ROLES_ = {

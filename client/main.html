@@ -6,47 +6,68 @@
   <link rel="stylesheet" type="text/css" href="/css/TMQFormBuilder.css">
   <link rel="stylesheet" type="text/css" href="/css/quill.css">
   <link rel="stylesheet" href="/css/morris.css" />
-   <style>
-      html, body { height: 100%; overflow: hidden; }
-      #app { height: 100%; }
-      .main { height: 100%; }
-      .maxHeight { height: 100% !important; }
-      /* width */
-      ::-webkit-scrollbar {
-         width: 5px;
-         height: 5px;
-         border-bottom-left-radius: 10px;
-      }
+  <style>
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
 
-      /* Track */
-      ::-webkit-scrollbar-track {
-         background: #f1f1f1;
-      }
+    #app {
+      height: 100%;
+    }
 
-      /* Handle */
-      ::-webkit-scrollbar-thumb {
-         background: #888;
-         border-radius: 10px;
-      }
+    .main {
+      height: 100%;
+      max-height: calc(100% - 50px);
+      overflow-y: auto;
+    }
 
-      /* Handle on hover */
-      ::-webkit-scrollbar-thumb:hover {
-         background: #555;
-      }
-      .row-striped-task-list:nth-of-type(odd){
-         background-color: #efefef;
-         border-left: 4px #000000 solid;
-      }
+    .maxHeight {
+      height: 100% !important;
+    }
 
-      .row-striped-task-list:nth-of-type(even){
-         background-color: #ffffff;
-         border-left: 4px #efefef solid;
-      }
+    /* width */
 
-      .row-striped-task-list{
-         padding: 15px 0;
-      }
-   </style>
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+      border-bottom-left-radius: 10px;
+    }
+
+    /* Track */
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    /* Handle */
+
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+
+    /* Handle on hover */
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    .row-striped-task-list:nth-of-type(odd){
+       background-color: #efefef;
+       border-left: 4px #000000 solid;
+    }
+
+    .row-striped-task-list:nth-of-type(even){
+       background-color: #ffffff;
+       border-left: 4px #efefef solid;
+    }
+
+    .row-striped-task-list{
+       padding: 15px 0;
+    }
+  </style>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript" src="/js/jquery.js"></script>
   <script type="text/javascript" src="/js/bootstrap.js"></script>

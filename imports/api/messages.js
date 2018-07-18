@@ -545,24 +545,30 @@ if (Meteor.isServer) {
         }
         this.ready();
     });
-    Meteor.publish(ValidMessages, function (contact, limit) {
+    Meteor.publish(ValidMessages, function (contact, limit, search, start, end) {
         try {
             let count = null,
                 cursor = null;
             let candidate = CandidatesDB.findOne({ contact });
             let or = [{ contact: candidate.contact }];
+            let or2 = [];
+            if (search)
+                or2 = [{ text: { $regex: search, $options: 'i' } }, { subject: { $regex: search, $options: 'i' } }];
             let user = Meteor.user();
             if (candidate.email)
                 or.push({ contact: candidate.email });
             if (candidate.number)
                 or.push({ contact: candidate.number });
-            if (user && isPermitted(user.profile.role, ROLES.VIEW_MESSAGES_PRIVATE)) {
-                count = MessagesDB.find({ $or: or }, { sort: { createdAt: -1 } }).count();
-                cursor = MessagesDB.find({ $or: or }, { sort: { createdAt: -1 }, limit });
-            } else {
-                count = MessagesDB.find({ $or: or, retired: { $exists: false } }, { sort: { createdAt: -1 } }).count();
-                cursor = MessagesDB.find({ $or: or, retired: { $exists: false } }, { sort: { createdAt: -1 }, limit });
-            }
+            let query = { $or: or };
+            if (or.length && or2.length)
+                query = { $and: [{ $or: or }, { $or: or2 }] }
+
+            if (user && !isPermitted(user.profile.role, ROLES.VIEW_MESSAGES_PRIVATE))
+                query.retired = { $exists: false };
+            if (start.length && end.length)
+                query.createdAt = { $lte: moment(end).endOf('day').valueOf(), $gte: moment(start).startOf('day').valueOf() };
+            count = MessagesDB.find(query, { sort: { createdAt: -1 } }).count();
+            cursor = MessagesDB.find(query, { sort: { createdAt: -1 }, limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;
                 return doc;

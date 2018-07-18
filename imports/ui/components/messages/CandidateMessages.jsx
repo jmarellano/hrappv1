@@ -24,7 +24,10 @@ class CandidateMessages extends React.Component {
             text: '',
             files: [],
             uploading: false,
-            reply: false
+            reply: false,
+            search: '',
+            start: '',
+            end: ''
         };
         this.styleSet = {
             overlay: {
@@ -44,7 +47,9 @@ class CandidateMessages extends React.Component {
         this.sendMessage = this.sendMessage.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.setSearch = this.setSearch.bind(this);
         this.template = this.template.bind(this);
+        this.reset = this.reset.bind(this);
         this.quillRef = null;
         this.reactQuillRef = null;
     }
@@ -246,8 +251,19 @@ class CandidateMessages extends React.Component {
                     user={this.props.user}
                     users={this.props.users}
                     isReady={this.props.isReady}
+                    highlight={this.state.search}
                 />
             );
+        });
+    }
+
+    setSearch() {
+        this.props.setSearch(this.state.search, this.state.start, this.state.end);
+    }
+
+    reset() {
+        this.setState({ search: '', start: '', end: '' }, () => {
+            this.props.setSearch(this.state.search, this.state.search, this.state.end);
         });
     }
 
@@ -340,7 +356,12 @@ class CandidateMessages extends React.Component {
                     </div>
                     <hr />
                 </form>
-                <div className={`col-sm-12 ${this.state.reply ? 'open-reply' : 'close-reply'}`}>
+                <div id="content-emails" className={`col-sm-12 ${this.state.reply ? 'open-reply' : 'close-reply'}`}>
+                    Keyword: <input className="p-1" type="text" name="search" onChange={this.handleChangeInput} value={this.state.search} /> &nbsp;
+                    From: <input className="p-1" type="date" name="start" onChange={this.handleChangeInput} value={this.state.start} /> &nbsp;
+                    To: <input className="p-1" type="date" name="end" onChange={this.handleChangeInput} value={this.state.end} /> &nbsp;
+                    <button className="p-1" onClick={this.setSearch} disabled={!this.props.isReady}><i className="fa fa-search" /> Search</button> &nbsp;
+                    <button className="p-1" onClick={this.reset} disabled={!this.props.isReady}>Reset</button> &nbsp;
                     {
                         !this.props.isReady ?
                             <div className="text-center">
@@ -349,10 +370,10 @@ class CandidateMessages extends React.Component {
                             this.renderMessages()
                     }
                     {
-                        this.props.isReady && this.props.messages.length && this.props.messages[0].max > this.props.messages.length &&
-                        <div className="text-center">
-                            <button className="btn btn-success btn-sm" onClick={this.props.viewMore}>View More</button>
-                        </div>
+                        this.props.isReady && this.props.messages.length && this.props.messages[0].max > this.props.messages.length ?
+                            <div className="text-center">
+                                <button className="btn btn-success btn-sm" onClick={this.props.viewMore}>View More</button>
+                            </div> : null
                     }
                 </div>
             </div>
@@ -368,11 +389,12 @@ CandidateMessages.propTypes = {
     candidate: PropTypes.object,
     viewMore: PropTypes.func,
     users: PropTypes.array,
-    Candidate: PropTypes.object
+    Candidate: PropTypes.object,
+    setSearch: PropTypes.func
 };
 
 export default withTracker((props) => {
-    let isReady = Meteor.subscribe(ValidMessages, props.candidate.contact, props.limit).ready();
+    let isReady = Meteor.subscribe(ValidMessages, props.candidate.contact, props.limit, props.search, props.start, props.end).ready();
     return {
         isReady
     };

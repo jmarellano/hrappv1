@@ -138,9 +138,15 @@ public class JavaPST {
                             messages.insertOne(doc);
                         } else if(type.toLowerCase().contains("IPM.Schedule.Meeting".toLowerCase())){
                             tyype = "appointments";
+                            PSTAppointment appointment = (PSTAppointment)email;
+                            doc.append("startTime", appointment.getStartTime());
+                            doc.append("endTime", appointment.getEndTime());
                             appointments.insertOne(doc);
                         } else if(type.toLowerCase().contains("IPM.Appointment".toLowerCase())){
                             tyype = "appointments";
+                            PSTAppointment appointment = (PSTAppointment)email;
+                            doc.append("startTime", appointment.getStartTime());
+                            doc.append("endTime", appointment.getEndTime());
                             appointments.insertOne(doc);
                         } else if(type.toLowerCase().contains("IPM.Contact".toLowerCase()))
                             contacts.insertOne(doc);
