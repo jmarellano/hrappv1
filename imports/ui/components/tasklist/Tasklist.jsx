@@ -45,7 +45,7 @@ class Record extends Component {
         if(this.props.taskList && this.props.taskList.length)
             return this.props.taskList.map((task, index) => {
                return (
-                   <div className="row row-striped-task-list">
+                   <div className="row row-striped-task-list" key={index}>
                        <div className="col-3 text-right">
                            <h1 className="display-4">
                                <span className="badge badge-secondary">{moment(task.startTime).format("hh:mm A")}</span>
@@ -93,8 +93,7 @@ class Record extends Component {
                         </div>
                         <div className="panel-body maxHeight">
                             {this.renderTaskList()}
-                            {(this.props.taskList && this.props.taskList.length && this.props.taskList[0].max !== this.props.taskList.length)
-                            && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
+                            {(this.props.taskList && this.props.taskList.length && this.props.taskList[0].max !== this.props.taskList.length) ?  <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
                         </div>
                     </div>
                 </Modal>
