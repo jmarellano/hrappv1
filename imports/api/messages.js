@@ -531,7 +531,8 @@ if (Meteor.isServer) {
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 tomorrow.setHours(0,0,0,0);
                 cursor = AppointmentDB.find({contact: {$in: user.profile.emails}, startTime: {$gte: today, $lt: tomorrow }});
-            }
+            }else if(currentUserOnly && user && !user.profile.emails)
+                return [];
             Util.setupHandler(this, currentUserOnly ? "#task-lists" : databaseAppointments, cursor, (doc) => {
                 if(doc.subject)
                     doc.title = doc.subject;
