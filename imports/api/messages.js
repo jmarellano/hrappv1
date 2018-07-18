@@ -520,10 +520,21 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    Meteor.publish(AppointmentsPub, function () {
+    Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
             let cursor = AppointmentDB.find({});
-            Util.setupHandler(this, databaseAppointments, cursor, (doc) => {
+            let user = Meteor.user();
+            console.log("user: ", user);
+            if(currentUserOnly && user && user.profile.emails && user.profile.emails.length){
+                console.log("user.profile.emails: ", user.profile.emails);
+                let today = new Date();
+                today.setHours(0,0,0,0);
+                let tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0,0,0,0);
+                cursor = AppointmentDB.find({contact: {$in: user.profile.emails}, startTime: {$gte: today, $lt: tomorrow }});
+            }
+            Util.setupHandler(this, currentUserOnly ? "#task-lists" : databaseAppointments, cursor, (doc) => {
                 if(doc.subject)
                     doc.title = doc.subject;
                 return doc;

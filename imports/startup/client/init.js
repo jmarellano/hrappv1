@@ -6,6 +6,7 @@ db = {};
 Meteor.startup(() => {
     db = {
         '#users': new Mongo.Collection('#users', { idGeneration: 'MONGO' }),
+        '#task-lists': new Mongo.Collection('#task-lists', { idGeneration: 'MONGO' }),
     };
     for (let key in db) {
         db[key].deny({
