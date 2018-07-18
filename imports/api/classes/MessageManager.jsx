@@ -29,7 +29,7 @@ export default class MessageManager {
         try {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
             let spawn = child_process.spawn;
-            const ls = spawn('java', [ '-jar', '/data/JavaPST.jar', file ]);
+            const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId]);
             ls.stdout.on('data', (data) => {
                 //console.log(`stdout: ${data}`);
             });
@@ -49,7 +49,7 @@ export default class MessageManager {
                 UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
             }));
             return true;
-        }catch(err){
+        } catch (err) {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
             throw new Meteor.Error('bad', err.message);
         }

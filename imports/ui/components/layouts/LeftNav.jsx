@@ -65,7 +65,7 @@ class LeftNav extends Component {
                     <HeaderNav key={2} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_TEAMS}>
                         <a className="nav-link" data-tip="Teams" href="#" onClick={this.routeTeams}><i className="fa fa-2x fa-users" /></a>
                     </HeaderNav>
-                    <HeaderNav key={3} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_TEAMS}>
+                    <HeaderNav key={3} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_MESSAGES}>
                         <a className="nav-link" data-tip="Candidates" href="#" onClick={this.routeCandidates}><i className="fa fa-2x fa-user" /></a>
                     </HeaderNav>
                     <HeaderNav key={4} type="navbar">
