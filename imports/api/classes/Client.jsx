@@ -30,7 +30,7 @@ class Auth {
     accountLogin(email, password, callback) {
         Meteor.loginWithPassword(email, password, (err) => {
             callback(err);
-            if(!err){
+            if (!err) {
                 Meteor.call(UpdateUserLogin);
             }
         });
@@ -693,8 +693,8 @@ class Statistics {
         });
     }
 
-    getReports(callback) {
-        Meteor.call(GetReports, (err, data) => {
+    getReports(type, start, end, callback) {
+        Meteor.call(GetReports, type, start, end, (err, data) => {
             callback(err, data);
         });
     }

@@ -42,12 +42,35 @@ export default class SettingManager {
     static recordDelete(id) {
         return PostingDB.remove({ _id: id });
     }
-    static getReports() {
+    static getReports(type, start, end) {
+        let dayStart = null,
+            dayEnd = null;
+        switch (type) {
+            case 0:
+                dayStart = moment().subtract(11, 'days').startOf('day');
+                dayEnd = moment().startOf('day');
+                break;
+            case 1:
+                dayStart = moment().startOf('month').subtract('1', 'days');
+                dayEnd = moment().endOf('month').add('1', 'days');
+                break;
+            case 2:
+                dayStart = moment().startOf('week').subtract(1, 'days');
+                dayEnd = moment().endOf('week').add(1, 'days');
+                break;
+            case 3:
+                dayStart = moment(start);
+                dayEnd = moment(end);
+                break;
+        }
+        let report = this.generateReport(dayStart, dayEnd);
+        return [
+            report[0],
+            report[1]
+        ];
+    }
+    static generateReport(dayStart, dayEnd) {
         let categories = CategoriesDB.find().fetch();
-        let lastMonth = moment().subtract(1, 'month').add(1, 'day');
-        let endLastMonth = lastMonth.add(1, 'month').subtract(1, 'day');
-        let row = [],
-            row2 = [];
         let positions = {};
         let positionsLabel = [];
         let positionsObj = {};
@@ -64,32 +87,7 @@ export default class SettingManager {
                 positionsObj2[category.category] = 0;
                 positionsLabel2.push(category.category);
             }
-            let posts = PostingDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).count();
-            let newApplicants = CandidatesDB.find({ category: category._id, timestamp: { $lte: endLastMonth.valueOf(), $gte: lastMonth.valueOf() } }).fetch();
-            let applicants = 0,
-                preQualified = 0,
-                interviewed = 0,
-                qualified = 0,
-                hired = 0;
-            newApplicants.forEach((applicant) => {
-                applicants++;
-                if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED)
-                    preQualified++;
-                if (applicant.status === CANDIDATE_STATUS.INT)
-                    interviewed++;
-                if (applicant.status === CANDIDATE_STATUS.QUALIFIED)
-                    qualified++;
-                if (applicant.status === CANDIDATE_STATUS.HIRED)
-                    hired++;
-            });
-
-            let percentage = (newApplicants / posts) * 100;
-            row.push({ post: category.category, jobPosts: posts, new: applicants, percentage: isNaN(percentage) ? 0 : percentage });
-            row2.push({ post: category.category, new: applicants, preQualified, interviewed, qualified, hired });
         });
-
-        let dayStart = moment().subtract(11, 'days').startOf('day');
-        let dayEnd = moment().startOf('day');
         let posts2 = PostingDB.find({ timestamp: { $lt: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { timestamp: 1 } }).fetch();
         let newApplicants2 = CandidatesDB.find({ createdAt: { $lt: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { createdAt: 1 } }).fetch();
 
@@ -107,8 +105,8 @@ export default class SettingManager {
         let quaData2 = [];
         let hiredData2 = [];
         let postLabel2 = [];
-
-        for (let i = 0; i < 10; i++) {
+        let countDiff = dayEnd.diff(dayStart, 'days');
+        for (let i = 0; i < (countDiff - 1); i++) {
             let date = dayStart.add(1, 'days').format('MMM-DD-YYYY');
             postLabel.push(date);
             postData.push({ date, ...positionsObj });
@@ -165,10 +163,8 @@ export default class SettingManager {
             }
         });
         return [
-            row,
-            row2,
-            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel },
-            { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2 }
+            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel, dates: postLabel },
+            { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2, dates: postLabel }
         ];
     }
     static getPostingStat(opt) {

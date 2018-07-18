@@ -15,10 +15,10 @@ export const PostingDB = new Mongo.Collection(Meteor.settings.public.collections
 
 
 if (Meteor.isServer) {
-    functions[GetReports] = function () {
+    functions[GetReports] = function (type, start, end) {
         try {
             check(this.userId, String);
-            return SettingManager.getReports();
+            return SettingManager.getReports(type, start, end);
         } catch (err) {
             console.log(err);
             throw new Meteor.Error(403, 'Not authorized');
