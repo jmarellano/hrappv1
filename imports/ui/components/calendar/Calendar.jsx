@@ -93,7 +93,6 @@ class Record extends Component {
                 </div>
             )
         });
-        console.log("selected appointment: ", appointment);
     }
     render() {
         console.log("this.props", this.props);
