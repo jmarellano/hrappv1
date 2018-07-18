@@ -65,7 +65,8 @@ class Message extends React.Component {
         let self = this;
         if (iframe) {
             const document = iframe.contentDocument;
-            document.body.innerHTML = this.props.message.html.length ? this.props.message.html : this.props.message.text;
+            let message = this.props.message.html.length ? this.props.message.html : this.props.message.text;
+            document.body.innerHTML = message.replace(this.props.highlight, '<span class="highlight">' + this.props.highlight + '</span>');
             this.setState({ height: document.body.offsetHeight + 40 });
             document.addEventListener('contextmenu', (event) => {
                 let text = this.getSelectionFrameText(this.props.message.id);
