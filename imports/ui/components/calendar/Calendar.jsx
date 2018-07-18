@@ -118,7 +118,7 @@ class Record extends Component {
                             <BigCalendar
                                 selectable
                                 events={this.props.appointments}
-                                defaultView={BigCalendar.Views.WEEK}
+                                defaultView={BigCalendar.Views.MONTH}
                                 defaultDate={new Date()}
                                 onSelectEvent={this.toggleAppointment}
                                 startAccessor='startTime'
