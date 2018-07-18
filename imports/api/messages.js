@@ -14,6 +14,7 @@ import SMTPConnection from 'nodemailer/lib/smtp-connection';
 import MessageManager from './classes/MessageManager';
 
 export const ValidTemplates = 'templates_valid';
+export const AppointmentsPub = 'appointments_pub';
 export const MessagesAddSender = 'messages_add_sender';
 export const MessagesRemoveSender = 'messages_remove_sender';
 export const MessagesAddListener = 'messages_add_listener';
@@ -519,6 +520,20 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    Meteor.publish(AppointmentsPub, function () {
+        try {
+            let cursor = AppointmentDB.find({});
+            Util.setupHandler(this, databaseAppointments, cursor, (doc) => {
+                if(doc.subject)
+                    doc.title = doc.subject;
+                return doc;
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
     Meteor.publish(ValidMessages, function (contact, limit) {
         try {
             let count = null,
