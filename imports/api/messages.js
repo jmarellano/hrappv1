@@ -524,9 +524,7 @@ if (Meteor.isServer) {
         try {
             let cursor = AppointmentDB.find({});
             let user = Meteor.user();
-            console.log("user: ", user);
             if(currentUserOnly && user && user.profile.emails && user.profile.emails.length){
-                console.log("user.profile.emails: ", user.profile.emails);
                 let today = new Date();
                 today.setHours(0,0,0,0);
                 let tomorrow = new Date();
