@@ -7,6 +7,7 @@ import { MessagesIncomingPub, IncomingDB } from '../../../api/messages';
 import Timezone from '../timezone/Timezone';
 import MessageBox from '../messages/MessageBox';
 import Calendar from '../calendar/Calendar';
+import Tasklist from '../tasklist/Tasklist';
 import moment from 'moment-timezone';
 import Help from './Help';
 class RightNav extends Component {
@@ -61,6 +62,9 @@ class RightNav extends Component {
                     </HeaderNav>
                     <HeaderNav key={4} type="navbar">
                         <Calendar {...this.props} />
+                    </HeaderNav>
+                    <HeaderNav key={5} type="navbar">
+                        <Tasklist {...this.props} />
                     </HeaderNav>
                 </ul>
             </div>
