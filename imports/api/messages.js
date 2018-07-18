@@ -523,7 +523,6 @@ if (Meteor.isServer) {
     Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
             let cursor = AppointmentDB.find({});
-            let user = Meteor.user();
             if(currentUserOnly && this.userId){
                 let today = new Date();
                 today.setHours(0,0,0,0);

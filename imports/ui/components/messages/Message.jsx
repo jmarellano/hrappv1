@@ -1,6 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { MESSAGES_TYPE, MESSAGES_STATUS, isPermitted, ROLES, VALUE } from '../../../api/classes/Const';
+import { MESSAGES_TYPE, MESSAGES_STATUS, isPermitted, ROLES, VALUE, EMAIL_TIMEOUT } from '../../../api/classes/Const';
 import { EmailFiles } from '../../../api/files';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
@@ -201,6 +201,21 @@ class Message extends React.Component {
                             {type}
                         </small>
                         <small className="pull-right">
+                            {
+                                message.status === MESSAGES_STATUS.SENT &&
+                                <i className="fa fa-check-circle-o text-success mr-1" data-tip="Sending Success" />
+                            }
+                            {
+                                message.status === MESSAGES_STATUS.RECEIVED &&
+                                <i className="fa fa-check-square text-info mr-1" data-tip="Received." />
+                            }
+                            {
+                                (message.status === MESSAGES_STATUS.SENDING) ?
+                                    ( message.type === MESSAGES_TYPE.EMAIL && message.createdAt + (EMAIL_TIMEOUT * 60000) < Date.now() ) ?
+                                    <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" /> : //TODO for John to add retry click function here
+                                    <i className="fa fa-spin fa-circle-o-notch text-info mr-1" data-tip="Sending..." /> :
+                                    null
+                            }
                             {
                                 message.status === MESSAGES_STATUS.FAILED &&
                                 <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" />

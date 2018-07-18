@@ -161,8 +161,9 @@ if (Meteor.isServer) {
     Meteor.publish(CandidatesPub, function () {
         try {
             let cursor = CandidatesDB.find({
+                name: { $exists: true },
+                createdAt: { $exists: true },
                 '$or': [
-                    { name: { $exists: true } },
                     { email: { $exists: true } },
                     { number: { $exists: true } },
                     { address: { $exists: true } },

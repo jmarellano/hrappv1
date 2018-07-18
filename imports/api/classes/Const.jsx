@@ -122,6 +122,8 @@ export const MESSAGES_STATUS = {
     FAILED: 3,
 };
 
+export const EMAIL_TIMEOUT = 3;
+
 export const CANDIDATE_STATUS = {
     NA: false,
     ABANDONED: 90,
