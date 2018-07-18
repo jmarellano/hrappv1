@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ValidCategories, CategoriesDB } from '../../../api/categories';
 import { PostPub, PostingDB } from '../../../api/settings';
-import { JOB_SITES } from '../../../api/classes/Const';
+import { isPermitted, JOB_SITES, ROLES } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
 import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
@@ -81,9 +81,11 @@ class Record extends Component {
         e.preventDefault();
         let deletePost = confirm("Are you sure to delete this post?");
         if(deletePost){
-            this.props.Statistics.deletePosting(this.state.selectedJobPost);
+            this.props.Statistics.deletePosting(this.state.selectedJobPost, (err) => {
+                if(err)
+                    Bert.alert(err.reason, 'danger', 'growl-top-right');
+            });
         }
-
     }
     saveRecord(e) {
         e.preventDefault();
@@ -142,6 +144,7 @@ class Record extends Component {
         });
     }
     render() {
+        console.log("this.props", this.props);
         return (
             <div>
                 <a className="nav-link" data-tip="Record Job Posting" href="#" onClick={this.toggleModal}>
@@ -233,6 +236,7 @@ class Record extends Component {
                                         className="btn btn-danger ml10"
                                         onClick={this.deletePost}
                                         style={{marginLeft: "10px"}}
+                                        disabled={!(isPermitted(this.props.user.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER))}
                                     >
                                         Delete
                                     </button>}
