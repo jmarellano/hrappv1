@@ -112,6 +112,12 @@ class Graphs extends Component {
         let graph5 = this.bgraph5;
         let graph6 = this.bgraph6;
         let graph7 = this.bgraph7;
+        let graph8 = this.bgraph8;
+        let graph9 = this.bgraph9;
+        let graph10 = this.bgraph10;
+        let graph11 = this.bgraph11;
+        let graph12 = this.bgraph12;
+        let graph13 = this.bgraph13;
         this.setState({ processing: true });
         this.props.Statistics.getReports((err, data) => {
             this.setState({ processing: false });
@@ -163,6 +169,54 @@ class Graphs extends Component {
                 labels: data[2].labels,
                 data: data[2].hired
             });
+            this.props.Statistics.createBarGraph({
+                element: graph8,
+                xkey: 'date',
+                ykeys: data[3].labels,
+                parseTime: false,
+                labels: data[3].labels,
+                data: data[3].post
+            });
+            this.props.Statistics.createBarGraph({
+                element: graph9,
+                xkey: 'date',
+                ykeys: data[3].labels,
+                parseTime: false,
+                labels: data[3].labels,
+                data: data[3].new
+            });
+            this.props.Statistics.createBarGraph({
+                element: graph10,
+                xkey: 'date',
+                ykeys: data[3].labels,
+                parseTime: false,
+                labels: data[3].labels,
+                data: data[3].pre
+            });
+            this.props.Statistics.createBarGraph({
+                element: graph11,
+                xkey: 'date',
+                ykeys: data[3].labels,
+                parseTime: false,
+                labels: data[3].labels,
+                data: data[3].int
+            });
+            this.props.Statistics.createBarGraph({
+                element: graph12,
+                xkey: 'date',
+                ykeys: data[3].labels,
+                parseTime: false,
+                labels: data[3].labels,
+                data: data[3].qua
+            });
+            this.props.Statistics.createBarGraph({
+                element: graph13,
+                xkey: 'date',
+                ykeys: data[3].labels,
+                parseTime: false,
+                labels: data[3].labels,
+                data: data[3].hired
+            });
             this.setState({ reports: data });
         });
     }
@@ -197,6 +251,108 @@ class Graphs extends Component {
             <form className="pull-left main mt-3" onSubmit={this.loadGraph}>
                 <div className="col-sm-12 p-2">
                     <div className="row p-2 pl-3">
+                        <div className="card col-sm-6">
+                            <div className="card-body">
+                                <h5 className="card-title">END OF DAY REPORT - <span className="text-primary">TECHNICAL CANDIDATES</span></h5>
+                                <h6 className="card-subtitle mb-2 text-muted">{moment().subtract(1, 'day').format('MMM DD, YYYY')}</h6>
+                                <div className="card-text">
+                                    {
+                                        this.state.processing &&
+                                        <div>
+                                            <i className="fa fa-spin fa-spinner" /> Loading...
+                                        </div>
+                                    }
+                                    {!this.state.processing && <h5>Job Ad Posting</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-2" ref={instance => { this.bgraph2 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>New Candidates</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-3" ref={instance => { this.bgraph3 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Prequalified</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-4" ref={instance => { this.bgraph4 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Interviewed</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-5" ref={instance => { this.bgraph5 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Qualified</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-6" ref={instance => { this.bgraph6 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Hired</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-7" ref={instance => { this.bgraph7 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card col-sm-6">
+                            <div className="card-body">
+                                <h5 className="card-title">END OF DAY REPORT - <span className="text-primary">NON-TECHNICAL CANDIDATES</span></h5>
+                                <h6 className="card-subtitle mb-2 text-muted">{moment().subtract(1, 'day').format('MMM DD, YYYY')}</h6>
+                                <div className="card-text">
+                                    {
+                                        this.state.processing &&
+                                        <div>
+                                            <i className="fa fa-spin fa-spinner" /> Loading...
+                                        </div>
+                                    }
+                                    {!this.state.processing && <h5>Job Ad Posting</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-8" ref={instance => { this.bgraph8 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>New Candidates</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-9" ref={instance => { this.bgraph9 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Prequalified</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-10" ref={instance => { this.bgraph10 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Interviewed</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-11" ref={instance => { this.bgraph11 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Qualified</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-12" ref={instance => { this.bgraph12 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Hired</h5>}
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-13" ref={instance => { this.bgraph13 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
                         <div className="card col-sm-12">
                             <div className="card-body">
                                 <h5 className="card-title">Job Postings</h5>
@@ -322,57 +478,6 @@ class Graphs extends Component {
                                             </tbody>
                                         </table>
                                     }
-                                </div>
-                            </div>
-                        </div>
-                        <div className="card col-sm-6">
-                            <div className="card-body">
-                                <h5 className="card-title">LAST DAY REPORT</h5>
-                                <h6 className="card-subtitle mb-2 text-muted">{moment().subtract(1, 'day').format('MMM DD, YYYY')}</h6>
-                                <div className="card-text">
-                                    {
-                                        this.state.processing &&
-                                        <div>
-                                            <i className="fa fa-spin fa-spinner" /> Loading...
-                                        </div>
-                                    }
-                                    {!this.state.processing && <h5>Job Ad Posting</h5>}
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-2" ref={instance => { this.bgraph2 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
-                                    {!this.state.processing && <h5>New Candidates</h5>}
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-3" ref={instance => { this.bgraph3 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
-                                    {!this.state.processing && <h5>Prequalified</h5>}
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-4" ref={instance => { this.bgraph4 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
-                                    {!this.state.processing && <h5>Interviewed</h5>}
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-5" ref={instance => { this.bgraph5 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
-                                    {!this.state.processing && <h5>Qualified</h5>}
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-6" ref={instance => { this.bgraph6 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
-                                    {!this.state.processing && <h5>Hired</h5>}
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-7" ref={instance => { this.bgraph7 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
-                                    <br />
                                 </div>
                             </div>
                         </div>
