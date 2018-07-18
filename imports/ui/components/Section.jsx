@@ -16,6 +16,7 @@ import FormViewer from './forms/FormViewer';
 import FormData from './forms/FormData';
 import Emails from './emails/Emails';
 import Teams from './teams/Teams';
+import Candidates from './candidates/Candidates';
 import Graphs from './statistics/Graphs';
 
 import Header from './layouts/Header';
@@ -48,6 +49,7 @@ class Section extends Component {
                 };
             case ROUTES.MESSAGES:
             case ROUTES.TEAMS:
+            case ROUTES.CANDIDATES:
             case ROUTES.TEMPLATES_CREATOR:
             case ROUTES.FORMS_CREATOR:
             case ROUTES.FORMS_VIEWER:
@@ -200,6 +202,13 @@ class Section extends Component {
                             <Header key={component + '_0'} {...this.filteredProps()} />,
                             <LeftNav key={component + '_1'} {...this.filteredProps()} />,
                             <Teams key={component + '_2'} {...this.filteredProps()} />,
+                            <RightNav key={component + '_3'} {...this.filteredProps()} />
+                        ]);
+                    case ROUTES.CANDIDATES:
+                        return ([
+                            <Header key={component + '_0'} {...this.filteredProps()} />,
+                            <LeftNav key={component + '_1'} {...this.filteredProps()} />,
+                            <Candidates key={component + '_2'} {...this.filteredProps()} />,
                             <RightNav key={component + '_3'} {...this.filteredProps()} />
                         ]);
                     case ROUTES.STATISTICS:

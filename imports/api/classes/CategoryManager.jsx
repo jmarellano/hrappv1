@@ -21,7 +21,8 @@ export default class CategoryManager {
             TEST_WEBFLOW: obj.TEST_WEBFLOW || 0,
             TEST_MOCK: obj.TEST_MOCK || 0,
             TEST_SIMULATION: obj.TEST_SIMULATION || 0,
-            others: obj.others || 0
+            others: obj.others || 0,
+            technical: obj.technical || true
         };
         if (obj._id)
             this.json._id = obj._id;
