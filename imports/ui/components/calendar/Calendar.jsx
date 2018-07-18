@@ -95,7 +95,6 @@ class Record extends Component {
         });
     }
     render() {
-        console.log("this.props", this.props);
         return (
             <div className="maxHeight">
                 <a className="nav-link" data-tip="Calendar" href="#" onClick={this.toggleModal}>
