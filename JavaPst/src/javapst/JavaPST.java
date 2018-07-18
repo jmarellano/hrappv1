@@ -34,6 +34,7 @@ public class JavaPST {
     public int folderC = 0;
     private static Logger logger = Logger.getLogger("log");
     private static MessageDigest md = null;
+    private static String userId = "";
     public static void main(String[] args) throws Exception {
         new JavaPST(args);
     }
@@ -47,6 +48,7 @@ public class JavaPST {
             MongoCollection<Document> contacts = database.getCollection("contacts");
             MongoCollection<Document> candidates = database.getCollection("candidates");
             md = MessageDigest.getInstance("MD5");
+            userId = args[1];
             System.out.println(pstFile.getMessageStore().getDisplayName());
             this.contact = pstFile.getMessageStore().getDisplayName();
             System.out.println("started! "+this.contact);
@@ -119,8 +121,8 @@ public class JavaPST {
                         .append("type", 1)
                         .append("status", status)
                         .append("messageId", messageId)
-                        .append("attachments", Arrays.asList());
-
+                        .append("attachments", Arrays.asList())
+                        .append("importedBy", userId);
 
                     Document subDoc = new Document("createdAt", date.getTime())
                         .append("read", read)
