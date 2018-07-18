@@ -138,7 +138,7 @@ class Teams extends React.Component {
                             <h3>
                                 You are going to set {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name: "NO_NAME" } Status to {this.state.friendlyStatus}. Continue?
                             </h3>
-                            <button onClick={ this.selectStatus } className="btn btn-danger" disabled={this.state.saving}>Yes</button>
+                            <button onClick={ this.selectStatus } className="btn btn-success" disabled={this.state.saving}>Yes</button>
                             <button onClick={ () => {
                                 this.setState({
                                     changeStatus: false,
