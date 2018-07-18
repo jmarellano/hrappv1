@@ -524,15 +524,14 @@ if (Meteor.isServer) {
         try {
             let cursor = AppointmentDB.find({});
             let user = Meteor.user();
-            if(currentUserOnly && user && user.profile.emails && user.profile.emails.length){
+            if(currentUserOnly && this.userId){
                 let today = new Date();
                 today.setHours(0,0,0,0);
                 let tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 tomorrow.setHours(0,0,0,0);
-                cursor = AppointmentDB.find({contact: {$in: user.profile.emails}, startTime: {$gte: today, $lt: tomorrow }});
-            }else if(currentUserOnly && user && !user.profile.emails)
-                return [];
+                cursor = AppointmentDB.find({ importedBy : this.userId, startTime: {$gte: today, $lt: tomorrow }});
+            }
             Util.setupHandler(this, currentUserOnly ? "#task-lists" : databaseAppointments, cursor, (doc) => {
                 if(doc.subject)
                     doc.title = doc.subject;
