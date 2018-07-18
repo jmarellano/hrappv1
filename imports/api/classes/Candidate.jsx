@@ -114,6 +114,9 @@ class Candidate {
         this.TEST_SIMULATION_history = obj.TEST_SIMULATION_history;
         this.others_history = obj.others_history;
         this.claimed = obj.claimed;
+        this.joinedDt = obj.joinedDt;
+        this.friendlyStatus = obj.friendlyStatus;
+        this.index = obj.index;
         this.status = obj.status;
     }
 
