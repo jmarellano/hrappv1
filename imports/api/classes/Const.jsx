@@ -16,7 +16,8 @@ export const ROUTES = {
     TEMPLATES_CREATOR: 'templates-creator',
     TEMPLATES_NOT_FOUND: 'templates-not-found',
     STATISTICS: 'statistics',
-    FILES: 'files'
+    FILES: 'files',
+    CANDIDATES: 'candidates',
 };
 
 let ROLES_ = {
