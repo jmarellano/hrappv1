@@ -18,28 +18,13 @@ export default class WebShot {
         let retval = { error: null, data: null };
         let future = new Future();
         let spawn = child_process.spawn;
-        // const ls = spawn(basepath + 'phantomjs', [
-        //     '--local-to-remote-url-access=true',
-        //     '--ssl-protocol=any',
-        //     '--ignore-ssl-errors=true',
-        //     '--web-security=false',
-        //     basepath + '/public/js/phantomjs.execute.js',
-        //     JSON.stringify(
-        //         {
-        //             link: this.link,
-        //             filePath: this.filePath,
-        //             crop: this.options.crop || { width: 240, height: 50 },
-        //             window: this.options.window || { width: 1024, height: 768 },
-        //             delay: this.options.delay || 1000
-        //         }
-        //     )
-        // ]);
-        const ls = spawn('/data/phantomjs', [
+        server.getFileSystem().openSync(this.filePath, 'w');
+        const ls = spawn(basepath + 'phantomjs', [
             '--local-to-remote-url-access=true',
             '--ssl-protocol=any',
             '--ignore-ssl-errors=true',
             '--web-security=false',
-            '/data/phantomjs.execute.js',
+            basepath + '/public/js/phantomjs.execute.js',
             JSON.stringify(
                 {
                     link: this.link,
@@ -50,6 +35,22 @@ export default class WebShot {
                 }
             )
         ]);
+        // const ls = spawn('/data/phantomjs', [
+        //     '--local-to-remote-url-access=true',
+        //     '--ssl-protocol=any',
+        //     '--ignore-ssl-errors=true',
+        //     '--web-security=false',
+        //     '/data/phantomjs.execute.js',
+        //     JSON.stringify(
+        //         {
+        //             link: this.link,
+        //             filePath: this.filePath,
+        //             crop: this.options.crop || { width: 240, height: 50 },
+        //             window: this.options.window || { width: 1024, height: 768 },
+        //             delay: this.options.delay || 1000
+        //         }
+        //     )
+        // ]);
         ls.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
         });
