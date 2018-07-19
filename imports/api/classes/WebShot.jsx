@@ -55,8 +55,6 @@ export default class WebShot {
         });
         ls.stderr.on('data', Meteor.bindEnvironment((data) => {
             console.log(`stderr: ${data}`);
-            retval.error = data;
-            future.return(retval);
         }));
         ls.on('close', Meteor.bindEnvironment(() => {
             console.log(`close`);
