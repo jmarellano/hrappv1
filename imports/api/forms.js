@@ -57,12 +57,8 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(data, Object);
-            let user = Meteor.user();
-            if (user && isPermitted(user.profile.role, ROLES.MANAGE_FORMS)) {
-                let id = data._id;
-                return FormManager.formUpdate(id, data);
-            }
-            throw new Meteor.Error(403, 'Not authorized');
+            let id = data._id;
+            return FormManager.formUpdate(id, data);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

@@ -66,8 +66,7 @@ class Message extends React.Component {
         if (iframe) {
             const document = iframe.contentDocument;
             let message = this.props.message.html.length ? this.props.message.html : this.props.message.text;
-            message = message.replace('<style>', '<style>.highlight{background-color:yellow;}');
-            message = message.replace(this.props.highlight, '<span class="highlight">' + this.props.highlight + '</span>');
+            message = message.replace(this.props.highlight, `<span style="background-color: yellow !important;">${this.props.highlight}</span>`);
             document.body.innerHTML = message;
             this.setState({ height: document.body.offsetHeight + 40 });
             document.addEventListener('contextmenu', (event) => {
