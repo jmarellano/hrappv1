@@ -18,6 +18,7 @@ export default class WebShot {
         let retval = { error: null, data: null };
         let future = new Future();
         let spawn = child_process.spawn;
+        server.getFileSystem().openSync(this.filePath, 'w');
         const ls = spawn(basepath + 'phantomjs', [
             '--local-to-remote-url-access=true',
             '--ssl-protocol=any',
@@ -34,13 +35,27 @@ export default class WebShot {
                 }
             )
         ]);
+        // const ls = spawn('/data/phantomjs', [
+        //     '--local-to-remote-url-access=true',
+        //     '--ssl-protocol=any',
+        //     '--ignore-ssl-errors=true',
+        //     '--web-security=false',
+        //     '/data/phantomjs.execute.js',
+        //     JSON.stringify(
+        //         {
+        //             link: this.link,
+        //             filePath: this.filePath,
+        //             crop: this.options.crop || { width: 240, height: 50 },
+        //             window: this.options.window || { width: 1024, height: 768 },
+        //             delay: this.options.delay || 1000
+        //         }
+        //     )
+        // ]);
         ls.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
         });
         ls.stderr.on('data', Meteor.bindEnvironment((data) => {
             console.log(`stderr: ${data}`);
-            retval.error = data;
-            future.return(retval);
         }));
         ls.on('close', Meteor.bindEnvironment(() => {
             console.log(`close`);

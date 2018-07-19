@@ -167,7 +167,7 @@ class Candidate {
     }
 
     getClaimer() {
-        let user = Meteor.users.findOne({ _id: this.claimed });
+        let user = db[ "#users" ].findOne({ _id: this.claimed });
         return user ? user.username : 'N\\A';
     }
 

@@ -149,10 +149,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(email, String);
-            let user = Meteor.user();
-            if (user && isPermitted(user.profile.role, ROLES.MANAGE_FORMS))
-                return CandidateManager.getId(email);
-            throw new Meteor.Error(403, 'Not authorized');
+            return CandidateManager.getId(email);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
