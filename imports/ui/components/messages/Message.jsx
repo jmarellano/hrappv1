@@ -60,6 +60,14 @@ class Message extends React.Component {
             $('.custom-menu').hide(100);
         });
     }
+    resend(data){
+        this.props.Message.reSend(data.id, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                Bert.alert('Message Resent!', 'success', 'growl-top-right');
+        });
+    }
     setFrame() {
         const iframe = this.frame;
         let self = this;
@@ -211,13 +219,13 @@ class Message extends React.Component {
                             {
                                 (message.status === MESSAGES_STATUS.SENDING) ?
                                     ( message.type === MESSAGES_TYPE.EMAIL && message.createdAt + (EMAIL_TIMEOUT * 60000) < Date.now() ) ?
-                                    <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" /> : //TODO for John to add retry click function here
+                                    <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" style={{ cursor: "pointer" }} onClick={this.resend.bind(this, message)} /> : //TODO for John to add retry click function here
                                     <i className="fa fa-spin fa-circle-o-notch text-info mr-1" data-tip="Sending..." /> :
                                     null
                             }
                             {
                                 message.status === MESSAGES_STATUS.FAILED &&
-                                <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" />
+                                <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" style={{ cursor: "pointer" }} onClick={this.resend.bind(this, message)} />
                             }
                             {
                                 message.getDateTime()

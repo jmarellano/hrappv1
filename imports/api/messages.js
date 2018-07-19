@@ -19,6 +19,7 @@ export const MessagesAddSender = 'messages_add_sender';
 export const MessagesRemoveSender = 'messages_remove_sender';
 export const MessagesAddListener = 'messages_add_listener';
 export const MessagesSend = 'messages_send';
+export const MessageReSend = 'message_re_send';
 export const MessagesSave = 'messages_save';
 export const MessagesRemove = 'messages_remove';
 export const MessagesRead = 'messages_read';
@@ -332,6 +333,73 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    functions[MessageReSend] = function(id){
+        try{
+            check(this.userId, String);
+            check(id, Mongo.ObjectID);
+            let message = MessagesDB.findOne({_id: id});
+            if(!message)
+                throw new Meteor.Error('bad', 'Invalid Data');
+            switch(message.type){
+                case MESSAGES_TYPE.EMAIL:
+                    let smtpConfig = { //TODO JOHN UPDATE THIS
+                        // host: data.sender.smtp_host,
+                        // port: data.sender.smtp_port,
+                        // secure: (data.sender.smtp_port === '465'),
+                        // auth: {
+                        //     user: data.sender.user,
+                        //     pass: data.sender.password,
+                        // },
+                        // tls: {
+                        //     rejectUnauthorized: false
+                        // },
+                        // ignoreTLS: true
+                    };
+                    let transporter = server.getNodemailer().createTransport(smtpConfig);
+                    if(!transporter)
+                        throw new Meteor.Error('bad', 'Server Error, Contact Administrator');
+                    let arrFiles = [];
+                    for (let i = 0; i < message.attachments.length; i++) { //TODO JOHN UPDATE THIS
+                        arrFiles.push(message.attachments[ i ]);
+                    }
+                    let mailOptions = { //TODO JOHN UPDATE THIS
+                        // from: data.sender.user,
+                        // to: data.contact,
+                        // cc: data.cc,
+                        // bcc: data.bcc,
+                        // subject: data.subject,
+                        // text: data.text,
+                        // html: data.html,
+                        // attachments: arrFiles,
+                    };
+                    MessagesDB.update({ _id: message._id }, {
+                        $set: {
+                            status: MESSAGES_STATUS.SENDING,
+                        }
+                    });
+                    transporter.sendMail(mailOptions, Meteor.bindEnvironment((error, infoObj) => {
+                        if (error && error !== null) {
+                            console.error(`Error re-sending EMAIL with '${message.from}'(EMAIL):`, error);
+                            MessagesDB.update({ _id: message._id }, {
+                                $set: {
+                                    status: MESSAGES_STATUS.FAILED,
+                                }
+                            });
+                        } else {
+                            MessagesDB.update({ _id: message._id }, {
+                                $set: {
+                                    status: MESSAGES_STATUS.SENT
+                                }
+                            });
+                        }
+                    }));
+                    break;
+            }
+        }catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    }
     functions[MessagesSend] = function (data) {
         try {
             check(this.userId, String);

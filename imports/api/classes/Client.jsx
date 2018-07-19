@@ -4,7 +4,7 @@ import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
-import { MessagesAddSender, MessagesSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
+import { MessagesAddSender, MessagesSend, MessageReSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesStatus } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave, GetReports, DeleteJob } from '../settings';
 import { PSTFiles } from '../files';
@@ -512,6 +512,11 @@ class Message {
     }
     sendMessage(data, callback) {
         Meteor.call(MessagesSend, data, (err) => {
+            callback(err);
+        });
+    }
+    reSend(id, callback){
+        Meteor.call(MessageReSend, id, (err) => {
             callback(err);
         });
     }
