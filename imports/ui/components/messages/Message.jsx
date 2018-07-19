@@ -39,11 +39,13 @@ class Message extends React.Component {
         this.toggleConfirmation = this.toggleConfirmation.bind(this);
         this.remove = this.remove.bind(this);
         this.frame = null;
+        this.frameBackUp = null;
     }
     componentDidMount() {
+        this.frameBackUp = this.frame;
         this.setFrame();
     }
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         let self = this;
         $('.custom-menu li').click(function () {
             switch ($(this).attr('data-action')) {
@@ -59,8 +61,12 @@ class Message extends React.Component {
             }
             $('.custom-menu').hide(100);
         });
+        if (this.props.message !== prevProps.message) {
+            this.frame = this.frameBackUp;
+            this.setFrame();
+        }
     }
-    resend(data){
+    resend(data) {
         this.props.Message.reSend(data.id, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -69,25 +75,26 @@ class Message extends React.Component {
         });
     }
     setFrame() {
-        const iframe = this.frame;
+        let iframe = this.frame;
         let self = this;
         if (iframe) {
             const document = iframe.contentDocument;
-            let message = this.props.message.html.length ? this.props.message.html : this.props.message.text;
-            message = message.replace(this.props.highlight, `<span style="background-color: yellow !important;">${this.props.highlight}</span>`);
-            document.body.innerHTML = message;
-            this.setState({ height: document.body.offsetHeight + 40 });
-            document.addEventListener('contextmenu', (event) => {
+            let func = (event) => {
                 let text = this.getSelectionFrameText(this.props.message.id);
                 this.setState({ text });
                 if (text.length) {
                     event.preventDefault();
-                    $('.custom-menu').finish().toggle(100).css({
+                    $('.custom-menu').finish().show().css({
                         top: event.pageY + 'px',
                         left: event.pageX + 'px'
                     });
                 }
-            });
+            };
+            let message = this.props.message.html.length ? this.props.message.html : this.props.message.text;
+            message = message.replace(this.props.highlight, `<span style="background-color: yellow !important;">${this.props.highlight}</span>`);
+            document.body.innerHTML = message;
+            this.setState({ height: document.body.offsetHeight + 40 });
+            document.addEventListener('contextmenu', func);
             $(document).bind('mousedown', function (e) {
                 if (!$(e.target).parents('.custom-menu').length > 0) {
                     $('.custom-menu').hide(100);
@@ -218,9 +225,9 @@ class Message extends React.Component {
                             }
                             {
                                 (message.status === MESSAGES_STATUS.SENDING) ?
-                                    ( message.type === MESSAGES_TYPE.EMAIL && message.createdAt + (EMAIL_TIMEOUT * 60000) < Date.now() ) ?
-                                    <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" style={{ cursor: "pointer" }} onClick={this.resend.bind(this, message)} /> : //TODO for John to add retry click function here
-                                    <i className="fa fa-spin fa-circle-o-notch text-info mr-1" data-tip="Sending..." /> :
+                                    (message.type === MESSAGES_TYPE.EMAIL && message.createdAt + (EMAIL_TIMEOUT * 60000) < Date.now()) ?
+                                        <i className="fa fa-exclamation-triangle text-danger mr-1" data-tip="Sending failed" style={{ cursor: "pointer" }} onClick={this.resend.bind(this, message)} /> :
+                                        <i className="fa fa-spin fa-circle-o-notch text-info mr-1" data-tip="Sending..." /> :
                                     null
                             }
                             {
@@ -336,7 +343,8 @@ Message.propTypes = {
     users: PropTypes.array,
     Message: PropTypes.object,
     Candidate: PropTypes.object,
-    isReady: PropTypes.bool
+    isReady: PropTypes.bool,
+    highlight: PropTypes.string
 };
 
 export default withTracker(() => {

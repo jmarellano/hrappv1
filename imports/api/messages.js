@@ -333,44 +333,55 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[MessageReSend] = function(id){
-        try{
+    functions[MessageReSend] = function (id) {
+        try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
-            let message = MessagesDB.findOne({_id: id});
-            if(!message)
+            let message = MessagesDB.findOne({ _id: id });
+            if (!message)
                 throw new Meteor.Error('bad', 'Invalid Data');
-            switch(message.type){
+            let account = Meteor.user().profile.emails;
+            if (account)
+                account = account.filter((obj) => { return (obj.user === message.from) && obj.status === 'connected' });
+            else
+                throw new Meteor.Error('BAD', 'Cannot resend the message. Please create new one!');
+            if (account.length < 1)
+                throw new Meteor.Error('BAD', 'Cannot resend the message. Please create new one!');
+            let smtpConfig = null;
+            let transporter = null;
+            let arrFiles = null;
+            let mailOptions = null;
+            switch (message.type) {
                 case MESSAGES_TYPE.EMAIL:
-                    let smtpConfig = { //TODO JOHN UPDATE THIS
-                        // host: data.sender.smtp_host,
-                        // port: data.sender.smtp_port,
-                        // secure: (data.sender.smtp_port === '465'),
-                        // auth: {
-                        //     user: data.sender.user,
-                        //     pass: data.sender.password,
-                        // },
-                        // tls: {
-                        //     rejectUnauthorized: false
-                        // },
-                        // ignoreTLS: true
+                    smtpConfig = {
+                        host: account[0].smtp_host,
+                        port: account[0].smtp_port,
+                        secure: (account[0].smtp_port === '465'),
+                        auth: {
+                            user: account[0].user,
+                            pass: account[0].password,
+                        },
+                        tls: {
+                            rejectUnauthorized: false
+                        },
+                        ignoreTLS: true
                     };
-                    let transporter = server.getNodemailer().createTransport(smtpConfig);
-                    if(!transporter)
+                    transporter = server.getNodemailer().createTransport(smtpConfig);
+                    if (!transporter)
                         throw new Meteor.Error('bad', 'Server Error, Contact Administrator');
-                    let arrFiles = [];
-                    for (let i = 0; i < message.attachments.length; i++) { //TODO JOHN UPDATE THIS
-                        arrFiles.push(message.attachments[ i ]);
+                    arrFiles = [];
+                    for (let i = 0; i < message.attachments.length; i++) {
+                        arrFiles.push(message.attachments[i]);
                     }
-                    let mailOptions = { //TODO JOHN UPDATE THIS
-                        // from: data.sender.user,
-                        // to: data.contact,
-                        // cc: data.cc,
-                        // bcc: data.bcc,
-                        // subject: data.subject,
-                        // text: data.text,
-                        // html: data.html,
-                        // attachments: arrFiles,
+                    mailOptions = {
+                        from: message.from,
+                        to: message.contact,
+                        cc: message.cc,
+                        bcc: message.bcc,
+                        subject: message.subject,
+                        text: message.text,
+                        html: message.html,
+                        attachments: message.attachments,
                     };
                     MessagesDB.update({ _id: message._id }, {
                         $set: {
@@ -395,7 +406,7 @@ if (Meteor.isServer) {
                     }));
                     break;
             }
-        }catch (err) {
+        } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
         }
@@ -591,16 +602,16 @@ if (Meteor.isServer) {
     Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
             let cursor = AppointmentDB.find({});
-            if(currentUserOnly && this.userId){
+            if (currentUserOnly && this.userId) {
                 let today = new Date();
-                today.setHours(0,0,0,0);
+                today.setHours(0, 0, 0, 0);
                 let tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
-                tomorrow.setHours(0,0,0,0);
-                cursor = AppointmentDB.find({ importedBy : this.userId, startTime: {$gte: today, $lt: tomorrow }});
+                tomorrow.setHours(0, 0, 0, 0);
+                cursor = AppointmentDB.find({ importedBy: this.userId, startTime: { $gte: today, $lt: tomorrow } });
             }
             Util.setupHandler(this, currentUserOnly ? "#task-lists" : databaseAppointments, cursor, (doc) => {
-                if(doc.subject)
+                if (doc.subject)
                     doc.title = doc.subject;
                 return doc;
             });
