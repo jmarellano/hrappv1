@@ -96,6 +96,55 @@ class Drive {
         });
         return myFuture.wait();
     }
+    copy(id, name, parent) {
+        this.getToken();
+        let myFuture = server.createFuture();
+        let options = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            params: {
+                'fileId': id 
+            },
+            data: {
+                'name': name,
+                'parents': parent
+            }
+        };
+        HTTP.call('POST', 'https://www.googleapis.com/drive/v3/files/' + id + '/copy', options, function (err, res) {
+            if (err && err !== null){
+                console.error(err);
+                myFuture.throw(new Meteor.Error(err.message));
+            }
+            else
+              myFuture.return(res);
+        });
+        return myFuture.wait();
+    }
+    rename(name, id) {
+        this.getToken();
+        let myFuture = server.createFuture();
+        let options = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            params: {
+                'fileId': id 
+            },
+            data: {
+                'name': name
+            }
+        };
+        HTTP.call('PATCH', 'https://www.googleapis.com/drive/v3/files/' + id, options, function (err, res) {
+            if (err && err !== null){
+                console.error(err);
+                myFuture.throw(new Meteor.Error(err.message));
+            }
+            else
+              myFuture.return(res);
+        });
+        return myFuture.wait();
+    }
     insertPermission(file, value, type, role) {
         let body = {
             'role': role,
