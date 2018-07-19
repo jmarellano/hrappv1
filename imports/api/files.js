@@ -18,7 +18,7 @@ let EmailFiles = new FilesCollection({
     storagePath: PATH.UPLOAD,
     onAfterUpload: function (fileRef) {
         if (!isWindows)
-            if (new ClamAv().scanFile(EmailFiles.link(fileRef)).isInfected) {
+            if (new ClamAv({ preference: 'clamdscan' }).scanFile(fileRef.path).isInfected) {
                 fs.move(fileRef.path, PATH.INFECTED + fileRef._id + fileRef.extensionWithDot);
                 EmailFiles.update({ _id: fileRef._id }, { $set: { _storagePath: PATH.INFECTED } });
             }

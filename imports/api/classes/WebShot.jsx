@@ -70,4 +70,4 @@ export default class WebShot {
         let val = future.wait();
         this.callback(val.error, val.data);
     }
-} 
+}
