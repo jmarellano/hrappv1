@@ -198,11 +198,11 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             return Meteor.users.find({ 'profile.retired': VALUE.TRUE }, { sort: { username_sort: 1 } }).fetch().map((user, index) => {
-                if(user.services)
+                if (user.services)
                     delete user.services;
-                if(user.emails && user.emails[0].address)
+                if (user.emails && user.emails[0].address)
                     user.email = user.emails[0].address;
-                if(user.createdAt)
+                if (user.createdAt)
                     user.dateJoined = moment(user.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
                 return user;
             });
@@ -211,7 +211,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[UpdateUserLogin] = function(){
+    functions[UpdateUserLogin] = function () {
         try {
             check(this.userId, String);
             return Meteor.users.update(this.userId, { $set: { lastLoggedInDt: new Date() } });
@@ -225,16 +225,20 @@ if (Meteor.isServer) {
             let cursor = Meteor.users.find({ 'profile.retired': VALUE.FALSE, 'emails.0.verified': true }, { sort: { username_sort: 1 } });
             Util.setupHandler(this, "#users", cursor, (doc) => {
                 //setup doc
-               let newDoc = doc;
-               if(doc.services)
-                   delete doc.services;
-               if(doc.emails && doc.emails[0].address)
-                   newDoc.email = doc.emails[0].address;
-               if(doc.createdAt)
-                   doc.dateJoined = moment(doc.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
-               if(doc.lastLoggedInDt)
-                   doc.lastLoggedInDt = moment(doc.lastLoggedInDt).format('MMMM DD, YYYY hh:mm:ss A');
-               return newDoc;
+                let newDoc = doc;
+                if (newDoc.profile.emails)
+                    newDoc.profile.emails.forEach((email) => {
+                        email.password = '------';
+                    });
+                if (doc.services)
+                    delete doc.services;
+                if (doc.emails && doc.emails[0].address)
+                    newDoc.email = doc.emails[0].address;
+                if (doc.createdAt)
+                    doc.dateJoined = moment(doc.createdAt).format('MMMM DD, YYYY hh:mm:ss A');
+                if (doc.lastLoggedInDt)
+                    doc.lastLoggedInDt = moment(doc.lastLoggedInDt).format('MMMM DD, YYYY hh:mm:ss A');
+                return newDoc;
             });
         } catch (err) {
             console.error(err);
