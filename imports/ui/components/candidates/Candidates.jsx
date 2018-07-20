@@ -286,7 +286,7 @@ class Teams extends React.Component {
                                            filter={ { type: 'RegexFilter', placeholder: 'Please enter status' } }
                                            dataFormat={ this.candidateStatus }
                                            width={ "200" }>Status</TableHeaderColumn>
-                        <TableHeaderColumn dataField='isReApplicant'
+                        <TableHeaderColumn dataField='isReApplicantFriendly'
                                            filter={ { type: 'RegexFilter', placeholder: 'Please enter status' } }
                                            dataFormat={ this.candidateReApplicant }
                                            width={ "200" }>Re-Applicant</TableHeaderColumn>
