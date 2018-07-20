@@ -10,6 +10,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import { ValidUsers } from "../../../api/users";
 import { CandidatesDB, CandidatesPub } from "../../../api/candidates";
 import Candidate from "../../../api/classes/Candidate";
+import { PostingSitesDB } from "../../../api/settings";
 
 class Teams extends React.Component {
     constructor() {
@@ -43,13 +44,19 @@ class Teams extends React.Component {
         };
         this.selectStatus = this.selectStatus.bind(this);
         this.candidateStatus = this.candidateStatus.bind(this);
+        this.candidateSource = this.candidateSource.bind(this);
     }
 
     selectStatus() {
         this.setState({
             saving: true
         });
-        this.props.Candidate.changeStats({ status: this.state.selectedStatus }, this.state.selectedCandidate.contact, (err) => {
+        let qry = {};
+        if(this.state.changeStatus)
+            qry = { status: this.state.selectedStatus };
+        else if(this.state.changeSite)
+            qry = { source: new Mongo.ObjectID(this.state.selectedSite) };
+        this.props.Candidate.changeStats(qry, this.state.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
@@ -57,7 +64,10 @@ class Teams extends React.Component {
             this.setState({
                 changeStatus: false,
                 saving: false,
+                changeSite: false,
                 selectedCandidate: null,
+                friendlySite: null,
+                selectedSite: null,
                 friendlyStatus: null,
                 selectedRole: null
             });
@@ -108,6 +118,32 @@ class Teams extends React.Component {
         );
     }
 
+    candidateSource(cell, candidate) {
+        let source = candidate.source ? candidate.source._str : "not_indicated";
+        return (
+            <div key={"wakanda"}>
+                <select ref={"role" + candidate.index} className="form-control"
+                    value={source}
+                    onChange={(selectedStatus) => {
+                        let id = selectedStatus.nativeEvent.target.selectedIndex;
+                        this.setState({
+                            changeSite: true,
+                            selectedCandidate: candidate,
+                            friendlySite: selectedStatus.nativeEvent.target[id].text,
+                            selectedSite: selectedStatus.target.value
+                        });
+                    }}>
+                    <option value="not_indicated">Not Indicated</option>
+                    {this.props.postingSites.map((item, index) => {
+                        return (
+                            <option value={item._id._str} key={index}>{item.site}</option>
+                        )
+                    })}
+                </select>
+            </div>
+        );
+    }
+
 
     render() {
         return (
@@ -120,11 +156,12 @@ class Teams extends React.Component {
                         <TableHeaderColumn dataField='address' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }}>Address</TableHeaderColumn>
                         <TableHeaderColumn dataField='joinedDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }} width={200}>Joined Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='friendlyStatus' filter={{ type: 'RegexFilter', placeholder: 'Please enter status' }} dataFormat={this.candidateStatus} width={200} >Status</TableHeaderColumn>
+                        <TableHeaderColumn dataField='friendlySource' filter={{ type: 'RegexFilter', placeholder: 'Please enter source' }} dataFormat={this.candidateSource} width={200} >Source</TableHeaderColumn>
                     </BootstrapTable>
                     {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
                 </div>
                 <Modal
-                    isOpen={this.state.changeStatus}
+                    isOpen={this.state.changeStatus || this.state.changeSite}
                     style={this.styleSet}
                     contentLabel="Change Status"
                 >
@@ -135,16 +172,22 @@ class Teams extends React.Component {
                             </div>
                         </div>
                         <div className="panel-body p-2">
-                            <h3>
+                            { this.state.changeStatus && <h3>
                                 You are going to set {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} Status to {this.state.friendlyStatus}. Continue?
-                            </h3>
+                            </h3>}
+                            { this.state.changeSite && <h3>
+                                You are going to set {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} Source to {this.state.friendlySite}. Continue?
+                            </h3>}
                             <button onClick={this.selectStatus} className="btn btn-success" disabled={this.state.saving}>Yes</button>
                             <button onClick={() => {
                                 this.setState({
                                     changeStatus: false,
+                                    changeSite: false,
                                     selectedCandidate: null,
                                     friendlyStatus: null,
-                                    selectedRole: null
+                                    selectedRole: null,
+                                    friendlySite: null,
+                                    selectedSite: null
                                 })
                             }} className="btn btn-danger" style={{ marginLeft: "10px" }}>No</button>
                         </div>
@@ -164,6 +207,7 @@ export default withTracker(() => {
     Meteor.subscribe(CandidatesPub);
     return {
         validCandidates: CandidatesDB.find({ retired: 0 }, { sort: { created: -1 } }).fetch().map((item, index) => new Candidate(item, index)),
-        retiredCandidates: CandidatesDB.find({ retired: 1 }).fetch().map((item, index) => new Candidate(item, index))
+        retiredCandidates: CandidatesDB.find({ retired: 1 }).fetch().map((item, index) => new Candidate(item, index)),
+        postingSites: PostingSitesDB.find({}, { sort: { site: 1 } }).fetch(),
     };
 })(Teams);

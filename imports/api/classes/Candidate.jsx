@@ -118,6 +118,7 @@ class Candidate {
         this.friendlyStatus = obj.friendlyStatus;
         this.index = obj.index;
         this.status = obj.status;
+        this.source = obj.source;
     }
 
     isRetired() {

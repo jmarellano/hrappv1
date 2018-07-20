@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { CategoriesDB } from '../categories';
 import { CandidatesDB } from '../candidates';
-import { SettingsDB, PostingDB } from '../settings';
+import { SettingsDB, PostingDB, PostingSitesDB } from '../settings';
 import { CANDIDATE_STATUS } from './Const';
 import moment from 'moment-timezone';
 
@@ -27,6 +27,9 @@ export default class SettingManager {
     }
     static save(data) {
         return SettingsDB.update({}, data, { upsert: true });
+    }
+    static addSite(site) {
+        return PostingSitesDB.insert({site: site.toLowerCase()});
     }
     static record(data, userId) {
         return PostingDB.update({ _id: data.selectedJobPost }, {

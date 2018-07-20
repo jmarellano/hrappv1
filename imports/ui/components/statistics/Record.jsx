@@ -546,6 +546,6 @@ export default withTracker(() => {
     return {
         categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => new CategoryClass(item)),
         posts: PostingDB.find({}, { sort: { timestamp: -1 } }).fetch(),
-        postingSites: PostingSitesDB.find({}, { sort: { timestamp: -1 } }).fetch(),
+        postingSites: PostingSitesDB.find({}, { sort: { site: 1 } }).fetch(),
     };
 })(Record);

@@ -83,7 +83,7 @@ export default class CandidateManager {
     static updateCandidateStats(contact, data) {
         let temp = {};
         Object.keys(data).forEach((item) => {
-            temp[item] = parseInt(data[item]);
+            temp[item] = data[item];
         });
         return CandidatesDB.update({ contact: contact }, {
             $set: temp

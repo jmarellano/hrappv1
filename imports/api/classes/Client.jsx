@@ -5,7 +5,19 @@ import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, D
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessageReSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
-import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesStatus } from '../candidates';
+import {
+    CandidatesGetId,
+    CandidatesInfo,
+    CandidatesStats,
+    CandidatesClaim,
+    CandidatesUnclaim,
+    CandidatesTransferClaim,
+    CandidatesFollower,
+    CandidatesAddInfo,
+    CandidatesAddFileStats,
+    CandidatesRemoveFileStats,
+    CandidatesStatus
+} from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave, GetReports, DeleteJob, AddSite } from '../settings';
 import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
