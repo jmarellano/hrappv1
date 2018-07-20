@@ -116,6 +116,7 @@ class Candidate {
         this.claimed = obj.claimed;
         this.joinedDt = obj.joinedDt;
         this.friendlyStatus = obj.friendlyStatus;
+        this.friendlySite = obj.friendlySite;
         this.index = obj.index;
         this.status = obj.status;
         this.source = obj.source;

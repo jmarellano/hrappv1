@@ -150,13 +150,13 @@ class Teams extends React.Component {
             <div className="pull-left main">
                 <div className="table-responsive">
                     <BootstrapTable data={this.props.validCandidates} striped hover maxHeight='calc(100% - 60px)'>
-                        <TableHeaderColumn isKey dataField='name' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={130}>Name</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='name' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={"130"}>Name</TableHeaderColumn>
                         <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }}>Email</TableHeaderColumn>
-                        <TableHeaderColumn dataField='number' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={200}>Phone Number</TableHeaderColumn>
+                        <TableHeaderColumn dataField='number' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={"200"}>Phone Number</TableHeaderColumn>
                         <TableHeaderColumn dataField='address' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }}>Address</TableHeaderColumn>
-                        <TableHeaderColumn dataField='joinedDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }} width={200}>Joined Date</TableHeaderColumn>
-                        <TableHeaderColumn dataField='friendlyStatus' filter={{ type: 'RegexFilter', placeholder: 'Please enter status' }} dataFormat={this.candidateStatus} width={200} >Status</TableHeaderColumn>
-                        <TableHeaderColumn dataField='friendlySource' filter={{ type: 'RegexFilter', placeholder: 'Please enter source' }} dataFormat={this.candidateSource} width={200} >Source</TableHeaderColumn>
+                        <TableHeaderColumn dataField='joinedDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }} width={"200"}>Joined Date</TableHeaderColumn>
+                        <TableHeaderColumn dataField='friendlyStatus' filter={{ type: 'RegexFilter', placeholder: 'Please enter status' }} dataFormat={this.candidateStatus} width={"200"} >Status</TableHeaderColumn>
+                        <TableHeaderColumn dataField='friendlySite' filter={{ type: 'RegexFilter', placeholder: 'Please enter source' }} dataFormat={this.candidateSource} width={"200"} >Source</TableHeaderColumn>
                     </BootstrapTable>
                     {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
                 </div>
@@ -206,8 +206,17 @@ Teams.propTypes = {
 export default withTracker(() => {
     Meteor.subscribe(CandidatesPub);
     return {
-        validCandidates: CandidatesDB.find({ retired: 0 }, { sort: { created: -1 } }).fetch().map((item, index) => new Candidate(item, index)),
-        retiredCandidates: CandidatesDB.find({ retired: 1 }).fetch().map((item, index) => new Candidate(item, index)),
+        validCandidates: CandidatesDB.find({ retired: 0 }, { sort: { created: -1 } }).fetch().map((item, index) => {
+            let friendlySite = null;
+            if(item.source){
+                let postingSite = PostingSitesDB.findOne({_id: item.source});
+                if(postingSite)
+                    friendlySite = postingSite.site;
+            }
+            if(friendlySite)
+                item.friendlySite = friendlySite;
+            return new Candidate(item, index);
+        }),
         postingSites: PostingSitesDB.find({}, { sort: { site: 1 } }).fetch(),
     };
 })(Teams);
