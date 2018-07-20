@@ -3,24 +3,79 @@ import React, { Component } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { ValidUsers } from '../../api/users';
-import { SettingsDB, SettingsPub } from '../../api/settings';
+import { CheckAppointments, SettingsDB, SettingsPub } from '../../api/settings';
 
 import Client from '../../api/classes/Client';
 import User from '../../api/classes/User';
 import Section from './Section';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
+import Util from "../../api/classes/Utilities";
 
 class Main extends Component {
     constructor(props) {
         super(props);
         this.state = {};
         this.Client = new Client();
+        this.willContinueCheckingAppointments = true;
+    }
+
+    notify(data){
+        let option = {"icon" : "/img/e-mail-10.png"};
+        Util.notifyClient("Incoming Appointment Alert", `Hello you have an incoming appointment with subject:  in the next 100 minutes`, option);
+    }
+
+    componentDidMount(){
+        Meteor.setInterval(() => {
+            Meteor.call(CheckAppointments);
+        }, 2000);
     }
 
     componentDidUpdate(prevProps) {
+        let option = {"icon" : "/img/e-mail-10.png"};
+        Util.notifyClient("Incoming Appointment Alert", `test notif`, option);
         if ((this.props.user !== prevProps.user) && this.props.user)
             moment.tz.setDefault(this.props.user.default_timezone || 'Asia/Manila');
+        if (this.props.scheduledTask !== prevProps.scheduledTask && Meteor.user()) { // TODO John Please Fix
+            let didNotify = false;
+            let tasks = this.props.scheduledTask;
+            if(tasks.length && this.willContinueCheckingAppointments){
+                for(let i = 0; i < tasks.length; i++){
+                    let task = tasks[i];
+                    let timestamp = moment(task.startTime).valueOf(); // add 5 mins to date on db to test
+                    let remainingTime = Util.getTimeRemaining(new Date(timestamp));
+                    if(remainingTime){
+                        console.log('remaining time: ', remainingTime.minutes);
+                        switch(remainingTime.minutes){
+                            case 5:
+                                console.log('should show 5 mins');
+                                Util.notifyClient("Incoming Appointment Alert", `Hello you have an incoming appointment with subject: ${task.subject} in the next 5 minutes`, option);
+                                didNotify = true;
+                                break;
+                            case 3:
+                                console.log('should show 3 mins');
+                                Util.notifyClient("Incoming Appointment Alert", `Hello you have an incoming appointment with subject: ${task.subject} in the next 3 minutes`, option);
+                                didNotify = true;
+                                break;
+                            case 0:
+                                console.log('should show now');
+                                Util.notifyClient("Incoming Appointment Alert", `Hello you have a scheduled appointment with subject: ${task.subject} right now`, option);
+                                didNotify = true;
+                                break;
+                        }
+                    }
+                    if(didNotify){
+                        this.audio = new Audio('/Woosh.mp3');
+                        this.audio.play();
+                        this.willContinueCheckingAppointments = false;
+                        Meteor.setTimeout(()=>{
+                            this.willContinueCheckingAppointments = true;
+                        }, 60 * 1000);
+                    }
+                }
+            }
+        }
+
     }
 
     render() {
@@ -50,6 +105,7 @@ export default withTracker(props => {
         isReady,
         user,
         users: users,
-        settings: SettingsDB.findOne()
+        settings: SettingsDB.findOne(),
+        scheduledTask: db['#task-lists'].find({}, {sort: {startTime: -1}}).fetch()
     };
 })(Main);
