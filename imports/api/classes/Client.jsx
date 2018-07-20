@@ -290,7 +290,6 @@ class Drive {
         });
     }
     paste(file, parent, callback) {
-        console.log(file);
         Meteor.call(DriveCopyFile, file.id, `Copy of ${file.name}`, parent, (err, result) => {
             callback(err, result);
         });
