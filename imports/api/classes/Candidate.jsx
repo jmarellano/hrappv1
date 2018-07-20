@@ -120,6 +120,7 @@ class Candidate {
         this.index = obj.index;
         this.status = obj.status;
         this.source = obj.source;
+        this.categoryColor = obj.categoryColor;
     }
 
     isRetired() {
@@ -157,7 +158,8 @@ class Candidate {
     }
 
     getCategory() {
-        return <div className="badge badge-warning mr-1 text-light">{this.category}</div>;
+        console.log(this.categoryColor);
+        return <div className="badge mr-1 text-light" style={{ backgroundColor: this.categoryColor }}>{this.category}</div>;
     }
 
     getDisplayName() {
@@ -169,7 +171,7 @@ class Candidate {
     }
 
     getClaimer() {
-        let user = db[ "#users" ].findOne({ _id: this.claimed });
+        let user = db["#users"].findOne({ _id: this.claimed });
         return user ? user.username : 'N\\A';
     }
 

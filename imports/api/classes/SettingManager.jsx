@@ -29,7 +29,7 @@ export default class SettingManager {
         return SettingsDB.update({}, data, { upsert: true });
     }
     static addSite(site) {
-        return PostingSitesDB.insert({site: site.toLowerCase()});
+        return PostingSitesDB.insert({ site: site.toLowerCase() });
     }
     static record(data, userId) {
         return PostingDB.update({ _id: data.selectedJobPost }, {
@@ -80,15 +80,19 @@ export default class SettingManager {
         let positions2 = {};
         let positionsLabel2 = [];
         let positionsObj2 = {};
+        let positionColors = [];
+        let positionColors2 = [];
         categories.forEach((category) => {
             if (category.technical === "true") {
                 positions[category._id._str] = category.category;
                 positionsObj[category.category] = 0;
                 positionsLabel.push(category.category);
+                positionColors.push(category.color);
             } else {
                 positions2[category._id._str] = category.category;
                 positionsObj2[category.category] = 0;
                 positionsLabel2.push(category.category);
+                positionColors2.push(category.color);
             }
         });
         let posts2 = PostingDB.find({ timestamp: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { timestamp: 1 } }).fetch();
@@ -177,8 +181,8 @@ export default class SettingManager {
             }
         });
         return [
-            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel, dates: postLabel, adv: advData2 },
-            { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2, dates: postLabel }
+            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel, dates: postLabel, adv: advData2, colors: positionColors },
+            { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2, dates: postLabel, colors: positionColors2 }
         ];
     }
     static getPostingStat(opt) {

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { CategoriesDB } from '../../../api/categories';
+import { CSVLink } from 'react-csv';
 import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
@@ -15,7 +16,8 @@ class Graphs extends Component {
             headers: [],
             page: 0,
             startDate: moment().subtract(1, 'months').startOf('day').format('YYYY-MM-DD'),
-            endDate: moment().endOf('day').format('YYYY-MM-DD')
+            endDate: moment().endOf('day').format('YYYY-MM-DD'),
+            csv: []
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
@@ -81,45 +83,160 @@ class Graphs extends Component {
         this.setState({ processing: true });
         this.props.Statistics.getReports(type, this.state.startDate, this.state.endDate, (err, data) => {
             this.setState({ processing: false });
+            let csv = [];
             this.props.Statistics.createBarGraph({
                 element: graph2,
                 xkey: 'date',
                 ykeys: data[0].labels,
                 parseTime: false,
                 labels: data[0].labels,
-                data: data[0].post
+                data: data[0].post,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            let csvHeaders = ['Positions'];
+            let csvBlank = ['-----'];
+            let csvData = [];
+            let csvPositions = Object.keys(data[0].post[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[0].post.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Job Ad Posts');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph3,
                 xkey: 'date',
                 ykeys: data[0].labels,
                 parseTime: false,
                 labels: data[0].labels,
-                data: data[0].new
+                data: data[0].new,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[0].new[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[0].new.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- New Candidates');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph4,
                 xkey: 'date',
                 ykeys: data[0].labels,
                 parseTime: false,
                 labels: data[0].labels,
-                data: data[0].pre
+                data: data[0].pre,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[0].pre[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[0].pre.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Pre Qualified');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph5,
                 xkey: 'date',
                 ykeys: data[0].labels,
                 parseTime: false,
                 labels: data[0].labels,
-                data: data[0].int
+                data: data[0].int,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[0].int[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[0].int.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Interviewed');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph14,
                 xkey: 'date',
                 ykeys: ['METEOR_TEST', 'LIVE_TEST', 'GD_LIVE_TEST'],
                 parseTime: false,
                 labels: ['METEOR_TEST', 'LIVE_TEST', 'GD_LIVE_TEST'],
-                data: data[0].adv
+                data: data[0].adv,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
             this.props.Statistics.createBarGraph({
                 element: graph6,
@@ -127,65 +244,281 @@ class Graphs extends Component {
                 ykeys: data[0].labels,
                 parseTime: false,
                 labels: data[0].labels,
-                data: data[0].qua
+                data: data[0].qua,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[0].qua[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[0].qua.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Qualified');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph7,
                 xkey: 'date',
                 ykeys: data[0].labels,
                 parseTime: false,
                 labels: data[0].labels,
-                data: data[0].hired
+                data: data[0].hired,
+                barColors: function (row, series) {
+                    if (data[0].colors[series.index])
+                        return data[0].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[0].hired[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[0].hired.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Hired');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph8,
                 xkey: 'date',
                 ykeys: data[1].labels,
                 parseTime: false,
                 labels: data[1].labels,
-                data: data[1].post
+                data: data[1].post,
+                barColors: function (row, series) {
+                    if (data[1].colors[series.index])
+                        return data[1].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[1].post[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[1].post.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Job Ad Posts');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph9,
                 xkey: 'date',
                 ykeys: data[1].labels,
                 parseTime: false,
                 labels: data[1].labels,
-                data: data[1].new
+                data: data[1].new,
+                barColors: function (row, series) {
+                    if (data[1].colors[series.index])
+                        return data[1].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[1].new[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[1].new.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- New Candidates');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph10,
                 xkey: 'date',
                 ykeys: data[1].labels,
                 parseTime: false,
                 labels: data[1].labels,
-                data: data[1].pre
+                data: data[1].pre,
+                barColors: function (row, series) {
+                    if (data[1].colors[series.index])
+                        return data[1].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[1].pre[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[1].pre.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Pre Qualified');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph11,
                 xkey: 'date',
                 ykeys: data[1].labels,
                 parseTime: false,
                 labels: data[1].labels,
-                data: data[1].int
+                data: data[1].int,
+                barColors: function (row, series) {
+                    if (data[1].colors[series.index])
+                        return data[1].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[1].int[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[1].int.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Interviewed');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph12,
                 xkey: 'date',
                 ykeys: data[1].labels,
                 parseTime: false,
                 labels: data[1].labels,
-                data: data[1].qua
+                data: data[1].qua,
+                barColors: function (row, series) {
+                    if (data[1].colors[series.index])
+                        return data[1].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[1].qua[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[1].qua.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Qualified');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
             this.props.Statistics.createBarGraph({
                 element: graph13,
                 xkey: 'date',
                 ykeys: data[1].labels,
                 parseTime: false,
                 labels: data[1].labels,
-                data: data[1].hired
+                data: data[1].hired,
+                barColors: function (row, series) {
+                    if (data[1].colors[series.index])
+                        return data[1].colors[series.index];
+                    else
+                        return '#cccccc';
+                },
             });
-            this.setState({ reports: data, headers: data[0].dates }); // TODO data
+            csvHeaders = ['Positions'];
+            csvBlank = ['-----'];
+            csvData = [];
+            csvPositions = Object.keys(data[1].hired[0]);
+            csvPositions.shift();
+            csvPositions.forEach((position, i) => {
+                csvData[i] = [position];
+                data[1].hired.forEach((item, j) => {
+                    if (i === 0) {
+                        csvHeaders.push(item.date);
+                        csvBlank.push('-----');
+                    }
+                    csvData[i][j + 1] = item[position];
+                });
+            });
+            csvHeaders.push('|||---- Hired');
+            csv.push(csvHeaders);
+            csvData.forEach((obj) => {
+                csv.push(obj);
+            });
+            csv.push(csvBlank);
+            this.setState({ reports: data, headers: data[0].dates, csv }); // TODO data
         });
     }
     renderReport(type, row) {
@@ -302,6 +635,9 @@ class Graphs extends Component {
                             </li>
                             <li className="nav-item">
                                 <a className={`nav-link ${!this.state.processing && 'text-primary'} ${this.state.page === 3 && 'active'}`} href="#custom" onClick={this.setPage.bind(this, 3)}>Custom</a>
+                            </li>
+                            <li className="nav-item ml-auto">
+                                <CSVLink data={this.state.csv} filename={`hrapp-report-${moment().format("MM-DD-YYYY")}.csv`} className="nav-link text-primary false">Import to CSV</CSVLink>
                             </li>
                         </ul>
                         <div className="tab-content">

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Modal from '../extras/Modal';
 import CategoryClass from '../../../api/classes/Category';
+import { GithubPicker } from 'react-color';
 
 class Category extends React.Component {
     constructor() {
@@ -32,7 +33,8 @@ class Category extends React.Component {
             TEST_MOCK: 0,
             TEST_SIMULATION: 0,
             others: 0,
-            technical: "true"
+            technical: "true",
+            color: '#ccc'
         };
         this.className = {
             base: 'modal-base',
@@ -44,6 +46,7 @@ class Category extends React.Component {
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.confirmationModal = this.confirmationModal.bind(this);
+        this.handleChangeColor = this.handleChangeColor.bind(this);
         this.styleSet = {
             overlay: {
                 zIndex: '8888',
@@ -72,6 +75,25 @@ class Category extends React.Component {
                 padding: '0px'
             }
         };
+    }
+
+    handleChangeColor(color) {
+        this.setState({ color: color.hex });
+        // color = {
+        //   hex: '#333',
+        //   rgb: {
+        //     r: 51,
+        //     g: 51,
+        //     b: 51,
+        //     a: 1,
+        //   },
+        //   hsl: {
+        //     h: 0,
+        //     s: 0,
+        //     l: .20,
+        //     a: 1,
+        //   },
+        // }
     }
 
     renderCategories() {
@@ -104,7 +126,8 @@ class Category extends React.Component {
             TEST_MOCK: this.state.TEST_MOCK,
             TEST_SIMULATION: this.state.TEST_SIMULATION,
             others: this.state.others,
-            technical: this.state.technical
+            technical: this.state.technical,
+            color: this.state.color
         }
         this.props.Category.add(data, (err) => {
             if (err)
@@ -130,7 +153,8 @@ class Category extends React.Component {
                     TEST_MOCK: 0,
                     TEST_SIMULATION: 0,
                     others: 0,
-                    technical: "true"
+                    technical: "true",
+                    color: '#ccc'
                 });
                 Bert.alert('New category is created', 'success', 'growl-top-right', 'fa-check');
             }
@@ -566,8 +590,10 @@ class Category extends React.Component {
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        Color:
+                                        <GithubPicker color={this.state.color} onChange={this.handleChangeColor} className="ml-5" />;
                                         <Button
-                                            className="btn btn-primary"
+                                            className="btn btn-primary m-2"
                                             type="submit"
                                             processing={this.state.processing}>
                                             Add

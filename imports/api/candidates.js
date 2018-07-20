@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ROLES, isPermitted, VALUE, SEARCH, CANDIDATE_STATUS } from './classes/Const';
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
+import { CategoriesDB } from './categories';
 import Util from './classes/Utilities';
 import CandidateManager from './classes/CandidateManager';
 import moment from "moment-timezone";
@@ -396,6 +397,7 @@ if (Meteor.isServer) {
             let cursor = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 }, limit: candidate.limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;
+                doc.categoryColor = CategoriesDB.findOne({ category: doc.category }).color;
                 return doc;
             });
         } catch (err) {

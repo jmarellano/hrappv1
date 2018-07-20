@@ -22,7 +22,8 @@ export default class CategoryManager {
             TEST_MOCK: obj.TEST_MOCK || 0,
             TEST_SIMULATION: obj.TEST_SIMULATION || 0,
             others: obj.others || 0,
-            technical: obj.technical || true
+            technical: obj.technical || true,
+            color: obj.color || '#ccc'
         };
         if (obj._id)
             this.json._id = obj._id;
