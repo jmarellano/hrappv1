@@ -26,6 +26,7 @@ class Teams extends React.Component {
             remove: false,
             permitted: false,
             editCandidateInfo: false,
+            changeReApplicantStatus: false,
             unRetire: false,
             retiredUsers: [],
             selectedUserRole: null,
@@ -45,7 +46,7 @@ class Teams extends React.Component {
                 padding: '0px'
             }
         };
-        this.styleSet = {
+        this.styleSet2 = {
             overlay: {
                 zIndex: '8888',
                 backgroundColor: 'rgba(0, 0, 0, 0.75)',
@@ -61,6 +62,7 @@ class Teams extends React.Component {
         };
         this.selectStatus = this.selectStatus.bind(this);
         this.candidateStatus = this.candidateStatus.bind(this);
+        this.candidateReApplicant = this.candidateReApplicant.bind(this);
         this.candidateSource = this.candidateSource.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.editInfo = this.editInfo.bind(this);
@@ -83,6 +85,8 @@ class Teams extends React.Component {
             qry = { status: this.state.selectedStatus };
         else if (this.state.changeSite)
             qry = { source: new Mongo.ObjectID(this.state.selectedSite) };
+        else if (this.state.changeReApplicantStatus)
+            qry = { isReApplicant: this.state.isSelectedReApplicant };
         this.props.Candidate.changeStats(qry, this.state.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -90,6 +94,7 @@ class Teams extends React.Component {
                 Bert.alert('Status changed!', 'success', 'growl-top-right');
             this.setState({
                 changeStatus: false,
+                changeReApplicantStatus: false,
                 saving: false,
                 changeSite: false,
                 selectedCandidate: null,
@@ -100,7 +105,25 @@ class Teams extends React.Component {
             });
         });
     }
-
+    candidateReApplicant(cell, candidate){
+        let reApplicant = candidate.isReApplicant ? "1" : "0";
+        return (
+            <div key={ "wakanda2" }>
+                <select ref={ "role" + candidate.index } className="form-control"
+                        value={ reApplicant }
+                        onChange={ (selectedStatus) => {
+                            this.setState({
+                                changeReApplicantStatus: true,
+                                selectedCandidate: candidate,
+                                isSelectedReApplicant: (selectedStatus.target.value === "1")
+                            });
+                        } }>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </div>
+        )
+    }
     candidateStatus(cell, candidate) {
         let status = candidate.status ? parseInt(candidate.status) : CANDIDATE_STATUS.NA;
         return (
@@ -148,7 +171,7 @@ class Teams extends React.Component {
     candidateSource(cell, candidate) {
         let source = candidate.source ? candidate.source._str : "not_indicated";
         return (
-            <div key={ "wakanda" }>
+            <div key={ "wakanda1" }>
                 <select ref={ "role" + candidate.index } className="form-control"
                         value={ source }
                         onChange={ (selectedStatus) => {
@@ -263,6 +286,10 @@ class Teams extends React.Component {
                                            filter={ { type: 'RegexFilter', placeholder: 'Please enter status' } }
                                            dataFormat={ this.candidateStatus }
                                            width={ "200" }>Status</TableHeaderColumn>
+                        <TableHeaderColumn dataField='isReApplicant'
+                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter status' } }
+                                           dataFormat={ this.candidateReApplicant }
+                                           width={ "200" }>Re-Applicant</TableHeaderColumn>
                         <TableHeaderColumn dataField='friendlySite'
                                            filter={ { type: 'RegexFilter', placeholder: 'Please enter source' } }
                                            dataFormat={ this.candidateSource }
@@ -273,7 +300,7 @@ class Teams extends React.Component {
                     {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) ?  <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
                 </div>
                 <Modal
-                    isOpen={ this.state.changeStatus || this.state.changeSite }
+                    isOpen={ this.state.changeStatus || this.state.changeSite || this.state.changeReApplicantStatus }
                     style={ this.styleSet }
                     contentLabel="Change Status"
                 >
@@ -294,6 +321,10 @@ class Teams extends React.Component {
                                 set { (this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME" } Source
                                 to { this.state.friendlySite }. Continue?
                             </h3> }
+                            { this.state.changeReApplicantStatus && <h3>
+                                You are going to
+                                mark { (this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME" } As {this.state.isSelectedReApplicant ? "A Re-Applicant" : "Not A Re-Applicant"} Continue?
+                            </h3> }
                             <button onClick={ this.selectStatus } className="btn btn-success"
                                     disabled={ this.state.saving }>Yes
                             </button>
@@ -301,6 +332,7 @@ class Teams extends React.Component {
                                 this.setState({
                                     changeStatus: false,
                                     changeSite: false,
+                                    changeReApplicantStatus: false,
                                     selectedCandidate: null,
                                     friendlyStatus: null,
                                     selectedRole: null,
@@ -314,7 +346,7 @@ class Teams extends React.Component {
                 </Modal>
                 <Modal
                     isOpen={ this.state.editCandidateInfo }
-                    style={ this.styleSet }
+                    style={ this.styleSet2 }
                     contentLabel="Change Status"
                 >
                     <form className="panel panel-primary" onSubmit={this.save}>
@@ -447,6 +479,7 @@ export default withTracker(() => {
                 item.friendlySite = friendlySite;
             let candidate_ = new Candidate(item, index);
             candidate_.claimedBy = candidate_.getClaimer();
+            candidate_.isReApplicantFriendly = candidate_.isReApplicant ? "Yes" : "No";
             return candidate_;
         }),
         postingSites: PostingSitesDB.find({}, { sort: { site: 1 } }).fetch(),

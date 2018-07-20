@@ -120,6 +120,7 @@ class Candidate {
         this.index = obj.index;
         this.status = obj.status;
         this.source = obj.source;
+        this.isReApplicant = obj.isReApplicant;
     }
 
     isRetired() {
