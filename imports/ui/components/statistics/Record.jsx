@@ -367,12 +367,14 @@ class Record extends Component {
                         </div>
                         <div className="panel-body p-2">
                             <div className="col-md-12 row">
-                                <div className="table-responsive text-center">
+                                <div className="table-responsive text-center" ref={ (el) => {
+                                    this.topDiv = el;
+                                } }>
                                     <button className="btn btn-xs btn-success btn-icon mt10 ml10"
                                             style={ { margin: "10px" } } onClick={ this.toggleModal2 }>
                                         <i className="fa fa-plus"/>
                                     </button>
-                                    <button className="btn btn-xs btn-success btn-icon mt10 ml10"
+                                    <button className="btn btn-xs btn-info btn-icon mt10 ml10"
                                             style={ { margin: "10px" } } onClick={ () => {
                                         if (this.listAndUpdate)
                                             this.listAndUpdate.scrollIntoView({ behavior: "smooth" });
@@ -397,6 +399,13 @@ class Record extends Component {
                                     <button className="btn btn-xs btn-success btn-icon mt10 ml10"
                                             onClick={ this.saveAll } style={ { margin: "10px" } }>
                                         Save All
+                                    </button>
+                                    <button className="btn btn-xs btn-info btn-icon mt10 ml10"
+                                            style={ { margin: "10px" } }>
+                                        <i className="fa fa-arrow-circle-o-up" onClick={ () => {
+                                            if (this.topDiv)
+                                                this.topDiv.scrollIntoView({ behavior: "smooth" });
+                                        } }/>
                                     </button>
                                 </div>
                                 <div className="col-md-6" ref={ (el) => {

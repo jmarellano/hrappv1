@@ -121,6 +121,7 @@ class Candidate {
         this.status = obj.status;
         this.source = obj.source;
         this.categoryColor = obj.categoryColor;
+        this.isReApplicant = obj.isReApplicant;
     }
 
     isRetired() {
