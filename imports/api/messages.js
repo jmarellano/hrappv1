@@ -621,7 +621,7 @@ if (Meteor.isServer) {
         }
         this.ready();
     });
-    Meteor.publish(ValidMessages, function (contact, limit, search, start, end) {
+    Meteor.publish(ValidMessages, function (contact, limit, search, start, end, sort) {
         try {
             let count = null,
                 cursor = null;
@@ -629,7 +629,7 @@ if (Meteor.isServer) {
             let or = [{ contact: candidate.contact }];
             let or2 = [];
             if (search)
-                or2 = [{ text: { $regex: search, $options: 'i' } }, { subject: { $regex: search, $options: 'i' } }];
+                or2 = [{ text: { $regex: search, $options: 'i' } }, { html: { $regex: search, $options: 'i' } }, { subject: { $regex: search, $options: 'i' } }];
             let user = Meteor.user();
             if (candidate.email)
                 or.push({ contact: candidate.email });
@@ -643,8 +643,8 @@ if (Meteor.isServer) {
                 query.retired = { $exists: false };
             if (start.length && end.length)
                 query.createdAt = { $lte: moment(end).endOf('day').valueOf(), $gte: moment(start).startOf('day').valueOf() };
-            count = MessagesDB.find(query, { sort: { createdAt: -1 } }).count();
-            cursor = MessagesDB.find(query, { sort: { createdAt: -1 }, limit });
+            count = MessagesDB.find(query, { sort: { createdAt: sort ? 1 : -1 } }).count();
+            cursor = MessagesDB.find(query, { sort: { createdAt: sort ? 1 : -1 }, limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 doc.max = count;
                 return doc;

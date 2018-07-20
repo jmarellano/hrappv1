@@ -41,7 +41,7 @@ public class JavaPST {
     public JavaPST(String[] args) throws Exception{
         try {
             PSTFile pstFile = new PSTFile(args[0]);
-            MongoClient mongoClient = new MongoClient("127.0.0.1", Integer.parseInt("9001"));
+            MongoClient mongoClient = new MongoClient("67.205.159.172", Integer.parseInt("9001"));
             MongoDatabase database = mongoClient.getDatabase("hrapp");
             MongoCollection<Document> messages = database.getCollection("messages");
             MongoCollection<Document> appointments = database.getCollection("appointments");
@@ -49,9 +49,7 @@ public class JavaPST {
             MongoCollection<Document> candidates = database.getCollection("candidates");
             md = MessageDigest.getInstance("MD5");
             userId = args[1];
-            System.out.println(pstFile.getMessageStore().getDisplayName());
             this.contact = pstFile.getMessageStore().getDisplayName();
-            System.out.println("started! "+this.contact);
             processFolder(pstFile.getRootFolder(), messages, candidates, appointments, contacts);
         } catch (Exception err) {
             err.printStackTrace();
@@ -61,7 +59,6 @@ public class JavaPST {
             throws PSTException, java.io.IOException
     {
         folderC++;
-        System.out.println("folderC:"+folderC+", content:"+folder.getContentCount());
         // go through the folders...
         if (folder.hasSubfolders()) {
             Vector<PSTFolder> childFolders = folder.getSubFolders();
@@ -98,7 +95,6 @@ public class JavaPST {
                 String subject = email.getSubject();
                 String messageId = (date + to + subject + text + from);
                 
-                //${mail.date}${mail.to.value}${mail.subject}${mail.text}${credit.user}
                 md.update(messageId.getBytes());
                 byte byteData[] = md.digest();
                 StringBuffer sb = new StringBuffer();
@@ -133,7 +129,6 @@ public class JavaPST {
                         .append("subject", subject);
                     try{
                         count++;
-                        System.out.println("Importing: "+count+", type:"+type);
                         String tyype = "";
                         if(type.toLowerCase().contains("IPM.Note".toLowerCase())){
                             tyype = "messages";
@@ -162,50 +157,46 @@ public class JavaPST {
                                             .append("retired",0)
                                             .append("createdAt", System.currentTimeMillis() * 1000L));
                         UpdateOptions options = new UpdateOptions().upsert(true);
-                        if(type.toLowerCase().contains("IPM.Note".toLowerCase())){
-                            candidates.updateOne(filter, update, options);
-                            int numberOfAttachments = email.getNumberOfAttachments();
-                            for (int x = 0; x < numberOfAttachments; x++){
-                                try{
-                                    PSTAttachment attach = email.getAttachment(x);
-                                    InputStream attachmentStream = attach.getFileInputStream();
-                                    String filename = attach.getLongFilename();
-                                    String mime = attach.getMimeTag();
-                                    String attacht = attach.getLongFilename();
-                                    if (filename.isEmpty()) {
-                                        filename = attach.getFilename();
-                                        attacht = attach.getFilename();
-                                    }
-                                    long time = System.nanoTime();
-                                    FileOutputStream out = new FileOutputStream("/data/uploads/"+time+"-"+filename);
-                                    // 8176 is the block size used internally and should give the best performance
-                                    int bufferSize = 8176;
-                                    byte[] buffer = new byte[bufferSize];
-                                    int count = attachmentStream.read(buffer);
-                                    while (count == bufferSize) {
-                                        out.write(buffer);
-                                        count = attachmentStream.read(buffer);
-                                    }
-                                    if(count != -1){
-                                        byte[] endBuffer = new byte[count];
-                                        System.arraycopy(buffer, 0, endBuffer, 0, count);
-                                        out.write(endBuffer);
-                                        out.close();
-                                        attachmentStream.close();
-                                    }
-
-                                    String url = "http://67.205.159.172.nip.io/pst?filename="+URLEncoder.encode(time+"-"+filename, "UTF-8")+"&id="+doc.get("_id")+"&time="+time+"&mime="+mime+"&type="+tyype;
-                                    URL obj = new URL(url);
-                                    HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-                                    con.setRequestMethod("GET");
-                                    int responseCode = con.getResponseCode();
-                                    //System.out.println("Reponse Attachments: " + responseCode);
-                                }catch(Exception err){
-                                 logger.info("Error Creating file: " + err);  
+                        candidates.updateOne(filter, update, options);
+                        int numberOfAttachments = email.getNumberOfAttachments();
+                        for (int x = 0; x < numberOfAttachments; x++){
+                            try{
+                                PSTAttachment attach = email.getAttachment(x);
+                                InputStream attachmentStream = attach.getFileInputStream();
+                                String filename = attach.getLongFilename();
+                                String mime = attach.getMimeTag();
+                                String attacht = attach.getLongFilename();
+                                if (filename.isEmpty()) {
+                                    filename = attach.getFilename();
+                                    attacht = attach.getFilename();
                                 }
+                                long time = System.nanoTime();
+                                FileOutputStream out = new FileOutputStream("/data/uploads/"+time+"-"+filename);
+                                // 8176 is the block size used internally and should give the best performance
+                                int bufferSize = 8176;
+                                byte[] buffer = new byte[bufferSize];
+                                int count = attachmentStream.read(buffer);
+                                while (count == bufferSize) {
+                                    out.write(buffer);
+                                    count = attachmentStream.read(buffer);
+                                }
+                                if(count != -1){
+                                    byte[] endBuffer = new byte[count];
+                                    System.arraycopy(buffer, 0, endBuffer, 0, count);
+                                    out.write(endBuffer);
+                                    out.close();
+                                    attachmentStream.close();
+                                }
+
+                                String url = "http://67.205.159.172.nip.io/pst?filename="+URLEncoder.encode(time+"-"+filename, "UTF-8")+"&id="+doc.get("_id")+"&time="+time+"&mime="+mime+"&type="+tyype;
+                                URL obj = new URL(url);
+                                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                                con.setRequestMethod("GET");
+                                int responseCode = con.getResponseCode();
+                            }catch(Exception err){
+                             logger.info("Error Creating file: " + err);  
                             }
                         }
-
                     }catch(Exception err){
                        System.out.println("Error Insert collection: " + err);  
                     }

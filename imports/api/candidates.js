@@ -259,7 +259,7 @@ if (Meteor.isServer) {
     });
     Meteor.publish(ValidCandidates, function (candidate) {
         try {
-            let query = { 'retired': VALUE.FALSE };
+            let query = { 'retired': VALUE.FALSE, 'category': { $ne: 'SPAMMER' } };
             let or = [];
             let or1 = [];
             let or2 = [];

@@ -50,6 +50,7 @@ class CandidateMessages extends React.Component {
         this.setSearch = this.setSearch.bind(this);
         this.template = this.template.bind(this);
         this.reset = this.reset.bind(this);
+        this.sortDate = this.sortDate.bind(this);
         this.quillRef = null;
         this.reactQuillRef = null;
     }
@@ -267,6 +268,10 @@ class CandidateMessages extends React.Component {
         });
     }
 
+    sortDate() {
+        this.props.sortDate(!this.props.sort);
+    }
+
     render() {
         let type = parseInt(this.state.type);
         return (
@@ -362,6 +367,9 @@ class CandidateMessages extends React.Component {
                     To: <input className="p-1" type="date" name="end" onChange={this.handleChangeInput} value={this.state.end} /> &nbsp;
                     <button className="p-1" onClick={this.setSearch} disabled={!this.props.isReady}><i className="fa fa-search" /> Search</button> &nbsp;
                     <button className="p-1" onClick={this.reset} disabled={!this.props.isReady}>Reset</button> &nbsp;
+                    <div className="pull-right" style={{ cursor: 'pointer' }} onClick={this.sortDate}>
+                        <small>Sort by Date</small> <i className={`fa ${this.props.sort ? 'fa-sort-up' : 'fa-sort-down'}`} style={{ top: this.props.sort ? '4px' : '-4px', position: 'relative', margin: '5px' }} />
+                    </div>
                     {
                         !this.props.isReady ?
                             <div className="text-center">
@@ -390,11 +398,13 @@ CandidateMessages.propTypes = {
     viewMore: PropTypes.func,
     users: PropTypes.array,
     Candidate: PropTypes.object,
-    setSearch: PropTypes.func
+    setSearch: PropTypes.func,
+    sort: PropTypes.bool,
+    sortDate: PropTypes.func
 };
 
 export default withTracker((props) => {
-    let isReady = Meteor.subscribe(ValidMessages, props.candidate.contact, props.limit, props.search, props.start, props.end).ready();
+    let isReady = Meteor.subscribe(ValidMessages, props.candidate.contact, props.limit, props.search, props.start, props.end, props.sort).ready();
     return {
         isReady
     };

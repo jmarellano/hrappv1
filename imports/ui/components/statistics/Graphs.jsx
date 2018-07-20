@@ -64,6 +64,7 @@ class Graphs extends Component {
         let graph11 = this.bgraph11;
         let graph12 = this.bgraph12;
         let graph13 = this.bgraph13;
+        let graph14 = this.bgraph14;
         $(this.bgraph2).empty();
         $(this.bgraph3).empty();
         $(this.bgraph4).empty();
@@ -76,6 +77,7 @@ class Graphs extends Component {
         $(this.bgraph11).empty();
         $(this.bgraph12).empty();
         $(this.bgraph13).empty();
+        $(this.bgraph14).empty();
         this.setState({ processing: true });
         this.props.Statistics.getReports(type, this.state.startDate, this.state.endDate, (err, data) => {
             this.setState({ processing: false });
@@ -110,6 +112,14 @@ class Graphs extends Component {
                 parseTime: false,
                 labels: data[0].labels,
                 data: data[0].int
+            });
+            this.props.Statistics.createBarGraph({
+                element: graph14,
+                xkey: 'date',
+                ykeys: ['METEOR_TEST', 'LIVE_TEST', 'GD_LIVE_TEST'],
+                parseTime: false,
+                labels: ['METEOR_TEST', 'LIVE_TEST', 'GD_LIVE_TEST'],
+                data: data[0].adv
             });
             this.props.Statistics.createBarGraph({
                 element: graph6,
@@ -199,6 +209,9 @@ class Graphs extends Component {
             case 5:
                 property = 'hired';
                 break;
+            case 6:
+                property = 'adv';
+                break;
         }
         let data = this.state.reports[type][property];
         let positions = Object.keys(data[0]).filter((position) => { return position !== 'date' });
@@ -253,15 +266,15 @@ class Graphs extends Component {
         switch (this.state.page) {
             case 0:
                 title = 'End of Report';
-                subtitle = moment().subtract(1, 'day').format('MMM DD, YYYY');
+                subtitle = moment().startOf('day').format('MMM DD, YYYY');
                 break;
             case 1:
                 title = 'DAILY STATS';
-                subtitle = moment().subtract(1, 'day').format('MMM YYYY');
+                subtitle = moment().startOf('day').format('MMM YYYY');
                 break;
             case 2:
                 title = 'DAILY STATS';
-                subtitle = 'Week ' + moment().subtract(1, 'day').format('W - MMM DD, YYYY');
+                subtitle = 'Week ' + moment().startOf('day').format('W - MMM DD, YYYY');
                 break;
             case 3:
                 title = 'Custom';
@@ -294,20 +307,6 @@ class Graphs extends Component {
                         <div className="tab-content">
                             <div className="row p-2">
                                 <div className="col-sm-12">
-                                    <div className="card-body bg-light">
-                                        <h5 className="card-title">{title} - <span className="text-primary">TECHNICAL CANDIDATES</span></h5>
-                                        <h6 className="card-subtitle mb-2 text-muted">{subtitle}</h6>
-                                        <div className="card-text">
-                                            {
-                                                this.state.processing &&
-                                                <div>
-                                                    <i className="fa fa-spin fa-spinner" /> Loading...
-                                            </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-sm-12">
                                     {!this.state.processing && <h5>Job Ad Posting</h5>}
                                     {
                                         !this.state.processing && this.state.page != 0 &&
@@ -328,6 +327,41 @@ class Graphs extends Component {
                                             <div id="graph-2" ref={instance => { this.bgraph2 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
                                         </div>
                                     </div>
+                                    {
+                                        !this.state.processing && this.state.page != 0 &&
+                                        <table className="table table-sm table-bordered">
+                                            <thead className="thead-light">
+                                                <tr>
+                                                    <th scope="col">Positions</th>
+                                                    {this.renderHeaders()}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.renderReport(1, 0)}
+                                            </tbody>
+                                        </table>
+                                    }
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-8" ref={instance => { this.bgraph8 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-sm-12">
+                                    <div className="card-body bg-light">
+                                        <h5 className="card-title">{title} - <span className="text-primary">TECHNICAL CANDIDATES</span></h5>
+                                        <h6 className="card-subtitle mb-2 text-muted">{subtitle}</h6>
+                                        <div className="card-text">
+                                            {
+                                                this.state.processing &&
+                                                <div>
+                                                    <i className="fa fa-spin fa-spinner" /> Loading...
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-sm-12">
                                     {!this.state.processing && <h5>New Candidates</h5>}
                                     {
                                         !this.state.processing && this.state.page != 0 &&
@@ -366,6 +400,26 @@ class Graphs extends Component {
                                     <div className="graph-container p-4">
                                         <div className="page-content">
                                             <div id="graph-4" ref={instance => { this.bgraph4 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
+                                        </div>
+                                    </div>
+                                    {!this.state.processing && <h5>Advanced Test</h5>}
+                                    {
+                                        !this.state.processing && this.state.page != 0 &&
+                                        <table className="table table-sm table-bordered">
+                                            <thead className="thead-light">
+                                                <tr>
+                                                    <th scope="col">Positions</th>
+                                                    {this.renderHeaders()}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {this.renderReport(0, 6)}
+                                            </tbody>
+                                        </table>
+                                    }
+                                    <div className="graph-container p-4">
+                                        <div className="page-content">
+                                            <div id="graph-14" ref={instance => { this.bgraph14 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
                                         </div>
                                     </div>
                                     {!this.state.processing && <h5>Interviewed</h5>}
@@ -444,26 +498,6 @@ class Graphs extends Component {
                                     </div>
                                 </div>
                                 <div className="col-sm-12">
-                                    {!this.state.processing && <h5>Job Ad Posting</h5>}
-                                    {
-                                        !this.state.processing && this.state.page != 0 &&
-                                        <table className="table table-sm table-bordered">
-                                            <thead className="thead-light">
-                                                <tr>
-                                                    <th scope="col">Positions</th>
-                                                    {this.renderHeaders()}
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {this.renderReport(1, 0)}
-                                            </tbody>
-                                        </table>
-                                    }
-                                    <div className="graph-container p-4">
-                                        <div className="page-content">
-                                            <div id="graph-8" ref={instance => { this.bgraph8 = instance }} style={{ height: this.state.processing ? '0' : '250px', width: '100%' }} />
-                                        </div>
-                                    </div>
                                     {!this.state.processing && <h5>New Candidates</h5>}
                                     {
                                         !this.state.processing && this.state.page != 0 &&

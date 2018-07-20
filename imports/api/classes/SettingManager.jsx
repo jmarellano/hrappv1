@@ -47,16 +47,16 @@ export default class SettingManager {
             dayEnd = null;
         switch (type) {
             case 0:
-                dayStart = moment().subtract(11, 'days').startOf('day');
-                dayEnd = moment().startOf('day');
+                dayStart = moment().subtract(10, 'days').startOf('day');
+                dayEnd = moment().endOf('day');
                 break;
             case 1:
-                dayStart = moment().startOf('month').subtract('1', 'days');
-                dayEnd = moment().endOf('month').add('1', 'days');
+                dayStart = moment().startOf('month');
+                dayEnd = moment().endOf('month');
                 break;
             case 2:
-                dayStart = moment().startOf('week').subtract(1, 'days');
-                dayEnd = moment().endOf('week').add(1, 'days');
+                dayStart = moment().startOf('week');
+                dayEnd = moment().endOf('week');
                 break;
             case 3:
                 dayStart = moment(start);
@@ -88,8 +88,8 @@ export default class SettingManager {
                 positionsLabel2.push(category.category);
             }
         });
-        let posts2 = PostingDB.find({ timestamp: { $lt: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { timestamp: 1 } }).fetch();
-        let newApplicants2 = CandidatesDB.find({ createdAt: { $lt: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { createdAt: 1 } }).fetch();
+        let posts2 = PostingDB.find({ timestamp: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { timestamp: 1 } }).fetch();
+        let newApplicants2 = CandidatesDB.find({ createdAt: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { createdAt: 1 } }).fetch();
 
         let postData = [];
         let newData = [];
@@ -105,9 +105,10 @@ export default class SettingManager {
         let quaData2 = [];
         let hiredData2 = [];
         let postLabel2 = [];
+        let advData2 = [];
         let countDiff = dayEnd.diff(dayStart, 'days');
-        for (let i = 0; i < (countDiff - 1); i++) {
-            let date = dayStart.add(1, 'days').format('MMM-DD-YYYY');
+        for (let i = 0; i < (countDiff + 1); i++) {
+            let date = dayStart.format('MMM-DD-YYYY');
             postLabel.push(date);
             postData.push({ date, ...positionsObj });
             newData.push({ date, ...positionsObj });
@@ -122,6 +123,8 @@ export default class SettingManager {
             intData2.push({ date, ...positionsObj2 });
             quaData2.push({ date, ...positionsObj2 });
             hiredData2.push({ date, ...positionsObj2 });
+            advData2.push({ date, 'METEOR_TEST': 0, 'LIVE_TEST': 0, 'GD_LIVE_TEST': 0 });
+            dayStart.add(1, 'days').format('MMM-DD-YYYY');
         }
         posts2.forEach((post) => {
             let category = positions[post.category._str];
@@ -149,6 +152,14 @@ export default class SettingManager {
                     quaData[index][applicant.category]++;
                 if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
                     hiredData[index][applicant.category]++;
+                if (applicant.TEST_METEOR)
+                    advData2[index]['METEOR_TEST']++;
+                if (applicant.TEST_LIVE) {
+                    if (applicant.category === 'Dev')
+                        advData2[index]['LIVE_TEST']++;
+                    else
+                        advData2[index]['GD_LIVE_TEST']++;
+                }
             } else {
                 index = newData2.map(function (e) { return e.date; }).indexOf(date);
                 newData2[index][applicant.category]++;
@@ -163,7 +174,7 @@ export default class SettingManager {
             }
         });
         return [
-            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel, dates: postLabel },
+            { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel, dates: postLabel, adv: advData2 },
             { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2, dates: postLabel }
         ];
     }

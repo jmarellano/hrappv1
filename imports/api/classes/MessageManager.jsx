@@ -30,22 +30,22 @@ export default class MessageManager {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
             let spawn = child_process.spawn;
             const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId]);
-            ls.stdout.on('data', (data) => {
+            ls.stdout.on('data', () => {
                 //console.log(`stdout: ${data}`);
             });
-            ls.stderr.on('data', (data) => {
+            ls.stderr.on('data', () => {
                 //console.log(`stderr: ${data}`);
             });
             ls.on('close', Meteor.bindEnvironment(() => {
-                console.log(`close`);
+                console.log(`JavaPST close! userID: ${userId}`);
                 UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
             }));
             ls.on('end', Meteor.bindEnvironment(() => {
-                console.log(`end`);
+                console.log(`JavaPST end! userID: ${userId}`);
                 UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
             }));
             ls.on('exit', Meteor.bindEnvironment(() => {
-                console.log(`exit`);
+                console.log(`JavaPST exit! userID: ${userId}`);
                 UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.FALSE } });
             }));
             return true;

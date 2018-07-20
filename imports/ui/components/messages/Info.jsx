@@ -151,6 +151,7 @@ class Info extends Component {
                                                 <select className="form-control" name="category" value={this.state.category} onChange={this.handleInputChange} required>
                                                     <option value={''}>Select Category</option>
                                                     {this.renderCategories()}
+                                                    <option value='SPAMMER'>SPAMMER</option>
                                                 </select>
                                             </div>
                                         </div>
