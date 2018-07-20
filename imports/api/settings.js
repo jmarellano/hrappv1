@@ -4,16 +4,20 @@ import { Mongo } from 'meteor/mongo';
 import SettingManager from './classes/SettingManager';
 import { isPermitted, ROLES } from "./classes/Const";
 import MessageManager from "./classes/MessageManager";
+import moment from "moment-timezone";
 
 export const SettingsPub = 'settings';
+export const PostingSitesPub = 'posting_sites';
 export const PostPub = 'posts';
 export const SettingsSave = 'settings_save';
+export const AddSite = 'add-site';
 export const RecordJob = 'record-job';
 export const DeleteJob = 'delete-job';
 export const GetPostingStat = 'posting-stat';
 export const GetReports = 'get-reports';
 export const SettingsDB = new Mongo.Collection(Meteor.settings.public.collections.settings || 'settings', { idGeneration: 'MONGO' });
 export const PostingDB = new Mongo.Collection(Meteor.settings.public.collections.posts || 'posts', { idGeneration: 'MONGO' });
+export const PostingSitesDB = new Mongo.Collection(Meteor.settings.public.collections.posts || 'posting_sites', { idGeneration: 'MONGO' });
 
 
 if (Meteor.isServer) {
@@ -26,11 +30,37 @@ if (Meteor.isServer) {
             throw new Meteor.Error(403, 'Not authorized');
         }
     }
-    functions[RecordJob] = function (data) {
+    functions[RecordJob] = function (data, multi) {
         this.unblock();
         try {
             check(this.userId, String);
-            return SettingManager.record(data, this.userId);
+            if(!multi)
+                return SettingManager.record(data, this.userId);
+            let data_ = data.jobPost;
+            if(!data_)
+                throw new Meteor.Error(403, 'No Valid Data');
+            for (let key in data_) {
+                if (data_.hasOwnProperty(key)) {
+                    let temp = {};
+                    temp.site = key;
+                    temp.link = data_[key].link;
+                    temp.timestamp = moment().valueOf();
+                    temp.category = data_[key].category;
+                    temp.selectedJobPost = null;
+                    console.log("temp: ", temp);
+                    SettingManager.record(temp, this.userId);
+                }
+            }
+            return true;
+        } catch (err) {
+            throw new Meteor.Error(403, 'Not authorized');
+        }
+    }
+    functions[AddSite] = function(site){
+        this.unblock();
+        try {
+            check(this.userId, String);
+            return SettingManager.addSite(site);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');
         }
@@ -72,6 +102,15 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             return SettingsDB.find(key);
+        } catch (err) {
+            throw new Meteor.Error(403, 'Not authorized');
+        }
+    });
+    Meteor.publish(PostingSitesPub, function (key = {}) {
+        this.unblock();
+        try {
+            check(this.userId, String);
+            return PostingSitesDB.find(key);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');
         }

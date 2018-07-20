@@ -6,7 +6,7 @@ import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../for
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessageReSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
 import { CandidatesGetId, CandidatesInfo, CandidatesStats, CandidatesClaim, CandidatesUnclaim, CandidatesTransferClaim, CandidatesFollower, CandidatesAddInfo, CandidatesAddFileStats, CandidatesRemoveFileStats, CandidatesStatus } from '../candidates';
-import { RecordJob, GetPostingStat, SettingsSave, GetReports, DeleteJob } from '../settings';
+import { RecordJob, GetPostingStat, SettingsSave, GetReports, DeleteJob, AddSite } from '../settings';
 import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
 
@@ -290,6 +290,7 @@ class Drive {
         });
     }
     paste(file, parent, callback) {
+        console.log(file);
         Meteor.call(DriveCopyFile, file.id, `Copy of ${file.name}`, parent, (err, result) => {
             callback(err, result);
         });
@@ -680,10 +681,21 @@ class Statistics {
         this.barChart.setData(data);
     }
 
-    recordPosting(data) {
+    addSite(site){
         if (!this.recording) {
             this.recording = true;
-            Meteor.call(RecordJob, data, (err) => {
+            Meteor.call(AddSite, site, (err) => {
+                this.recording = false;
+                if (err)
+                    console.log(err);
+            });
+        }
+    }
+
+    recordPosting(data, multi) {
+        if (!this.recording) {
+            this.recording = true;
+            Meteor.call(RecordJob, data, multi, (err) => {
                 this.recording = false;
                 if (err)
                     console.log(err);
