@@ -157,6 +157,8 @@ class Record extends Component {
             border: '0px',
             display: 'block'
         };
+        if (event.endTime < moment().valueOf())
+            style.backgroundColor = "#ffc6c6";
         switch(status){
             case "1":
                 style.backgroundColor = "rgb(177, 236, 179)";
