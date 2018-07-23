@@ -5,11 +5,13 @@ import SettingManager from './classes/SettingManager';
 import { isPermitted, ROLES } from "./classes/Const";
 import MessageManager from "./classes/MessageManager";
 import moment from "moment-timezone";
+import { AppointmentDB } from "./messages";
 
 export const SettingsPub = 'settings';
 export const PostingSitesPub = 'posting_sites';
 export const PostPub = 'posts';
 export const SettingsSave = 'settings_save';
+export const CheckAppointments = 'check_appointments';
 export const AddSite = 'add-site';
 export const RecordJob = 'record-job';
 export const DeleteJob = 'delete-job';
@@ -21,6 +23,18 @@ export const PostingSitesDB = new Mongo.Collection(Meteor.settings.public.collec
 export const ReportsDB = new Mongo.Collection(Meteor.settings.public.collections.reports || 'reports', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
+    functions[CheckAppointments] = function () {
+        try {
+            check(this.userId, String);
+            let temp_ = AppointmentDB.findOne({});
+            if(temp_){
+                AppointmentDB.update({ _id: temp_._id }, { $inc: { tempCounter: 1 } })
+            }
+        } catch (err) {
+            console.log(err);
+            throw new Meteor.Error(403, 'Not authorized');
+        }
+    }
     functions[GetReports] = function (type, start, end) {
         try {
             check(this.userId, String);
