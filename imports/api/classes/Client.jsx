@@ -1,6 +1,21 @@
 import { Accounts } from 'meteor/accounts-base';
 import { ROLES } from './Const';
-import { UsersSendVerificationLink, UsersRegister, UsersResetLink, UsersAddEmail, UsersRemoveEmail, UsersDefaultEmail, UsersTimezone, UsersToggleMute, UsersGetRetired, UsersChangeRole, UsersRetire, UsersRemove, UpdateUserLogin } from '../users';
+import {
+    UsersSendVerificationLink,
+    UsersRegister,
+    UsersResetLink,
+    UsersAddEmail,
+    UsersRemoveEmail,
+    UsersDefaultEmail,
+    UsersTimezone,
+    UsersToggleMute,
+    UsersGetRetired,
+    UsersChangeRole,
+    UsersRetire,
+    UsersRemove,
+    UpdateUserLogin,
+    UserMarkTask, UserAddTask
+} from '../users';
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
@@ -118,6 +133,16 @@ class Account {
     }
     toggleMute(callback) {
         Meteor.call(UsersToggleMute, (err) => {
+            callback(err);
+        });
+    }
+    markTask(data, callback){
+        Meteor.call(UserMarkTask, data, (err) => {
+            callback(err);
+        });
+    }
+    AddTask(data, callback){
+        Meteor.call(UserAddTask, data, (err) => {
             callback(err);
         });
     }

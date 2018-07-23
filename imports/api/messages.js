@@ -601,14 +601,14 @@ if (Meteor.isServer) {
     };
     Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
-            let cursor = AppointmentDB.find({});
+            let cursor = AppointmentDB.find({ importedBy: this.userId });
             if (currentUserOnly && this.userId) {
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);
                 let tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 tomorrow.setHours(0, 0, 0, 0);
-                cursor = AppointmentDB.find({ importedBy: this.userId, startTime: { $gte: today, $lt: tomorrow } });
+                cursor = AppointmentDB.find({ importedBy: this.userId, startTime: { $gte: moment(today).valueOf(), $lt: moment(tomorrow).valueOf() } });
             }
             Util.setupHandler(this, currentUserOnly ? "#task-lists" : databaseAppointments, cursor, (doc) => {
                 if (doc.subject)
