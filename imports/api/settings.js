@@ -18,7 +18,7 @@ export const GetReports = 'get-reports';
 export const SettingsDB = new Mongo.Collection(Meteor.settings.public.collections.settings || 'settings', { idGeneration: 'MONGO' });
 export const PostingDB = new Mongo.Collection(Meteor.settings.public.collections.posts || 'posts', { idGeneration: 'MONGO' });
 export const PostingSitesDB = new Mongo.Collection(Meteor.settings.public.collections.posts || 'posting_sites', { idGeneration: 'MONGO' });
-
+export const ReportsDB = new Mongo.Collection(Meteor.settings.public.collections.reports || 'reports', { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
     functions[GetReports] = function (type, start, end) {
@@ -34,10 +34,10 @@ if (Meteor.isServer) {
         this.unblock();
         try {
             check(this.userId, String);
-            if(!multi)
+            if (!multi)
                 return SettingManager.record(data, this.userId);
             let data_ = data.jobPost;
-            if(!data_)
+            if (!data_)
                 throw new Meteor.Error(403, 'No Valid Data');
             for (let key in data_) {
                 if (data_.hasOwnProperty(key)) {
@@ -56,7 +56,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error(403, 'Not authorized');
         }
     }
-    functions[AddSite] = function(site){
+    functions[AddSite] = function (site) {
         this.unblock();
         try {
             check(this.userId, String);
