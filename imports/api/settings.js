@@ -43,10 +43,10 @@ if (Meteor.isServer) {
             throw new Meteor.Error(403, 'Not authorized');
         }
     }
-    functions[GetReports] = function (type, start) {
+    functions[GetReports] = function (type, start, country) {
         try {
             check(this.userId, String);
-            return SettingManager.getReports(type, start);
+            return SettingManager.getReports(type, start, country);
         } catch (err) {
             console.log(err);
             throw new Meteor.Error(403, 'Not authorized');
@@ -69,7 +69,6 @@ if (Meteor.isServer) {
                     temp.timestamp = moment().valueOf();
                     temp.category = data_[key].category;
                     temp.selectedJobPost = null;
-                    console.log("temp: ", temp);
                     SettingManager.record(temp, this.userId);
                 }
             }

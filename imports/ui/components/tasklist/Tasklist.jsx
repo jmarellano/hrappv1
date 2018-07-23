@@ -52,8 +52,8 @@ class Record extends Component {
         this.selectStatus = this.selectStatus.bind(this);
     }
     selectStatus() {
-        if(this.state.selectedStatus === "2"){
-            if(!this.state.startTime || !this.state.endTime)
+        if (this.state.selectedStatus === "2") {
+            if (!this.state.startTime || !this.state.endTime)
                 return Bert.alert("WARNING: Start/End Date & Time is required", 'warning', 'growl-top-right');
         }
         this.setState({
@@ -79,50 +79,50 @@ class Record extends Component {
         this.setState({ isOpen: !this.state.isOpen });
     }
 
-    renderTaskList(){
+    renderTaskList() {
         if (this.props.taskList && this.props.taskList.length)
             return this.props.taskList.map((task, index) => {
                 let style = {};
                 if (task.endTime < moment().valueOf())
                     style = { backgroundColor: "#ffc6c6" };
                 let status = task.taskStatus ? task.taskStatus : "";
-                switch(status){
+                switch (status) {
                     case "1":
-                        style = { backgroundColor: "rgb(177, 236, 179)"};
+                        style = { backgroundColor: "rgb(177, 236, 179)" };
                         break;
                     case "2":
-                        style = { backgroundColor: "rgb(255, 188, 244)"};
+                        style = { backgroundColor: "rgb(255, 188, 244)" };
                         break;
                     case "3":
-                        style = { backgroundColor: "rgb(167, 167, 167)"};
+                        style = { backgroundColor: "rgb(167, 167, 167)" };
                         break;
                     case "4":
-                        style = { backgroundColor: "#ffc6c6"};
+                        style = { backgroundColor: "#ffc6c6" };
                         break;
                     case "5":
-                        style = { backgroundColor: "rgb(255, 216, 182)"};
+                        style = { backgroundColor: "rgb(255, 216, 182)" };
                         break;
                 }
                 return (
-                    <div className="row row-striped-task-list" key={ index } style={ style }>
+                    <div className="row row-striped-task-list" key={index} style={style}>
                         <div className="col-3 text-right">
                             <h1 className="display-4">
                                 <span
-                                    className="badge badge-secondary">{ moment(task.startTime).format("hh:mm A") }</span>
+                                    className="badge badge-secondary">{moment(task.startTime).format("hh:mm A")}</span>
                             </h1>
                             <h1 className="display-4">
                                 <span className="badge badge-secondary">
-                                    <select className="form-control" style={{fontSize: "30%"}}
-                                            value={ status }
-                                            onChange={ (selectedStatus) => {
-                                                let id = selectedStatus.nativeEvent.target.selectedIndex;
-                                                this.setState({
-                                                    changeStatus: true,
-                                                    selectedStatus: selectedStatus.target.value,
-                                                    friendlyStatus: selectedStatus.nativeEvent.target[ id ].text,
-                                                    selectedTask: task
-                                                });
-                                            } }>
+                                    <select className="form-control" style={{ fontSize: "30%" }}
+                                        value={status}
+                                        onChange={(selectedStatus) => {
+                                            let id = selectedStatus.nativeEvent.target.selectedIndex;
+                                            this.setState({
+                                                changeStatus: true,
+                                                selectedStatus: selectedStatus.target.value,
+                                                friendlyStatus: selectedStatus.nativeEvent.target[id].text,
+                                                selectedTask: task
+                                            });
+                                        }}>
                                         <option value="">--- Not Marked ---</option>
                                         <option value="1">Done</option>
                                         <option value="2">Rescheduled</option>
@@ -135,36 +135,36 @@ class Record extends Component {
                         </div>
                         <div className="col-9">
                             <h3 className="text-uppercase">
-                                <strong>{ task.subject }</strong>
+                                <strong>{task.subject}</strong>
                             </h3>
                             <ul className="list-inline">
                                 <li className="list-inline-item">
-                                    <i className="fa fa-calendar-o" aria-hidden="true"/>
-                                    { moment(task.startTime).format("dddd") }
+                                    <i className="fa fa-calendar-o" aria-hidden="true" /> &nbsp;
+                                    {moment(task.startTime).format("dddd")}
                                 </li>
                                 <li className="list-inline-item">
-                                    <i className="fa fa-clock-o" aria-hidden="true"/>
-                                    { moment(task.startTime).format("hh:mm A") } - { moment(task.endTime).format("hh:mm A") }
+                                    <i className="fa fa-clock-o" aria-hidden="true" /> &nbsp;
+                                    {moment(task.startTime).format("hh:mm A")} - {moment(task.endTime).format("hh:mm A")}
                                 </li>
                                 <li className="list-inline-item">
-                                    STATUS: <b>{ task.friendlyStatus || "N/A" }</b>
+                                    STATUS: <b>{task.friendlyStatus || "N/A"}</b>
                                 </li>
                             </ul>
-                            <p style={ { paddingRight: "10px" } }>{ task.text }</p>
+                            <p style={{ paddingRight: "10px" }}>{task.text}</p>
                         </div>
                     </div>
                 );
             });
     }
-    
+
     render() {
         let class_ = 'nav-link';
-        if(this.props.taskList && this.props.taskList.length)
+        if (this.props.taskList && this.props.taskList.length)
             class_ += ' haveTask';
-        if(this.state.selectedStatus === "2") {
+        if (this.state.selectedStatus === "2") {
             this.styleSet2.content.maxHeight = "500px";
             this.styleSet2.content.maxWidth = "930px";
-        }else{
+        } else {
             this.styleSet2.content.maxHeight = "180px";
             this.styleSet2.content.maxWidth = "550px";
         }
@@ -180,7 +180,7 @@ class Record extends Component {
                                 Task List
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                       onClick={this.toggleModal}>
+                                        onClick={this.toggleModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -188,13 +188,13 @@ class Record extends Component {
                         </div>
                         <div className="panel-body maxHeight">
                             {this.renderTaskList()}
-                            {(this.props.taskList && this.props.taskList.length && this.props.taskList[0].max !== this.props.taskList.length) ?  <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
+                            {(this.props.taskList && this.props.taskList.length && this.props.taskList[0].max !== this.props.taskList.length) ? <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
                         </div>
                     </div>
                 </Modal>
                 <Modal
-                    isOpen={ this.state.changeStatus }
-                    style={ this.styleSet2 }
+                    isOpen={this.state.changeStatus}
+                    style={this.styleSet2}
                     contentLabel="Change Status"
                 >
                     <div className="panel panel-primary">
@@ -215,7 +215,7 @@ class Record extends Component {
                                             <label className="control-label" htmlFor="name">Start Date & Time <span
                                                 className="text-danger">*</span></label>
                                             <DateTimePicker
-                                                onChange={(date) => {this.setState({ startTime: date })}}
+                                                onChange={(date) => { this.setState({ startTime: date }) }}
                                                 value={this.state.startTime}
                                                 minDate={new Date()}
                                             />
@@ -226,7 +226,7 @@ class Record extends Component {
                                             <label className="control-label" htmlFor="name">End Date & Time <span
                                                 className="text-danger">*</span></label>
                                             <DateTimePicker
-                                                onChange={(date) => {this.setState({ endTime: date })}}
+                                                onChange={(date) => { this.setState({ endTime: date }) }}
                                                 value={this.state.endTime}
                                                 minDate={new Date()}
                                             />
@@ -235,10 +235,10 @@ class Record extends Component {
                                 </div>
                             </h3>}
                             <div className="text-center">
-                                <button onClick={ this.selectStatus } className="btn btn-success"
-                                        disabled={ this.state.saving }>Yes
+                                <button onClick={this.selectStatus} className="btn btn-success"
+                                    disabled={this.state.saving}>Yes
                                 </button>
-                                <button onClick={ () => {
+                                <button onClick={() => {
                                     this.setState({
                                         changeStatus: false,
                                         saving: false,
@@ -248,7 +248,7 @@ class Record extends Component {
                                         endTime: null,
                                         selectedTask: null,
                                     })
-                                } } className="btn btn-danger" style={ { marginLeft: "10px" } }>No
+                                }} className="btn btn-danger" style={{ marginLeft: "10px" }}>No
                                 </button>
                             </div>
                         </div>
@@ -268,6 +268,6 @@ Record.propTypes = {
 
 export default withTracker(() => {
     return {
-        taskList: db['#task-lists'].find({}, {sort: {startTime: -1}}).fetch()
+        taskList: db['#task-lists'].find({}, { sort: { startTime: -1 } }).fetch()
     };
 })(Record);

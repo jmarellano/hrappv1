@@ -136,12 +136,12 @@ class Account {
             callback(err);
         });
     }
-    markTask(data, callback){
+    markTask(data, callback) {
         Meteor.call(UserMarkTask, data, (err) => {
             callback(err);
         });
     }
-    AddTask(data, callback){
+    AddTask(data, callback) {
         Meteor.call(UserAddTask, data, (err) => {
             callback(err);
         });
@@ -746,8 +746,8 @@ class Statistics {
         });
     }
 
-    getReports(type, start, callback) {
-        Meteor.call(GetReports, type, start, (err, data) => {
+    getReports(type, start, country, callback) {
+        Meteor.call(GetReports, type, start, country, (err, data) => {
             callback(err, data);
         });
     }

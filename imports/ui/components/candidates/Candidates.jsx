@@ -105,19 +105,19 @@ class Teams extends React.Component {
             });
         });
     }
-    candidateReApplicant(cell, candidate){
+    candidateReApplicant(cell, candidate) {
         let reApplicant = candidate.isReApplicant ? "1" : "0";
         return (
-            <div key={ "wakanda2" }>
-                <select ref={ "role" + candidate.index } className="form-control"
-                        value={ reApplicant }
-                        onChange={ (selectedStatus) => {
-                            this.setState({
-                                changeReApplicantStatus: true,
-                                selectedCandidate: candidate,
-                                isSelectedReApplicant: (selectedStatus.target.value === "1")
-                            });
-                        } }>
+            <div key={"wakanda2"}>
+                <select ref={"role" + candidate.index} className="form-control"
+                    value={reApplicant}
+                    onChange={(selectedStatus) => {
+                        this.setState({
+                            changeReApplicantStatus: true,
+                            selectedCandidate: candidate,
+                            isSelectedReApplicant: (selectedStatus.target.value === "1")
+                        });
+                    }}>
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                 </select>
@@ -127,42 +127,42 @@ class Teams extends React.Component {
     candidateStatus(cell, candidate) {
         let status = candidate.status ? parseInt(candidate.status) : CANDIDATE_STATUS.NA;
         return (
-            <div key={ "wakanda" }>
-                <select ref={ "role" + candidate.index } className="form-control"
-                        value={ status }
-                        onChange={ (selectedStatus) => {
-                            let id = selectedStatus.nativeEvent.target.selectedIndex;
-                            this.setState({
-                                changeStatus: true,
-                                selectedCandidate: candidate,
-                                friendlyStatus: selectedStatus.nativeEvent.target[ id ].text,
-                                selectedStatus: selectedStatus.target.value
-                            });
-                        } }>
-                    <option value={ CANDIDATE_STATUS.NA }>N/A Status</option>
-                    <option value={ CANDIDATE_STATUS.ABANDONED }>ABANDONED</option>
-                    <option value={ CANDIDATE_STATUS.DEV_METEOR }>DEV_METEOR</option>
-                    <option value={ CANDIDATE_STATUS.DEV_LT }>DEV_LT</option>
-                    <option value={ CANDIDATE_STATUS.DQ_FOREIGNER }>DQ_FOREIGNER</option>
-                    <option value={ CANDIDATE_STATUS.DQ_GREY }>DQ_GREY</option>
-                    <option value={ CANDIDATE_STATUS.DQ_ECO }>DQ_ECO</option>
-                    <option value={ CANDIDATE_STATUS.DQ_SAL }>DQ_SAL</option>
-                    <option value={ CANDIDATE_STATUS.DQ_NOT_FIT }>DQ_NOT_FIT</option>
-                    <option value={ CANDIDATE_STATUS.FAILED_INT }>FAILED_INT</option>
-                    <option value={ CANDIDATE_STATUS.FAILED_METEOR }>FAILED_METEOR</option>
-                    <option value={ CANDIDATE_STATUS.HIRED }>HIRED</option>
-                    <option value={ CANDIDATE_STATUS.INC }>INC</option>
-                    <option value={ CANDIDATE_STATUS.INQ }>INQ</option>
-                    <option value={ CANDIDATE_STATUS.INT }>INT</option>
-                    <option value={ CANDIDATE_STATUS.NO_RESPONSE }>NO_RESPONSE</option>
-                    <option value={ CANDIDATE_STATUS.NO_SHOW }>NO_SHOW</option>
-                    <option value={ CANDIDATE_STATUS.QUALIFIED }>QUALIFIED</option>
-                    <option value={ CANDIDATE_STATUS.REDIRECT }>REDIRECT</option>
-                    <option value={ CANDIDATE_STATUS.RESCHEDULED }>RESCHEDULED</option>
-                    <option value={ CANDIDATE_STATUS.SCHED_INT }>SCHED_INT</option>
-                    <option value={ CANDIDATE_STATUS.SCHED_LT }>SCHED_LT</option>
-                    <option value={ CANDIDATE_STATUS.WITHDREW }>WITHDREW</option>
-                    <option value={ CANDIDATE_STATUS.PRE_QUALIFIED }>PRE_QUALIFIED</option>
+            <div key={"wakanda"}>
+                <select ref={"role" + candidate.index} className="form-control"
+                    value={status}
+                    onChange={(selectedStatus) => {
+                        let id = selectedStatus.nativeEvent.target.selectedIndex;
+                        this.setState({
+                            changeStatus: true,
+                            selectedCandidate: candidate,
+                            friendlyStatus: selectedStatus.nativeEvent.target[id].text,
+                            selectedStatus: selectedStatus.target.value
+                        });
+                    }}>
+                    <option value={CANDIDATE_STATUS.NA}>N/A Status</option>
+                    <option value={CANDIDATE_STATUS.ABANDONED}>ABANDONED</option>
+                    <option value={CANDIDATE_STATUS.DEV_METEOR}>DEV_METEOR</option>
+                    <option value={CANDIDATE_STATUS.DEV_LT}>DEV_LT</option>
+                    <option value={CANDIDATE_STATUS.DQ_FOREIGNER}>DQ_FOREIGNER</option>
+                    <option value={CANDIDATE_STATUS.DQ_GREY}>DQ_GREY</option>
+                    <option value={CANDIDATE_STATUS.DQ_ECO}>DQ_ECO</option>
+                    <option value={CANDIDATE_STATUS.DQ_SAL}>DQ_SAL</option>
+                    <option value={CANDIDATE_STATUS.DQ_NOT_FIT}>DQ_NOT_FIT</option>
+                    <option value={CANDIDATE_STATUS.FAILED_INT}>FAILED_INT</option>
+                    <option value={CANDIDATE_STATUS.FAILED_METEOR}>FAILED_METEOR</option>
+                    <option value={CANDIDATE_STATUS.HIRED}>HIRED</option>
+                    <option value={CANDIDATE_STATUS.INC}>INC</option>
+                    <option value={CANDIDATE_STATUS.INQ}>INQ</option>
+                    <option value={CANDIDATE_STATUS.INT}>INT</option>
+                    <option value={CANDIDATE_STATUS.NO_RESPONSE}>NO_RESPONSE</option>
+                    <option value={CANDIDATE_STATUS.NO_SHOW}>NO_SHOW</option>
+                    <option value={CANDIDATE_STATUS.QUALIFIED}>QUALIFIED</option>
+                    <option value={CANDIDATE_STATUS.REDIRECT}>REDIRECT</option>
+                    <option value={CANDIDATE_STATUS.RESCHEDULED}>RESCHEDULED</option>
+                    <option value={CANDIDATE_STATUS.SCHED_INT}>SCHED_INT</option>
+                    <option value={CANDIDATE_STATUS.SCHED_LT}>SCHED_LT</option>
+                    <option value={CANDIDATE_STATUS.WITHDREW}>WITHDREW</option>
+                    <option value={CANDIDATE_STATUS.PRE_QUALIFIED}>PRE_QUALIFIED</option>
                 </select>
             </div>
         );
@@ -171,29 +171,29 @@ class Teams extends React.Component {
     candidateSource(cell, candidate) {
         let source = candidate.source ? candidate.source._str : "not_indicated";
         return (
-            <div key={ "wakanda1" }>
-                <select ref={ "role" + candidate.index } className="form-control"
-                        value={ source }
-                        onChange={ (selectedStatus) => {
-                            let id = selectedStatus.nativeEvent.target.selectedIndex;
-                            this.setState({
-                                changeSite: true,
-                                selectedCandidate: candidate,
-                                friendlySite: selectedStatus.nativeEvent.target[ id ].text,
-                                selectedSite: selectedStatus.target.value
-                            });
-                        } }>
+            <div key={"wakanda1"}>
+                <select ref={"role" + candidate.index} className="form-control"
+                    value={source}
+                    onChange={(selectedStatus) => {
+                        let id = selectedStatus.nativeEvent.target.selectedIndex;
+                        this.setState({
+                            changeSite: true,
+                            selectedCandidate: candidate,
+                            friendlySite: selectedStatus.nativeEvent.target[id].text,
+                            selectedSite: selectedStatus.target.value
+                        });
+                    }}>
                     <option value="not_indicated">Not Indicated</option>
-                    { this.props.postingSites.map((item, index) => {
+                    {this.props.postingSites.map((item, index) => {
                         return (
-                            <option value={ item._id._str } key={ index }>{ item.site }</option>
+                            <option value={item._id._str} key={index}>{item.site}</option>
                         )
-                    }) }
+                    })}
                 </select>
             </div>
         );
     }
-    editCandidateInfo(candidate){
+    editCandidateInfo(candidate) {
         this.setState({
             selectedCandidate: candidate,
             name: candidate.name,
@@ -208,11 +208,11 @@ class Teams extends React.Component {
             editCandidateInfo: true
         });
     }
-    editInfo(cell, candidate){
-        return(
+    editInfo(cell, candidate) {
+        return (
             <button
                 className="btn btn-info ml10"
-                onClick={ this.editCandidateInfo.bind(this, candidate) }
+                onClick={this.editCandidateInfo.bind(this, candidate)}
             >
                 Edit
             </button>
@@ -261,74 +261,76 @@ class Teams extends React.Component {
         return (
             <div className="pull-left main">
                 <div className="table-responsive">
-                    <BootstrapTable data={ this.props.validCandidates } striped hover maxHeight='calc(100% - 60px)'>
+                    <BootstrapTable data={this.props.validCandidates} striped hover maxHeight='calc(100% - 60px)'>
                         <TableHeaderColumn isKey dataField='name'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } }
-                                           width={ "130" }>Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={ {
+                            filter={{ type: 'RegexFilter', placeholder: 'Members' }}
+                            width={"130"}>Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Please enter a First Name'
-                        } }>Email</TableHeaderColumn>
+                        }}>Email</TableHeaderColumn>
                         <TableHeaderColumn dataField='number'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } }
-                                           width={ "200" }>Phone Number</TableHeaderColumn>
-                        <TableHeaderColumn dataField='address' filter={ {
+                            filter={{ type: 'RegexFilter', placeholder: 'Phone Number' }}
+                            width={"170"}>Phone Number</TableHeaderColumn>
+                        <TableHeaderColumn dataField='address' filter={{
                             type: 'RegexFilter',
-                            placeholder: 'Please enter a Email Add'
-                        } }>Address</TableHeaderColumn>
+                            placeholder: 'Enter Email Add'
+                        }}>Address</TableHeaderColumn>
                         <TableHeaderColumn dataField='joinedDt'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Time' } }
-                                           width={ "200" }>Joined Date</TableHeaderColumn>
+                            filter={{ type: 'RegexFilter', placeholder: 'Date Time' }}
+                            width={"150"}>Joined Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='claimedBy'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter a Name' } }
-                                           width={ "200" }>Claimed By</TableHeaderColumn>
+                            filter={{ type: 'RegexFilter', placeholder: 'UserName' }}
+                            width={"150"}>Claimed By</TableHeaderColumn>
                         <TableHeaderColumn dataField='friendlyStatus'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter status' } }
-                                           dataFormat={ this.candidateStatus }
-                                           width={ "200" }>Status</TableHeaderColumn>
+                            filter={{ type: 'RegexFilter', placeholder: 'Status' }}
+                            dataFormat={this.candidateStatus}
+                            width={"150"}>Status</TableHeaderColumn>
                         <TableHeaderColumn dataField='isReApplicantFriendly'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter status' } }
-                                           dataFormat={ this.candidateReApplicant }
-                                           width={ "200" }>Re-Applicant</TableHeaderColumn>
+                            filter={{ type: 'RegexFilter', placeholder: 'Status' }}
+                            dataFormat={this.candidateReApplicant}
+                            width={"150"}>Re-Applicant</TableHeaderColumn>
                         <TableHeaderColumn dataField='friendlySite'
-                                           filter={ { type: 'RegexFilter', placeholder: 'Please enter source' } }
-                                           dataFormat={ this.candidateSource }
-                                           width={ "200" }>Source</TableHeaderColumn>
-                        <TableHeaderColumn dataField='editInfo' dataFormat={ this.editInfo } width={ "200" }>Edit
-                            Info</TableHeaderColumn>
+                            filter={{ type: 'RegexFilter', placeholder: 'Source' }}
+                            dataFormat={this.candidateSource}
+                            width={"150"}>Source</TableHeaderColumn>
+                        <TableHeaderColumn dataField='country'
+                            filter={{ type: 'RegexFilter', placeholder: 'Country' }}
+                            width={"100"}>Country</TableHeaderColumn>
+                        <TableHeaderColumn dataField='editInfo' dataFormat={this.editInfo} width={"70"}>Info</TableHeaderColumn>
                     </BootstrapTable>
-                    {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) ?  <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
+                    {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) ? <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
                 </div>
                 <Modal
-                    isOpen={ this.state.changeStatus || this.state.changeSite || this.state.changeReApplicantStatus }
-                    style={ this.styleSet }
+                    isOpen={this.state.changeStatus || this.state.changeSite || this.state.changeReApplicantStatus}
+                    style={this.styleSet}
                     contentLabel="Change Status"
                 >
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
-                                Update { (this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "" } Status
+                                Update {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : ""} Status
                             </div>
                         </div>
                         <div className="panel-body p-2">
-                            { this.state.changeStatus && <h3>
+                            {this.state.changeStatus && <h3>
                                 You are going to
-                                set { (this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME" } Status
-                                to { this.state.friendlyStatus }. Continue?
-                            </h3> }
-                            { this.state.changeSite && <h3>
+                                set {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} Status
+                                to {this.state.friendlyStatus}. Continue?
+                            </h3>}
+                            {this.state.changeSite && <h3>
                                 You are going to
-                                set { (this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME" } Source
-                                to { this.state.friendlySite }. Continue?
-                            </h3> }
-                            { this.state.changeReApplicantStatus && <h3>
+                                set {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} Source
+                                to {this.state.friendlySite}. Continue?
+                            </h3>}
+                            {this.state.changeReApplicantStatus && <h3>
                                 You are going to
-                                mark { (this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME" } As {this.state.isSelectedReApplicant ? "A Re-Applicant" : "Not A Re-Applicant"} Continue?
-                            </h3> }
-                            <button onClick={ this.selectStatus } className="btn btn-success"
-                                    disabled={ this.state.saving }>Yes
+                                mark {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} As {this.state.isSelectedReApplicant ? "A Re-Applicant" : "Not A Re-Applicant"} Continue?
+                            </h3>}
+                            <button onClick={this.selectStatus} className="btn btn-success"
+                                disabled={this.state.saving}>Yes
                             </button>
-                            <button onClick={ () => {
+                            <button onClick={() => {
                                 this.setState({
                                     changeStatus: false,
                                     changeSite: false,
@@ -339,14 +341,14 @@ class Teams extends React.Component {
                                     friendlySite: null,
                                     selectedSite: null
                                 })
-                            } } className="btn btn-danger" style={ { marginLeft: "10px" } }>No
+                            }} className="btn btn-danger" style={{ marginLeft: "10px" }}>No
                             </button>
                         </div>
                     </div>
                 </Modal>
                 <Modal
-                    isOpen={ this.state.editCandidateInfo }
-                    style={ this.styleSet2 }
+                    isOpen={this.state.editCandidateInfo}
+                    style={this.styleSet2}
                     contentLabel="Change Status"
                 >
                     <form className="panel panel-primary" onSubmit={this.save}>
@@ -355,10 +357,10 @@ class Teams extends React.Component {
                                 Info
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                       onClick={ () => {
-                                           this.setState({ editCandidateInfo: false })
-                                       } }>
-                                        <i className="fa fa-remove"/>
+                                        onClick={() => {
+                                            this.setState({ editCandidateInfo: false })
+                                        }}>
+                                        <i className="fa fa-remove" />
                                     </a>
                                 </span>
                             </div>
@@ -470,12 +472,12 @@ export default withTracker(() => {
     return {
         validCandidates: CandidatesDB.find({ retired: 0 }, { sort: { created: -1 } }).fetch().map((item, index) => {
             let friendlySite = null;
-            if(item.source){
-                let postingSite = PostingSitesDB.findOne({_id: item.source});
-                if(postingSite)
+            if (item.source) {
+                let postingSite = PostingSitesDB.findOne({ _id: item.source });
+                if (postingSite)
                     friendlySite = postingSite.site;
             }
-            if(friendlySite)
+            if (friendlySite)
                 item.friendlySite = friendlySite;
             let candidate_ = new Candidate(item, index);
             candidate_.claimedBy = candidate_.getClaimer();

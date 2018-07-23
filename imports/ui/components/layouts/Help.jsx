@@ -56,6 +56,9 @@ class Help extends Component {
             case ROUTES.STATISTICS:
                 message = 'This is the page where statistics on Posted Jobs displayed. We can see here how many posts are created by the staff.';
                 break;
+            case ROUTES.CANDIDATES:
+                message = 'This is the page where candidates are listed. We can filter and change here the status of a candidate.';
+                break;
             default:
                 message = 'There is no information related to this page.';
                 break;

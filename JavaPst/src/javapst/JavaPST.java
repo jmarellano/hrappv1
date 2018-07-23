@@ -155,7 +155,7 @@ public class JavaPST {
                                       new Document()
                                             .append("contact",contact)
                                             .append("retired",0)
-                                            .append("createdAt", System.currentTimeMillis() * 1000L));
+                                            .append("createdAt", System.currentTimeMillis()));
                         UpdateOptions options = new UpdateOptions().upsert(true);
                         candidates.updateOne(filter, update, options);
                         int numberOfAttachments = email.getNumberOfAttachments();

@@ -169,6 +169,7 @@ if (Meteor.isServer) {
             let cursor = CandidatesDB.find({
                 name: { $exists: true },
                 createdAt: { $exists: true },
+                category: { $ne: 'SPAMMER' },
                 '$or': [
                     { email: { $exists: true } },
                     { number: { $exists: true } },

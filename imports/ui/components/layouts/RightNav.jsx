@@ -57,14 +57,14 @@ class RightNav extends Component {
                     <HeaderNav key={2} type="navbar">
                         <Timezone {...this.props} Category={this.props.Account} />
                     </HeaderNav>
-                    <HeaderNav key={3} type="navbar">
-                        <Help {...this.props} />
-                    </HeaderNav>
                     <HeaderNav key={4} type="navbar">
                         <Calendar {...this.props} />
                     </HeaderNav>
                     <HeaderNav key={5} type="navbar">
                         <Tasklist {...this.props} />
+                    </HeaderNav>
+                    <HeaderNav key={3} type="navbar">
+                        <Help {...this.props} />
                     </HeaderNav>
                 </ul>
             </div>

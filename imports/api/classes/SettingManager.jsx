@@ -2,7 +2,7 @@ import { Mongo } from 'meteor/mongo';
 import { CategoriesDB } from '../categories';
 import { CandidatesDB } from '../candidates';
 import { SettingsDB, PostingDB, PostingSitesDB, ReportsDB } from '../settings';
-import { CANDIDATE_STATUS } from './Const';
+import { CANDIDATE_STATUS, COUNTRIES } from './Const';
 import moment from 'moment-timezone';
 
 export default class SettingManager {
@@ -38,6 +38,7 @@ export default class SettingManager {
                 site: data.site,
                 url: data.link,
                 category: new Mongo.ObjectID(data.category),
+                country: data.country,
                 postedBy: userId
             }
         }, { upsert: true });
@@ -45,7 +46,7 @@ export default class SettingManager {
     static recordDelete(id) {
         return PostingDB.remove({ _id: id });
     }
-    static getReports(type, start) {
+    static getReports(type, start, country) {
         let dayStart = null,
             dayEnd = null,
             report = [],
@@ -55,17 +56,17 @@ export default class SettingManager {
             case 0:
                 dayStart = moment().subtract(10, 'days').startOf('day');
                 dayEnd = moment().endOf('day');
-                report = this.generateReport(dayStart, dayEnd);
+                report = this.generateReport(dayStart, dayEnd, country);
                 break;
             case 1:
                 dayStart = moment().startOf('month');
                 dayEnd = moment().endOf('month');
-                report = this.generateReport(dayStart, dayEnd);
+                report = this.generateReport(dayStart, dayEnd, country);
                 break;
             case 2:
                 dayStart = moment().startOf('week');
                 dayEnd = moment().endOf('week');
-                report = this.generateReport(dayStart, dayEnd);
+                report = this.generateReport(dayStart, dayEnd, country);
                 break;
             case 3:
                 query[start] = { '$exists': true }
@@ -81,7 +82,7 @@ export default class SettingManager {
             report[1]
         ];
     }
-    static generateReport(dayStart, dayEnd) {
+    static generateReport(dayStart, dayEnd, country = null) {
         let categories = CategoriesDB.find().fetch();
         let positions = {};
         let positionsLabel = [];
@@ -104,8 +105,14 @@ export default class SettingManager {
                 positionColors2.push(category.color);
             }
         });
-        let posts2 = PostingDB.find({ timestamp: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { timestamp: 1 } }).fetch();
-        let newApplicants2 = CandidatesDB.find({ createdAt: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } }, { sort: { createdAt: 1 } }).fetch();
+        let query = { timestamp: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } };
+        let query2 = { createdAt: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } };
+        if (country) {
+            query['country'] = country.toString();
+            query2['country'] = COUNTRIES[country.toString()].name;
+        }
+        let posts2 = PostingDB.find(query, { sort: { timestamp: 1 } }).fetch();
+        let newApplicants2 = CandidatesDB.find(query2, { sort: { createdAt: 1 } }).fetch();
 
         let postData = [];
         let newData = [];

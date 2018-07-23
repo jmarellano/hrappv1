@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { CategoriesDB } from '../../../api/categories';
 import { CSVLink } from 'react-csv';
+import { COUNTRIES } from '../../../api/classes/Const';
 import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
@@ -16,9 +17,11 @@ class Graphs extends Component {
             headers: [],
             page: 0,
             startDate: moment().startOf('month').format('YYYY-MM'),
-            csv: []
+            csv: [],
+            country: props.settings.country
         };
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleCountryChange = this.handleCountryChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
     }
     componentWillMount() {
@@ -36,7 +39,8 @@ class Graphs extends Component {
             const value = target.type === 'checkbox' ? target.checked : target.value;
             if (this.setState)
                 this.setState({ [target.name]: value }, () => {
-                    callback();
+                    if (callback)
+                        callback();
                 });
         }
     }
@@ -80,7 +84,7 @@ class Graphs extends Component {
         $(this.bgraph13).empty();
         $(this.bgraph14).empty();
         this.setState({ processing: true });
-        this.props.Statistics.getReports(type, this.state.startDate, (err, data) => {
+        this.props.Statistics.getReports(type, this.state.startDate, this.state.country, (err, data) => {
             this.setState({ processing: false });
             let csv = [];
             this.props.Statistics.createBarGraph({
@@ -520,6 +524,11 @@ class Graphs extends Component {
             this.setState({ reports: data, headers: data[0].dates, csv }); // TODO data
         });
     }
+    renderCountries() {
+        return COUNTRIES.map((country, index) => {
+            return (<option key={index} value={index}>{country.name}</option>);
+        });
+    }
     renderReport(type, row) {
         let property = '';
         switch (row) {
@@ -592,6 +601,11 @@ class Graphs extends Component {
             this.loadReports(3);
         });
     }
+    handleCountryChange(e) {
+        this.handleInputChange(e, () => {
+            this.loadReports(this.state.page);
+        });
+    }
     render() {
         let title = '';
         let subtitle = '';
@@ -641,6 +655,23 @@ class Graphs extends Component {
                         <div className="tab-content">
                             <div className="row p-2">
                                 <div className="col-sm-12">
+                                    {
+                                        this.state.page != 3 &&
+                                        <div className="col-sm-3">
+                                            Country:
+                                        <select
+                                                value={this.state.country}
+                                                name="country"
+                                                className="mb-1 form-control"
+                                                onChange={this.handleCountryChange}
+                                                placeholder="Country"
+                                                required
+                                            >
+                                                <option value={null} disabled>Select Country</option>
+                                                {this.renderCountries()}
+                                            </select><br />
+                                        </div>
+                                    }
                                     {!this.state.processing && <h5>Job Ad Posting</h5>}
                                     {
                                         !this.state.processing && this.state.page != 0 &&
