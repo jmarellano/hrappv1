@@ -15,8 +15,7 @@ class Graphs extends Component {
             reports: [],
             headers: [],
             page: 0,
-            startDate: moment().subtract(1, 'months').startOf('day').format('YYYY-MM-DD'),
-            endDate: moment().endOf('day').format('YYYY-MM-DD'),
+            startDate: moment().startOf('month').format('YYYY-MM'),
             csv: []
         };
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -81,7 +80,7 @@ class Graphs extends Component {
         $(this.bgraph13).empty();
         $(this.bgraph14).empty();
         this.setState({ processing: true });
-        this.props.Statistics.getReports(type, this.state.startDate, this.state.endDate, (err, data) => {
+        this.props.Statistics.getReports(type, this.state.startDate, (err, data) => {
             this.setState({ processing: false });
             let csv = [];
             this.props.Statistics.createBarGraph({
@@ -613,8 +612,7 @@ class Graphs extends Component {
                 title = 'Custom';
                 subtitle = (
                     <div className="">
-                        From: <input type="date" name="startDate" value={this.state.startDate} onChange={this.handleDateChange} disabled={this.state.processing} />
-                        To: <input type="date" name="endDate" value={this.state.endDate} onChange={this.handleDateChange} disabled={this.state.processing} />
+                        From: <input type="month" name="startDate" value={this.state.startDate} onChange={this.handleDateChange} disabled={this.state.processing} />
                     </div>
                 )
                 break;

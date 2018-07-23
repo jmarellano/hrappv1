@@ -27,7 +27,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             let temp_ = AppointmentDB.findOne({});
-            if(temp_){
+            if (temp_) {
                 AppointmentDB.update({ _id: temp_._id }, { $inc: { tempCounter: 1 } })
             }
         } catch (err) {
@@ -35,10 +35,10 @@ if (Meteor.isServer) {
             throw new Meteor.Error(403, 'Not authorized');
         }
     }
-    functions[GetReports] = function (type, start, end) {
+    functions[GetReports] = function (type, start) {
         try {
             check(this.userId, String);
-            return SettingManager.getReports(type, start, end);
+            return SettingManager.getReports(type, start);
         } catch (err) {
             console.log(err);
             throw new Meteor.Error(403, 'Not authorized');

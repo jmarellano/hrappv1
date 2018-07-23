@@ -1,7 +1,7 @@
 import { Mongo } from 'meteor/mongo';
 import { CategoriesDB } from '../categories';
 import { CandidatesDB } from '../candidates';
-import { SettingsDB, PostingDB, PostingSitesDB } from '../settings';
+import { SettingsDB, PostingDB, PostingSitesDB, ReportsDB } from '../settings';
 import { CANDIDATE_STATUS } from './Const';
 import moment from 'moment-timezone';
 
@@ -45,28 +45,37 @@ export default class SettingManager {
     static recordDelete(id) {
         return PostingDB.remove({ _id: id });
     }
-    static getReports(type, start, end) {
+    static getReports(type, start) {
         let dayStart = null,
-            dayEnd = null;
+            dayEnd = null,
+            report = [],
+            query = {},
+            result = {};
         switch (type) {
             case 0:
                 dayStart = moment().subtract(10, 'days').startOf('day');
                 dayEnd = moment().endOf('day');
+                report = this.generateReport(dayStart, dayEnd);
                 break;
             case 1:
                 dayStart = moment().startOf('month');
                 dayEnd = moment().endOf('month');
+                report = this.generateReport(dayStart, dayEnd);
                 break;
             case 2:
                 dayStart = moment().startOf('week');
                 dayEnd = moment().endOf('week');
+                report = this.generateReport(dayStart, dayEnd);
                 break;
             case 3:
-                dayStart = moment(start);
-                dayEnd = moment(end);
+                query[start] = { '$exists': true }
+                result = ReportsDB.findOne(query);
+                if (result)
+                    report = result[start];
+                else
+                    report = [[], []];
                 break;
         }
-        let report = this.generateReport(dayStart, dayEnd);
         return [
             report[0],
             report[1]
@@ -184,6 +193,16 @@ export default class SettingManager {
             { post: postData, new: newData, pre: preData, int: intData, qua: quaData, hired: hiredData, labels: positionsLabel, dates: postLabel, adv: advData2, colors: positionColors },
             { post: postData2, new: newData2, pre: preData2, int: intData2, qua: quaData2, hired: hiredData2, labels: positionsLabel2, dates: postLabel, colors: positionColors2 }
         ];
+    }
+    static savePrevReports() {
+        let monthly = this.getReports(1, null, null),
+            datetime = moment();
+        let query = {},
+            obj = {};
+        query[datetime.format('YYYY-MM')] = { '$exists': true };
+        obj[datetime.format('YYYY-MM')] = monthly;
+        if (ReportsDB.update(query, { $set: obj }, { upsert: true }))
+            console.log("Created Report for today...", moment().format('MM-DD-YYYY'));
     }
     static getPostingStat(opt) {
         let retval = {};

@@ -527,7 +527,7 @@ class Message {
             callback(err);
         });
     }
-    reSend(id, callback){
+    reSend(id, callback) {
         Meteor.call(MessageReSend, id, (err) => {
             callback(err);
         });
@@ -675,7 +675,6 @@ class Statistics {
     }
 
     createLineGraph(options) {
-        console.log("options: ", options);
         this.lineChart = new Morris.Line({
             data: this.lineData,
             ...options
@@ -693,7 +692,7 @@ class Statistics {
         this.barChart.setData(data);
     }
 
-    addSite(site){
+    addSite(site) {
         if (!this.recording) {
             this.recording = true;
             Meteor.call(AddSite, site, (err) => {
@@ -722,8 +721,8 @@ class Statistics {
         });
     }
 
-    getReports(type, start, end, callback) {
-        Meteor.call(GetReports, type, start, end, (err, data) => {
+    getReports(type, start, callback) {
+        Meteor.call(GetReports, type, start, (err, data) => {
             callback(err, data);
         });
     }

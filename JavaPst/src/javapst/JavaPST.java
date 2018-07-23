@@ -93,7 +93,7 @@ public class JavaPST {
                 String html = email.getBodyHTML();
                 String text = email.getBody();
                 String subject = email.getSubject();
-                String messageId = (date + to + subject + text + from);
+                String messageId = (date.getTime() + to + subject + text + from);
                 
                 md.update(messageId.getBytes());
                 byte byteData[] = md.digest();
@@ -136,14 +136,14 @@ public class JavaPST {
                         } else if(type.toLowerCase().contains("IPM.Schedule.Meeting".toLowerCase())){
                             tyype = "appointments";
                             PSTAppointment appointment = (PSTAppointment)email;
-                            doc.append("startTime", appointment.getStartTime());
-                            doc.append("endTime", appointment.getEndTime());
+                            doc.append("startTime", appointment.getStartTime().getTime());
+                            doc.append("endTime", appointment.getEndTime().getTime());
                             appointments.insertOne(doc);
                         } else if(type.toLowerCase().contains("IPM.Appointment".toLowerCase())){
                             tyype = "appointments";
                             PSTAppointment appointment = (PSTAppointment)email;
-                            doc.append("startTime", appointment.getStartTime());
-                            doc.append("endTime", appointment.getEndTime());
+                            doc.append("startTime", appointment.getStartTime().getTime());
+                            doc.append("endTime", appointment.getEndTime().getTime());
                             appointments.insertOne(doc);
                         } else if(type.toLowerCase().contains("IPM.Contact".toLowerCase()))
                             contacts.insertOne(doc);

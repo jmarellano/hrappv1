@@ -1,9 +1,7 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { ROLES, isPermitted } from '../../../api/classes/Const';
-import { MessagesDB } from '../../../api/messages';
 import { CandidatesDB } from '../../../api/candidates';
-import MessageClass from '../../../api/classes/Message';
 import ReactTooltip from 'react-tooltip';
 import PropTypes from 'prop-types';
 
@@ -101,7 +99,7 @@ class CandidatesContent extends React.Component {
                             isPermitted(this.props.user.role, ROLES.VIEW_MESSAGES_PRIVATE) ||
                                 this.props.user.id === candidate.claimed ||
                                 (candidate.followers && candidate.followers.filter((item) => item.id === this.props.user.id).length) ?
-                                <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} messages={this.props.messages} setSearch={this.search} search={this.state.search.length ? this.state.search : null} start={this.state.start} end={this.state.end} sort={this.state.sort} sortDate={this.sortDate} /> :
+                                <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} setSearch={this.search} search={this.state.search.length ? this.state.search : null} start={this.state.start} end={this.state.end} sort={this.state.sort} sortDate={this.sortDate} /> :
                                 <div>You need to be follower of this candidate or claim it to view messages.</div>
                         }
                     </div>
@@ -144,7 +142,6 @@ CandidatesContent.propTypes = {
 export default withTracker((props) => {
     let candidate = CandidatesDB.findOne({ contact: props.candidate.contact });
     return {
-        messages: MessagesDB.find({}, { sort: { createdAt: -1 } }).fetch().map((item, index) => new MessageClass(item, index)),
         candidate: candidate ? new CandidateClass(CandidatesDB.findOne({ contact: props.candidate.contact })) : null
     };
 

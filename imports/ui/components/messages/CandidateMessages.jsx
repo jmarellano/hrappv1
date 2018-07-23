@@ -3,6 +3,8 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { MESSAGES_TYPE } from '../../../api/classes/Const';
 import { EmailFiles } from '../../../api/files';
 import { ValidMessages } from '../../../api/messages';
+import { MessagesDB } from '../../../api/messages';
+import MessageClass from '../../../api/classes/Message';
 import Util from '../../../api/classes/Utilities';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
@@ -406,6 +408,7 @@ CandidateMessages.propTypes = {
 export default withTracker((props) => {
     let isReady = Meteor.subscribe(ValidMessages, props.candidate.contact, props.limit, props.search, props.start, props.end, props.sort).ready();
     return {
-        isReady
+        isReady,
+        messages: MessagesDB.find({}, { sort: { createdAt: props.sort ? 1 : -1 } }).fetch().map((item, index) => new MessageClass(item, index)),
     };
 })(CandidateMessages);

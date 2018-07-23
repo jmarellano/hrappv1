@@ -1,4 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
+import { MessagesAddListener } from '../messages';
+import SettingManager from './SettingManager';
 import Future from 'fibers/future';
 import Fiber from 'fibers';
 import nodemailer from 'nodemailer';
@@ -8,7 +10,7 @@ import WebShot from './WebShot';
 import clamscan from 'clamscan';
 import twilio from 'twilio';
 import fs from 'fs';
-import { MessagesAddListener } from '../messages';
+import moment from 'moment-timezone';
 
 export default class Server {
     constructor() {
@@ -34,6 +36,10 @@ export default class Server {
 
     getFileSystem() {
         return fs;
+    }
+
+    later() {
+        return later;
     }
 
     getNodemailer() {
@@ -77,12 +83,21 @@ export default class Server {
         this.messageSender = connections;
     }
 
+    generateReports() {
+        var task = new ScheduledTask('at 23:58 pm', function () {
+            SettingManager.savePrevReports();
+        });
+        task.start();
+    }
+
     run() {
         console.log('Initializing server setup...');
         let appVersion = 'MeteorJS + ReactJS';
         console.log(`Version: ${appVersion}`);
         console.log(`Meteor Version: ${Meteor.release}`);
         console.log('Running server scheduled events...');
+        later.date.localTime();
+        this.generateReports();
         Accounts.validateLoginAttempt((data) => {
             if (data.error)
                 return data.error;
