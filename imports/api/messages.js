@@ -601,7 +601,7 @@ if (Meteor.isServer) {
     };
     Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
-            let cursor = AppointmentDB.find({ importedBy: this.userId });
+            let cursor = AppointmentDB.find({ });
             if (currentUserOnly && this.userId) {
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);

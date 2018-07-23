@@ -66,6 +66,7 @@ class Record extends Component {
         this.toggleModal = this.toggleModal.bind(this);
         this.toggleModal2 = this.toggleModal2.bind(this);
         this.toggleAppointment = this.toggleAppointment.bind(this);
+        this.styleGetter = this.styleGetter.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.saveAppointment = this.saveAppointment.bind(this);
     }
@@ -147,6 +148,38 @@ class Record extends Component {
             )
         });
     }
+    styleGetter(event, start, end, isSelected) {
+        let status = event.taskStatus ? event.taskStatus : "";
+        let style = {
+            borderRadius: '0px',
+            opacity: 0.8,
+            color: 'black',
+            border: '0px',
+            display: 'block'
+        };
+        if (event.endTime < moment().valueOf())
+            style.backgroundColor = "#ffc6c6";
+        switch(status){
+            case "1":
+                style.backgroundColor = "rgb(177, 236, 179)";
+                break;
+            case "2":
+                style.backgroundColor = "rgb(255, 188, 244)";
+                break;
+            case "3":
+                style.backgroundColor = "rgb(167, 167, 167)";
+                break;
+            case "4":
+                style.backgroundColor = "#ffc6c6";
+                break;
+            case "5":
+                style.backgroundColor = "rgb(255, 216, 182)";
+                break;
+        }
+        return {
+            style: style
+        };
+    }
     render() {
         let class_ = 'nav-link';
         if(this.props.taskList && this.props.taskList.length)
@@ -188,6 +221,7 @@ class Record extends Component {
                                         });
                                     }
                                 }}
+                                eventPropGetter={this.styleGetter}
                             />
                         </div>
                         <Modal isOpen={this.state.isAppointmentOpen} contentLabel="RecordStatModal" style={this.styleSet2}>
