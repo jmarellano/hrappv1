@@ -160,13 +160,16 @@ if (Meteor.isServer) {
             let selectedAppointment = AppointmentDB.findOne({ _id: data.selectedTask._id });
             if(!selectedAppointment)
                 throw new Meteor.Error('bad', 'Task Does not Exist');
+            let qry = {
+                taskStatus: data.selectedStatus,
+                friendlyStatus: data.friendlyStatus,
+            };
+            if(data.startTime && data.endTime) {
+                qry.startTime = moment(data.startTime).valueOf();
+                qry.endTime = moment(data.endTime).valueOf();
+            }
             return AppointmentDB.update({ _id: selectedAppointment._id }, {
-                $set: {
-                    taskStatus: data.selectedStatus,
-                    friendlyStatus: data.friendlyStatus,
-                    startTime: moment(data.startTime).valueOf(),
-                    endTime: moment(data.endTime).valueOf(),
-                }
+                $set: qry
             });
         } catch (err) {
             console.error(err);
