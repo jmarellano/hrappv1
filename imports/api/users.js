@@ -4,6 +4,7 @@ import { ROLES, isPermitted, RETIRED, VERIFIED, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
 import Util from './classes/Utilities';
 import moment from "moment-timezone";
+import { AppointmentDB } from "./messages";
 
 export const ValidUsers = 'users_valid';
 export const UsersRegister = 'users_register';
@@ -14,6 +15,8 @@ export const UsersRemoveEmail = 'users_remove_email';
 export const UsersDefaultEmail = 'users_default_email';
 export const UsersTimezone = 'users_timezone';
 export const UsersToggleMute = 'users_toggle_mute';
+export const UserMarkTask = 'user_mark_task';
+export const UserAddTask = 'user_Add_task';
 export const UsersGetRetired = 'users_get_retired';
 export const UsersChangeRole = 'users_change_role';
 export const UsersRetire = 'users_retire';
@@ -143,6 +146,57 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             Meteor.users.update({ _id: this.userId }, { $set: { 'profile.mute': !(Meteor.user().profile && Meteor.user().profile.mute) } })
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[UserMarkTask] = function (data) {
+        try {
+            check(this.userId, String);
+            check(data, Object);
+            check(data.selectedTask, Object);
+            check(data.selectedStatus, String);
+            let selectedAppointment = AppointmentDB.findOne({ _id: data.selectedTask._id });
+            if(!selectedAppointment)
+                throw new Meteor.Error('bad', 'Task Does not Exist');
+            return AppointmentDB.update({ _id: selectedAppointment._id }, {
+                $set: {
+                    taskStatus: data.selectedStatus,
+                    friendlyStatus: data.friendlyStatus,
+                    startTime: moment(data.startTime).valueOf(),
+                    endTime: moment(data.endTime).valueOf(),
+                }
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[UserAddTask] = function (data) {
+        try {
+            check(this.userId, String);
+            check(data, Object);
+            let messageId = Util.hash(`${moment().valueOf()}${data.appointmentTo}${data.appointmentSubject}${data.appointmentMessage}${this.userId}`);
+            return AppointmentDB.insert({
+                "createdAt" : moment().valueOf(),
+                "read" : true,
+                "contact" : data.appointmentFrom,
+                "from" : data.appointmentFrom,
+                "to" : data.appointmentTo,
+                "cc" : "",
+                "bcc" : "",
+                "html" : "",
+                "text" : data.appointmentMessage,
+                "subject" : data.appointmentSubject,
+                "type" : 1,
+                "status" : 1,
+                "messageId" : messageId,
+                "attachments" : [],
+                "importedBy" : this.userId,
+                "startTime" : moment(data.startTime).valueOf(),
+                "endTime" : moment(data.endTime).valueOf(),
+            });
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

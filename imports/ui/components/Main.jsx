@@ -28,22 +28,21 @@ class Main extends Component {
     componentDidMount(){
         Meteor.setInterval(() => {
             Meteor.call(CheckAppointments);
-        }, 2000);
+        }, 20 * 1000);
     }
 
     componentDidUpdate(prevProps) {
         let option = {"icon" : "/img/e-mail-10.png"};
-        Util.notifyClient("Incoming Appointment Alert", `test notif`, option);
         if ((this.props.user !== prevProps.user) && this.props.user)
             moment.tz.setDefault(this.props.user.default_timezone || 'Asia/Manila');
-        if (this.props.scheduledTask !== prevProps.scheduledTask && Meteor.user()) { // TODO John Please Fix
+        if (this.props.scheduledTask !== prevProps.scheduledTask && Meteor.user()) {
             let didNotify = false;
             let tasks = this.props.scheduledTask;
             if(tasks.length && this.willContinueCheckingAppointments){
                 for(let i = 0; i < tasks.length; i++){
                     let task = tasks[i];
-                    let timestamp = moment(task.startTime).valueOf(); // add 5 mins to date on db to test
-                    let remainingTime = Util.getTimeRemaining(new Date(timestamp));
+                    let remainingTime = Util.getTimeRemaining(new Date(task.startTime));
+                    console.log(`checking a task with startTime: ${new Date(task.startTime)} with remaining time: ${JSON.stringify(remainingTime)}`);
                     if(remainingTime){
                         console.log('remaining time: ', remainingTime.minutes);
                         switch(remainingTime.minutes){
@@ -64,14 +63,14 @@ class Main extends Component {
                                 break;
                         }
                     }
-                    if(didNotify){
-                        this.audio = new Audio('/Woosh.mp3');
-                        this.audio.play();
-                        this.willContinueCheckingAppointments = false;
-                        Meteor.setTimeout(()=>{
-                            this.willContinueCheckingAppointments = true;
-                        }, 60 * 1000);
-                    }
+                }
+                if(didNotify){
+                    this.audio = new Audio('/Woosh.mp3');
+                    this.audio.play();
+                    this.willContinueCheckingAppointments = false;
+                    Meteor.setTimeout(()=>{
+                        this.willContinueCheckingAppointments = true;
+                    }, 60 * 1000);
                 }
             }
         }

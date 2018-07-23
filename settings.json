@@ -55,10 +55,10 @@
         }
     },
     "kadira": {
-        "appId": "c9pnqeqZhDKqRhPrz",
-        "appSecret": "0d85f560-ee29-4bfd-a0bd-d14fbc1c4a2e",
+        "appId": "GoQ38ujuKevA72by7",
+        "appSecret": "95805cc2-3b49-4a5c-be37-e2ea2d192c80",
         "options": {
-            "endpoint": "http://138.68.0.171:4000"
+            "endpoint": "http://138.197.105.23:11011"
         }
     },
     "drive": {
