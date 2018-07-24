@@ -62,7 +62,8 @@ class Stats extends Component {
             uploading: false,
             confirmation: false,
             uploadProgress: 0,
-            history: false
+            history: false,
+            score: 0
         };
         this.styleSet = {
             overlay: {
@@ -103,8 +104,49 @@ class Stats extends Component {
         this.toggleHistory = this.toggleHistory.bind(this);
     }
 
+    componentDidMount() {
+        let score = 0;
+        score += parseFloat(this.props.selectedCandidate.resume ? this.props.selectedCandidate.resume : 0);
+        score += parseFloat(this.props.selectedCandidate.portfolio ? this.props.selectedCandidate.portfolio : 0);
+        score += parseFloat(this.props.selectedCandidate.values ? this.props.selectedCandidate.values : 0);
+        score += parseFloat(this.props.selectedCandidate.disc ? this.props.selectedCandidate.disc : 0);
+        score += parseFloat(this.props.selectedCandidate.iq ? this.props.selectedCandidate.iq : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_METEOR ? this.props.selectedCandidate.TEST_METEOR : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_LIVE ? this.props.selectedCandidate.TEST_LIVE : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_WRITING ? this.props.selectedCandidate.TEST_WRITING : 0);
+        score += parseFloat(this.props.selectedCandidate.VIDEO ? this.props.selectedCandidate.VIDEO : 0);
+        score += parseFloat(this.props.selectedCandidate.INTERVIEW ? this.props.selectedCandidate.INTERVIEW : 0);
+        score += parseFloat(this.props.selectedCandidate.MANAGER ? this.props.selectedCandidate.MANAGER : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_IMAGE ? this.props.selectedCandidate.TEST_IMAGE : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_CREATIVE ? this.props.selectedCandidate.TEST_CREATIVE : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_WEBFLOW ? this.props.selectedCandidate.TEST_WEBFLOW : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_MOCK ? this.props.selectedCandidate.TEST_MOCK : 0);
+        score += parseFloat(this.props.selectedCandidate.TEST_SIMULATION ? this.props.selectedCandidate.TEST_SIMULATION : 0);
+        score += parseFloat(this.props.selectedCandidate.others ? this.props.selectedCandidate.others : 0);
+        this.setState({ score });
+    }
+
     componentDidUpdate(prevProps) {
-        if (this.props.selectedCandidate !== prevProps.selectedCandidate)
+        if (this.props.selectedCandidate !== prevProps.selectedCandidate) {
+            let score = 0;
+            score += parseFloat(this.props.selectedCandidate.resume ? this.props.selectedCandidate.resume : 0);
+            score += parseFloat(this.props.selectedCandidate.portfolio ? this.props.selectedCandidate.portfolio : 0);
+            score += parseFloat(this.props.selectedCandidate.values ? this.props.selectedCandidate.values : 0);
+            score += parseFloat(this.props.selectedCandidate.disc ? this.props.selectedCandidate.disc : 0);
+            score += parseFloat(this.props.selectedCandidate.iq ? this.props.selectedCandidate.iq : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_METEOR ? this.props.selectedCandidate.TEST_METEOR : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_LIVE ? this.props.selectedCandidate.TEST_LIVE : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_WRITING ? this.props.selectedCandidate.TEST_WRITING : 0);
+            score += parseFloat(this.props.selectedCandidate.VIDEO ? this.props.selectedCandidate.VIDEO : 0);
+            score += parseFloat(this.props.selectedCandidate.INTERVIEW ? this.props.selectedCandidate.INTERVIEW : 0);
+            score += parseFloat(this.props.selectedCandidate.MANAGER ? this.props.selectedCandidate.MANAGER : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_IMAGE ? this.props.selectedCandidate.TEST_IMAGE : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_CREATIVE ? this.props.selectedCandidate.TEST_CREATIVE : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_WEBFLOW ? this.props.selectedCandidate.TEST_WEBFLOW : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_MOCK ? this.props.selectedCandidate.TEST_MOCK : 0);
+            score += parseFloat(this.props.selectedCandidate.TEST_SIMULATION ? this.props.selectedCandidate.TEST_SIMULATION : 0);
+            score += parseFloat(this.props.selectedCandidate.others ? this.props.selectedCandidate.others : 0);
+
             this.setState({
                 resume: this.props.selectedCandidate.resume,
                 portfolio: this.props.selectedCandidate.portfolio,
@@ -145,7 +187,9 @@ class Stats extends Component {
                 TEST_MOCK_Care: this.props.selectedCandidate.TEST_MOCK_Care,
                 TEST_SIMULATION: this.props.selectedCandidate.TEST_SIMULATION,
                 others: this.props.selectedCandidate.others,
+                score
             });
+        }
     }
 
     handleUpload(stats, id, e) {
@@ -361,6 +405,7 @@ class Stats extends Component {
                                     <button type="button" className="btn btn-sm btn-default mr-1" data-tip="History" onClick={this.toggleHistory.bind(this, item.name)}>
                                         <i className="fa fa-history" />
                                     </button>
+                                    {category[item.base]}%
                                     <ReactTooltip />
                                 </span>
                             }
@@ -397,7 +442,6 @@ class Stats extends Component {
     }
 
     render() {
-        console.log(this.props);
         let category = this.props.categories.filter((item) => item.category === this.props.selectedCandidate.category)[0];
         if (!category)
             return null;
@@ -420,6 +464,9 @@ class Stats extends Component {
                             <ul className="nav nav-tabs">
                                 <li className="nav-item">
                                     <a className="nav-link active" href="#">{category.category}</a>
+                                </li>
+                                <li className="nav-item m-2 ml-auto">
+                                    Total Score: <i className="fa fa-trophy text-warning" />&nbsp;<b>{this.state.score}</b>
                                 </li>
                             </ul>
                             <div className="tab-content" id="myTabContent">

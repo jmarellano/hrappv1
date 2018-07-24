@@ -11,6 +11,7 @@ import PropTypes from 'prop-types';
 import ReactQuill from 'react-quill';
 import Message from './Message';
 import TemplateMain from '../templates/TemplateMain';
+import moment from 'moment-timezone';
 
 class CandidateMessages extends React.Component {
     constructor(props) {
@@ -29,7 +30,11 @@ class CandidateMessages extends React.Component {
             reply: false,
             search: '',
             start: '',
-            end: ''
+            end: '',
+            event: false,
+            startEvent: moment().format('YYYY-MM-DDTHH:mm'),
+            endEvent: moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
+            locationEvent: ''
         };
         this.styleSet = {
             overlay: {
@@ -41,6 +46,20 @@ class CandidateMessages extends React.Component {
                 width: 'auto',
                 height: 'auto',
                 maxHeight: '500px',
+                margin: '1% auto',
+                padding: '0px'
+            }
+        };
+        this.styleSet2 = {
+            overlay: {
+                zIndex: '8888',
+                backgroundColor: 'rgba(0, 0, 0, 0.75)',
+            },
+            content: {
+                maxWidth: '800px',
+                width: 'auto',
+                height: 'auto',
+                maxHeight: '600px',
                 margin: '1% auto',
                 padding: '0px'
             }
@@ -194,6 +213,10 @@ class CandidateMessages extends React.Component {
                     text: this.quillRef.getText(0),
                     html: this.state.text,
                     files: this.state.files,
+                    event: this.state.event,
+                    startEvent: this.state.startEvent,
+                    endEvent: this.state.endEvent,
+                    locationEvent: this.state.locationEvent,
                     type
                 };
             }
@@ -333,6 +356,23 @@ class CandidateMessages extends React.Component {
                                         onChange={this.handleChange}
                                     />
                                 </div>
+                                {
+                                    this.state.event &&
+                                    <div className="row p-3 m-0">
+                                        <div className="col-md-4">
+                                            Start Time: <br />
+                                            <input type="datetime-local" className="form-control" value={this.state.startEvent} name="startEvent" onChange={this.handleChangeInput} />
+                                        </div>
+                                        <div className="col-md-4">
+                                            End Time: <br />
+                                            <input type="datetime-local" className="form-control" value={this.state.endEvent} name="endEvent" onChange={this.handleChangeInput} />
+                                        </div>
+                                        <div className="col-md-4">
+                                            Location: <br />
+                                            <input type="text" className="form-control" value={this.state.locationEvent} name="locationEvent" onChange={this.handleChangeInput} />
+                                        </div>
+                                    </div>
+                                }
                                 <div className="row p-3 m-0 mb-1">
                                     <div className="col-md-2 p-0">
                                         <Button
@@ -353,10 +393,17 @@ class CandidateMessages extends React.Component {
                                                 onChange={this.uploadFile.bind(this)} />
                                         </label>
                                     </div>
-                                    <div className="col-md-2 p-0">
-                                        <TemplateMain {...this.props} Message={this.props.Message} setTemplate={this.template} />
+                                    <div className="col-md-2 p-0 ml-3">
+                                        <div className="row">
+                                            <TemplateMain {...this.props} Message={this.props.Message} setTemplate={this.template} />
+                                            <button type="button" className={`btn ${!this.state.event ? 'btn-light' : ''} ml-2`} onClick={() => {
+                                                this.setState({ event: !this.state.event });
+                                            }}>
+                                                <i className="fa fa-calendar" />
+                                            </button>
+                                        </div>
                                     </div>
-                                    {this.state.files.length > 0 && <div className="col-md-8">Files:{this.renderFiles()}</div>}
+                                    {this.state.files.length > 0 && <div className="col-md-7">Files:{this.renderFiles()}</div>}
                                 </div>
                             </div>
                         }

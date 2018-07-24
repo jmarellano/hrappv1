@@ -649,7 +649,7 @@ class Graphs extends Component {
                                 <a className={`nav-link ${!this.state.processing && 'text-primary'} ${this.state.page === 3 && 'active'}`} href="#custom" onClick={this.setPage.bind(this, 3)}>Custom</a>
                             </li>
                             <li className="nav-item ml-auto">
-                                <CSVLink data={this.state.csv} filename={`hrapp-report-${moment().format("MM-DD-YYYY")}.csv`} className="nav-link text-primary false">Import to CSV</CSVLink>
+                                <CSVLink data={this.state.csv} filename={`hrapp-report-${moment().format("MM-DD-YYYY")}.csv`} className="nav-link text-primary false">Export to CSV</CSVLink>
                             </li>
                         </ul>
                         <div className="tab-content">

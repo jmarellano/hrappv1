@@ -10,7 +10,7 @@ import WebShot from './WebShot';
 import clamscan from 'clamscan';
 import twilio from 'twilio';
 import fs from 'fs';
-import moment from 'moment-timezone';
+import ics from 'ics';
 
 export default class Server {
     constructor() {
@@ -20,6 +20,10 @@ export default class Server {
 
     createFuture() {
         return new Future();
+    }
+
+    getICS() {
+        return ics;
     }
 
     createTwilio(sid, token) {

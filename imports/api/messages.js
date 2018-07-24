@@ -29,6 +29,7 @@ export const MessagesImport = 'messages_import';
 export const MessagesSaveTemplate = 'messages_templates_save';
 export const MessagesGetTemplate = 'messages_templates_get';
 export const MessagesDeleteTemplate = 'messages_templates_delete';
+export const MessagesICS = 'messages_ics';
 
 let databaseName = Meteor.settings.public.collections.messages || 'messages';
 let databaseName2 = Meteor.settings.public.collections.templates || 'templates';
@@ -449,7 +450,21 @@ if (Meteor.isServer) {
                     attachments: arrFiles,
                 };
                 let toArr = data.contact.split(",");
+                let attendees = [];
+                toArr.forEach((to) => {
+                    attendees.push({ email: to, rsvp: true });
+                });
                 let msgArr = [];
+                if (data.event) {
+                    let file = functions[MessagesICS].call(this, data, attendees);
+                    let attachments = mailOptions['attachments'];
+                    attachments.push(file);
+                    mailOptions['attachments'] = attachments;
+                    // mailOptions['icalEvent'] = {
+                    //     method: 'PUBLISH',
+                    //     path: file
+                    // };
+                }
                 toArr.forEach((eadd) => {
                     let msgTime = moment().utc().valueOf();
                     msgArr.push(functions[MessagesSave].call(this, {
@@ -570,6 +585,34 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
+    functions[MessagesICS] = function (data, attendees) {
+        let future = server.createFuture();
+        console.log(attendees);
+        server.getICS().createEvent({
+            title: data.subject,
+            description: data.text,
+            start: moment(data.startEvent.replace('T', ' ')).format('YYYY-MM-DD-k-m').split('-'),
+            end: moment(data.endEvent.replace('T', ' ')).format('YYYY-MM-DD-k-m').split('-'),
+            location: data.locationEvent,
+            organizer: { email: data.sender.user },
+            attendees
+        }, Meteor.bindEnvironment((error, value) => {
+            let time = moment().valueOf();
+            if (error) {
+                console.log(error)
+            }
+            //future.return(value);
+            server.getFileSystem().writeFileSync(`${PATH.UPLOAD}/${time}_${data.sender.user}_event.ics`, value);
+            // future.return(`${PATH.UPLOAD}/${time}_${data.sender.user}_event.ics`);
+            EmailFiles.addFile(`${PATH.UPLOAD}/${time}_${data.sender.user}_event.ics`, {
+                fileName: 'invitation.ics',
+                type: 'text/calendar'
+            }, (err, fileRef) => {
+                future.return(fileRef);
+            });
+        }));
+        return future.wait();
+    };
     functions[MessagesSave] = function (data, outgoing = false) {
         try {
             check(data, Object);
@@ -601,7 +644,7 @@ if (Meteor.isServer) {
     };
     Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
-            let cursor = AppointmentDB.find({ });
+            let cursor = AppointmentDB.find({});
             if (currentUserOnly && this.userId) {
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);
