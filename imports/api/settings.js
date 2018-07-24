@@ -140,6 +140,8 @@ if (Meteor.isServer) {
         this.unblock();
         try {
             check(this.userId, String);
+            let day = moment().subtract(24, 'hours').valueOf();
+            key = { timestamp: { $gte : day } };        
             return PostingDB.find(key);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');

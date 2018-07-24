@@ -250,13 +250,15 @@ class Record extends Component {
     renderJobPost() {
         let jobPost = this.props.posts || [];
         return jobPost.map((post, index) => {
+            let addedBy = db["#users"].findOne({ _id: post.postedBy });
             return (
-                <li key={index} className="list-group-item">
-                    <small style={{ cursor: "pointer" }} onClick={this.selectJobPost.bind(this, post)}>
-                        {post.url}
-                        <br />
-                        <i className="fa fa-calendar" /> {moment(post.timestamp).format("MM/DD/YYYY HH:mm:ss A")}
+                <li key={ index } className="list-group-item">
+                    <small style={ { cursor: "pointer" } } onClick={ this.selectJobPost.bind(this, post) }>
+                        { post.url }
+                        <br/>
+                        <i className="fa fa-calendar"/> { moment(post.timestamp).format("MM/DD/YYYY HH:mm:ss A") }
                     </small>
+                    <small className="text-danger" style={{float: "right"}}>{`Added By: ${addedBy ? addedBy.username : 'N\\A'}`}</small>
                 </li>
             );
         });
