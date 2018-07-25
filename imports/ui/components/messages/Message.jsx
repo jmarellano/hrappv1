@@ -77,7 +77,7 @@ class Message extends React.Component {
     setFrame() {
         let iframe = this.frame;
         let self = this;
-        if (iframe) {
+        if (iframe && iframe.contentDocument && (this.props.message.html || this.props.message.text)) {
             const document = iframe.contentDocument;
             let func = (event) => {
                 let text = this.getSelectionFrameText(this.props.message.id);

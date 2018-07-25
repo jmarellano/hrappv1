@@ -32,8 +32,8 @@ class CandidateMessages extends React.Component {
             start: '',
             end: '',
             event: false,
-            startEvent: moment().format('YYYY-MM-DDTHH:mm'),
-            endEvent: moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
+            startEvent: moment().format('YYYY-MM-DD HH:mm').replace(' ', 'T'),
+            endEvent: moment().add(1, 'hours').format('YYYY-MM-DD HH:mm').replace(' ', 'T'),
             locationEvent: ''
         };
         this.styleSet = {

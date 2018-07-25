@@ -163,6 +163,69 @@ if (Meteor.isServer) {
                                                                 Meteor.defer(() => {
                                                                     Meteor.call(LinkPreview, EmailFiles.link(bool), messageId);
                                                                 });
+                                                                server.getFileSystem().readFile(fileRef.path, Meteor.bindEnvironment(function (errr, data) {
+                                                                    let content = data.toString('utf8'),
+                                                                        startEvent = '',
+                                                                        endEvent = '',
+                                                                        description = '',
+                                                                        location = '',
+                                                                        attendee = '',
+                                                                        summary = '';
+                                                                    if (/BEGIN:VCALENDAR/i.test(content)) {
+                                                                        if (/METHOD:ACCEPTED/i.test(content) || /PARTSTAT=ACCEPTED/i.test(content)) {
+                                                                            startEvent = /[\n\r].*DTSTART;.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            endEvent = /[\n\r].*DTEND;.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            description = /[\n\r].*DESCRIPTION.*:\s*([^\n\r]*)/i.exec(content);
+                                                                            if (description)
+                                                                                description = description[1];
+                                                                            else
+                                                                                description = /[\n\r].*COMMENT.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            location = /[\n\r].*LOCATION.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            attendee = /[\n\r].*attendee.*:mailto:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            summary = /[\n\r].*SUMMARY.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            AppointmentDB.insert({
+                                                                                createdAt: moment(startEvent).valueOf(),
+                                                                                read: true,
+                                                                                contact: attendee,
+                                                                                from: credit.user,
+                                                                                to: attendee,
+                                                                                cc: '',
+                                                                                bcc: '',
+                                                                                html: description,
+                                                                                text: description,
+                                                                                subject: summary,
+                                                                                type: 1,
+                                                                                status: 1,
+                                                                                importedBy: Meteor.users.findOne({ 'profile.emails.user': credit.user })._id,
+                                                                                startTime: moment(startEvent).valueOf(),
+                                                                                endTime: moment(endEvent).valueOf()
+                                                                            });
+                                                                        }
+                                                                        if (/METHOD:DELETED/i.test(content) || /METHOD:CANCELLED/i.test(content) || /PARTSTAT=DELETED/i.test(content) || /PARTSTAT=CANCELLED/i.test(content)) {
+                                                                            startEvent = /[\n\r].*DTSTART;.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            endEvent = /[\n\r].*DTEND;.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            description = /[\n\r].*DESCRIPTION.*:\s*([^\n\r]*)/i.exec(content);
+                                                                            if (description)
+                                                                                description = description[1];
+                                                                            else
+                                                                                description = /[\n\r].*COMMENT.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            location = /[\n\r].*LOCATION.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            attendee = /[\n\r].*attendee.*:mailto:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            summary = /[\n\r].*SUMMARY.*:\s*([^\n\r]*)/i.exec(content)[1];
+                                                                            AppointmentDB.remove({
+                                                                                contact: attendee,
+                                                                                from: credit.user,
+                                                                                to: attendee,
+                                                                                html: description,
+                                                                                text: description,
+                                                                                subject: summary,
+                                                                                importedBy: Meteor.users.findOne({ 'profile.emails.user': credit.user })._id,
+                                                                                startTime: moment(startEvent).valueOf(),
+                                                                                endTime: moment(endEvent).valueOf()
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                }));
                                                                 future.return(fileRef);
                                                             }
                                                         }), true);
@@ -460,10 +523,6 @@ if (Meteor.isServer) {
                     let attachments = mailOptions['attachments'];
                     attachments.push(file);
                     mailOptions['attachments'] = attachments;
-                    // mailOptions['icalEvent'] = {
-                    //     method: 'PUBLISH',
-                    //     path: file
-                    // };
                 }
                 toArr.forEach((eadd) => {
                     let msgTime = moment().utc().valueOf();
@@ -587,12 +646,11 @@ if (Meteor.isServer) {
     };
     functions[MessagesICS] = function (data, attendees) {
         let future = server.createFuture();
-        console.log(attendees);
         server.getICS().createEvent({
             title: data.subject,
             description: data.text,
-            start: moment(data.startEvent.replace('T', ' ')).format('YYYY-MM-DD-k-m').split('-'),
-            end: moment(data.endEvent.replace('T', ' ')).format('YYYY-MM-DD-k-m').split('-'),
+            start: moment(data.startEvent).format('YYYY-MM-DD-k-m').split('-'),
+            end: moment(data.endEvent).format('YYYY-MM-DD-k-m').split('-'),
             location: data.locationEvent,
             organizer: { email: data.sender.user },
             attendees

@@ -136,18 +136,22 @@ class Record extends Component {
         data.country = this.state.jobCountry;
         data.selectedJobPost = this.state.selectedJobPost;
         this.setState({ processing: true });
-        this.props.Statistics.recordPosting(data);
-        this.setState({
-            processing: false,
-            site: '',
-            link: '',
-            jobType: '',
-            datePosted: '',
-            timePosted: '',
-            selectedJobPost: null,
-            jobCountry: this.props.settings.country
+        this.props.Statistics.recordPosting(data, false, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                Bert.alert('New Job posting has recorded', 'success', 'growl-top-right');
+            this.setState({
+                processing: false,
+                site: '',
+                link: '',
+                jobType: '',
+                datePosted: '',
+                timePosted: '',
+                selectedJobPost: null,
+                jobCountry: this.props.settings.country
+            });
         });
-        Bert.alert('New Job posting has recorded', 'success', 'growl-top-right');
     }
 
     saveSite() {
@@ -252,13 +256,13 @@ class Record extends Component {
         return jobPost.map((post, index) => {
             let addedBy = db["#users"].findOne({ _id: post.postedBy });
             return (
-                <li key={ index } className="list-group-item">
-                    <small style={ { cursor: "pointer" } } onClick={ this.selectJobPost.bind(this, post) }>
-                        { post.url }
-                        <br/>
-                        <i className="fa fa-calendar"/> { moment(post.timestamp).format("MM/DD/YYYY HH:mm:ss A") }
+                <li key={index} className="list-group-item">
+                    <small style={{ cursor: "pointer" }} onClick={this.selectJobPost.bind(this, post)}>
+                        {post.url}
+                        <br />
+                        <i className="fa fa-calendar" /> {moment(post.timestamp).format("MM/DD/YYYY HH:mm:ss A")}
                     </small>
-                    <small className="text-danger" style={{float: "right"}}>{`Added By: ${addedBy ? addedBy.username : 'N\\A'}`}</small>
+                    <small className="text-danger" style={{ float: "right" }}>{`Added By: ${addedBy ? addedBy.username : 'N\\A'}`}</small>
                 </li>
             );
         });

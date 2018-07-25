@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import SettingManager from './classes/SettingManager';
 import { isPermitted, ROLES } from "./classes/Const";
-import MessageManager from "./classes/MessageManager";
 import moment from "moment-timezone";
 import { AppointmentDB } from "./messages";
 
@@ -53,9 +52,13 @@ if (Meteor.isServer) {
         }
     }
     functions[RecordJob] = function (data, multi) {
-        this.unblock();
+        if (!multi)
+            this.unblock();
         try {
             check(this.userId, String);
+            let user = Meteor.user();
+            if (data.selectedJobPost && !isPermitted(user.profile.role, ROLES.MANAGE_JOB_POSTS))
+                throw new Meteor.Error(403, 'Not authorized');
             if (!multi)
                 return SettingManager.record(data, this.userId);
             let data_ = data.jobPost;
@@ -91,7 +94,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             let user = Meteor.user();
-            if (user && isPermitted(user.profile.role, ROLES.ADMIN) || isPermitted(this.props.user.role, ROLES.SUPERUSER)) {
+            if (user && isPermitted(user.profile.role, ROLES.MANAGE_JOB_POSTS)) {
                 return SettingManager.recordDelete(id);
             }
             throw new Meteor.Error(403, "Not authorized");
@@ -141,7 +144,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             let day = moment().subtract(24, 'hours').valueOf();
-            key = { timestamp: { $gte : day } };        
+            key = { timestamp: { $gte: day } };
             return PostingDB.find(key);
         } catch (err) {
             throw new Meteor.Error(403, 'Not authorized');

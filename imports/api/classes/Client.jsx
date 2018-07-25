@@ -728,13 +728,15 @@ class Statistics {
         }
     }
 
-    recordPosting(data, multi) {
+    recordPosting(data, multi, callback) {
         if (!this.recording) {
             this.recording = true;
-            Meteor.call(RecordJob, data, multi, (err) => {
+            Meteor.call(RecordJob, data, multi, (err, result) => {
                 this.recording = false;
                 if (err)
                     console.log(err);
+                if (callback)
+                    callback(err, result);
             });
         }
     }

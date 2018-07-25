@@ -412,7 +412,7 @@ class Stats extends Component {
                         </h4>
                     </label >
                     <div className="col-sm-4 mt-2">
-                        <input type="number" min="0" step="1" className="form-control" name={item.name} value={this.state[item.name]} onChange={this.handleInputChange} />
+                        <input type="number" min="0" step="0.1" className="form-control" name={item.name} value={this.state[item.name]} onChange={this.handleInputChange} />
                     </div>
                 </div >
             );
