@@ -30,13 +30,13 @@ if (Meteor.isServer) {
                         type: output.mimetype,
                     }, (err, data) => {
                         if (err)
-                            console.err(output);
+                            console.err(`Method Save Media error:`, output);
                         else
                             myFuture.return(data);
                     });
 
                 } else {
-                    console.err(output);
+                    console.err(`Method Downloading File error:`, output);
                 }
             }));
             newAttachments.push(myFuture.wait());
@@ -89,13 +89,12 @@ if (Meteor.isServer) {
             type: params.query.mime,
         }, (err, data) => {
             if (err)
-                console.err(output);
+                console.err('Method update pst message error:', output);
             else {
-                console.log('adding attachment', 'id: ' + params.query.id);
                 if (params.query.type === "messages")
-                    console.log('result: ' + MessagesDB.update({ _id: new Mongo.ObjectID(params.query.id) }, { $push: { 'attachments': data } }));
+                    MessagesDB.update({ _id: new Mongo.ObjectID(params.query.id) }, { $push: { 'attachments': data } });
                 else if (params.query.type === "appointments")
-                    console.log('result: ' + AppointmentDB.update({ _id: new Mongo.ObjectID(params.query.id) }, { $push: { 'attachments': data } }));
+                    AppointmentDB.update({ _id: new Mongo.ObjectID(params.query.id) }, { $push: { 'attachments': data } });
             }
         });
         res.end("Successful saving attachments!");

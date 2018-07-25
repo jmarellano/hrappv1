@@ -22,7 +22,7 @@ if (Meteor.isServer) {
             }
             throw new Meteor.Error(403, 'Not authorized');
         } catch (err) {
-            console.error(err);
+            console.error(`Method ${CategoriesAdd} error:`, err);
             throw new Meteor.Error('bad', err.message);
         }
     };

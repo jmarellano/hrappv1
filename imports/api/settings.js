@@ -38,7 +38,7 @@ if (Meteor.isServer) {
                 AppointmentDB.update({ _id: temp_._id }, { $inc: { tempCounter: 1 } })
             }
         } catch (err) {
-            console.log(err);
+            console.error(`Method ${CheckAppointments} error:`, err);
             throw new Meteor.Error(403, 'Not authorized');
         }
     }
@@ -47,7 +47,7 @@ if (Meteor.isServer) {
             check(this.userId, String);
             return SettingManager.getReports(type, start, country);
         } catch (err) {
-            console.log(err);
+            console.error(`Method ${GetReports} error:`, err);
             throw new Meteor.Error(403, 'Not authorized');
         }
     }
@@ -108,7 +108,7 @@ if (Meteor.isServer) {
             check(opt.agentId, String);
             return SettingManager.getPostingStat(opt);
         } catch (err) {
-            console.log(err);
+            console.error(`Method ${GetPostingStat} error:`, err);
             throw new Meteor.Error(403, 'Not authorized');
         }
     }

@@ -30,11 +30,11 @@ export default class MessageManager {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
             let spawn = child_process.spawn;
             const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId, '127.0.0.1', 27017]);
-            ls.stdout.on('data', () => {
-                //console.log(`stdout: ${data}`);
+            ls.stdout.on('data', (data) => {
+                console.log(`stdout: ${data}`);
             });
-            ls.stderr.on('data', () => {
-                //console.log(`stderr: ${data}`);
+            ls.stderr.on('data', (data) => {
+                console.log(`stderr: ${data}`);
             });
             ls.on('close', Meteor.bindEnvironment(() => {
                 console.log(`JavaPST close! userID: ${userId}`);

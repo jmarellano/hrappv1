@@ -58,13 +58,13 @@ export default class WebShot {
             console.log(`stderr: ${data}`);
         }));
         ls.on('close', Meteor.bindEnvironment(() => {
-            console.log(`close`);
+            console.log(`Webshot close!`);
         }));
         ls.on('end', Meteor.bindEnvironment(() => {
-            console.log(`end`);
+            console.log(`Webshot end!`);
         }));
         ls.on('exit', Meteor.bindEnvironment(() => {
-            console.log(`exit`);
+            console.log(`Webshot exit!`);
             future.return(retval);
         }));
         let val = future.wait();

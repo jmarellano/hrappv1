@@ -656,12 +656,9 @@ if (Meteor.isServer) {
             attendees
         }, Meteor.bindEnvironment((error, value) => {
             let time = moment().valueOf();
-            if (error) {
-                console.log(error)
-            }
-            //future.return(value);
+            if (error)
+                console.log(`Method ${MessagesICS} error:`, error)
             server.getFileSystem().writeFileSync(`${PATH.UPLOAD}/${time}_${data.sender.user}_event.ics`, value);
-            // future.return(`${PATH.UPLOAD}/${time}_${data.sender.user}_event.ics`);
             EmailFiles.addFile(`${PATH.UPLOAD}/${time}_${data.sender.user}_event.ics`, {
                 fileName: 'invitation.ics',
                 type: 'text/calendar'

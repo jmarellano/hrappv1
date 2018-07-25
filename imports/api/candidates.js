@@ -86,8 +86,7 @@ if (Meteor.isServer) {
             if (CandidatesDB.findOne({
                 $or: [
                     { name: data.name, contact: { $ne: data.contact } },
-                    { email: data.email, contact: { $ne: data.contact } },
-                    { number: data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : '', contact: { $ne: data.contact } },
+                    { email: data.email, contact: { $ne: data.contact } }
                 ]
             }))
                 throw new Meteor.Error('BAD', 'Duplicate contact');

@@ -35,7 +35,7 @@ class Drive {
         if (this.jwt) {
             this.jwt.authorize(Meteor.bindEnvironment(function (err, tokens) {
                 if (err) {
-                    console.log(err);
+                    console.error(`Method get Google Drive Token error:`, err);
                     future.return(false);
                 }
                 future.return(tokens);
@@ -104,7 +104,7 @@ class Drive {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
             },
             params: {
-                'fileId': id 
+                'fileId': id
             },
             data: {
                 'name': name,
@@ -112,12 +112,12 @@ class Drive {
             }
         };
         HTTP.call('POST', 'https://www.googleapis.com/drive/v3/files/' + id + '/copy', options, function (err, res) {
-            if (err && err !== null){
+            if (err && err !== null) {
                 console.error(err);
                 myFuture.throw(new Meteor.Error(err.message));
             }
             else
-              myFuture.return(res);
+                myFuture.return(res);
         });
         return myFuture.wait();
     }
@@ -129,19 +129,19 @@ class Drive {
                 'Authorization': 'Bearer ' + this.jwt.credentials.access_token
             },
             params: {
-                'fileId': id 
+                'fileId': id
             },
             data: {
                 'name': name
             }
         };
         HTTP.call('PATCH', 'https://www.googleapis.com/drive/v3/files/' + id, options, function (err, res) {
-            if (err && err !== null){
+            if (err && err !== null) {
                 console.error(err);
                 myFuture.throw(new Meteor.Error(err.message));
             }
             else
-              myFuture.return(res);
+                myFuture.return(res);
         });
         return myFuture.wait();
     }
@@ -274,7 +274,7 @@ class Drive {
                         server.getFileSystem().renameSync(path, PATH.UPLOAD + id + time + '.pst');
                         MessageManager.import(PATH.UPLOAD + id + time + '.pst', userId, UserDB);
                     } else
-                        console.log('not matched!'); //TODO update importing status 'file is corrupt, retry...'
+                        console.error(`Method Download PST error:`, 'not matched!');
                 }));
                 myFuture.return(true);
             }
@@ -292,7 +292,7 @@ class Drive {
             response.data.on('end', Meteor.bindEnvironment(() => {
                 future.return(true);
             })).on('error', Meteor.bindEnvironment((err) => {
-                console.log('Error during download', err);
+                console.error('Method drive download error:', err);
                 future.return(false);
             })).pipe(dest);
         }));
@@ -314,11 +314,10 @@ class Drive {
         };
         HTTP.call('GET', 'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', req, Meteor.bindEnvironment((err, res) => {
             if (err && err !== null) {
-                console.log('Error during download', err);
+                console.error('Method partial drive download error:', err);
                 future.return(false);
             }
             else {
-                console.log(res);
                 dest.write(res.content);
                 future.return(true);
             }

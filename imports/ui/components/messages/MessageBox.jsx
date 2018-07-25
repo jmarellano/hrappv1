@@ -134,7 +134,6 @@ class MessageBox extends React.Component {
         const target = event.target;
         if (target) {
             const value = target.type === 'checkbox' ? target.checked : target.value;
-            console.log(value);
             if (this.setState)
                 this.setState({ [target.name]: value, save: true });
         }

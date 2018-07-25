@@ -8,16 +8,16 @@ export default class CandidateManager {
         const createdAt = obj.createdAt || moment().utc().valueOf();
         this.json = {
             createdAt,
-            contact: obj.contact || '',
+            contact: obj.contact.toLowerCase() || '',
             retired: obj.retired || VALUE.FALSE,
             lastMessage: obj.lastMessage || {}
         };
         if (obj.contact)
-            this.json.contact = obj.contact;
+            this.json.contact = obj.contact.toLowerCase();
         if (obj.number)
             this.json.number = obj.number;
         if (obj.email)
-            this.json.email = obj.email;
+            this.json.email = obj.email.toLowerCase();
     }
     parseCandidate(obj) {
         this.json = obj;
@@ -66,19 +66,23 @@ export default class CandidateManager {
         let set = {};
         set[info] = value;
         let info_trim = info.replace(/_notes|_file/gi, '');
-        return CandidatesDB.update({ _id: contact }, {
-            $set: set,
-            $push: { [info_trim + '_history']: { text, date: moment().valueOf() } }
-        });
+        let obj = {
+            $set: set
+        };
+        if (text)
+            obj['$push'] = { [info_trim + '_history']: { text, date: moment().valueOf() } };
+        return CandidatesDB.update({ _id: contact }, obj);
     }
     static updateCandidateSelectedRemoveFile(contact, info, text) {
         let set = {};
         set[info] = '';
         let info_trim = info.replace(/_notes|_file/gi, '');
-        return CandidatesDB.update({ _id: contact }, {
-            $set: set,
-            $push: { [info_trim + '_history']: { text, date: moment().valueOf() } }
-        });
+        let obj = {
+            $set: set
+        };
+        if (text)
+            obj['$push'] = { [info_trim + '_history']: { text, date: moment().valueOf() } };
+        return CandidatesDB.update({ _id: contact }, obj);
     }
     static updateCandidateStats(contact, data) {
         let temp = {};

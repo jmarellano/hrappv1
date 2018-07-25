@@ -159,7 +159,6 @@ class Candidate {
     }
 
     getCategory() {
-        console.log(this.categoryColor);
         return <div className="badge mr-1 text-light" style={{ backgroundColor: this.categoryColor }}>{this.category}</div>;
     }
 

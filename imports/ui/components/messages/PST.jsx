@@ -49,7 +49,6 @@ class PST extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.user.importing && !this.props.user.importing) {
-            console.log('test notify');
             Bert.alert('Messages imported using PST file!', 'success', 'growl-top-right');
         }
     }
@@ -96,10 +95,10 @@ class PST extends Component {
                     else {
                         Bert.alert('PST file uploaded! Importing started...', 'success', 'growl-top-right');
                         this.import(`${fileRef._storagePath}${fileRef._id}${fileRef.extensionWithDot}`, (err, result) => {
-                            if(err) {
+                            if (err) {
                                 Bert.alert(err.reason || 'PST file uploading failed!', 'danger', 'growl-top-right');
                                 this.setState({ uploading: false });
-                            }else
+                            } else
                                 this.setState({ uploading: false, pst: false });
                         });
                     }

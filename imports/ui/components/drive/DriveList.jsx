@@ -99,7 +99,6 @@ class DriveList extends React.Component {
         e.preventDefault();
         this.setState({ processing: true });
         this.props.Drive.rename({ name: this.state.name, fileId: this.state.file.id }, (err) => {
-            console.log(err);
             this.setState({ processing: false, rename: false });
             this.props.getFiles(null, true);
         });

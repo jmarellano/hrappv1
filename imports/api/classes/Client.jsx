@@ -243,7 +243,6 @@ class Drive {
                         if (pageToken)
                             setTimeout(() => {
                                 syncI++;
-                                console.log("Syncing #" + syncI);
                                 syncFunc();
                             }, Meteor.settings.public.oAuth.google.interval);
                         else
@@ -284,9 +283,7 @@ class Drive {
                 };
                 request = this.client.request(reqOptions);
                 request.execute((patchResult) => {
-                    console.log('patch 1', patchResult);
                     Meteor.call(DriveCopyFile, res.id, res.name, parents, (err, result) => {
-                        console.log('copy 2', result.data);
                         if (!err) {
                             reqOptions = {
                                 'method': 'DELETE',
@@ -297,7 +294,6 @@ class Drive {
                             };
                             request = this.client.request(reqOptions);
                             request.execute((deleteResult) => {
-                                console.log('delete 1', deleteResult);
                                 reqOptions = {
                                     'method': 'PATCH',
                                     'path': `/drive/v3/files/${result.data.id}`,
@@ -312,7 +308,6 @@ class Drive {
                                 };
                                 request = this.client.request(reqOptions);
                                 request.execute((permissionResult) => {
-                                    console.log('patch 2', permissionResult);
                                 });
                             });
                         }
@@ -327,7 +322,6 @@ class Drive {
         });
     }
     paste(file, parent, callback) {
-        console.log(file);
         Meteor.call(DriveCopyFile, file.id, `Copy of ${file.name}`, parent, (err, result) => {
             callback(err, result);
         });
@@ -692,7 +686,7 @@ class Statistics {
                     this.lineChart.setData(data);
                 }
             } else {
-                console.log(err);
+                console.error(`Method ${GetPostingStat} error:`, err);
             }
             if (callback)
                 callback();
@@ -723,7 +717,7 @@ class Statistics {
             Meteor.call(AddSite, site, (err) => {
                 this.recording = false;
                 if (err)
-                    console.log(err);
+                    console.error(`Method ${AddSite} error:`, err);
             });
         }
     }
@@ -734,7 +728,7 @@ class Statistics {
             Meteor.call(RecordJob, data, multi, (err, result) => {
                 this.recording = false;
                 if (err)
-                    console.log(err);
+                    console.error(`Method ${RecordJob} error:`, err);
                 if (callback)
                     callback(err, result);
             });
