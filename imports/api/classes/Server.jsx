@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { MessagesAddListener } from '../messages';
+import { MessagesAddSender } from '../messages';
 import SettingManager from './SettingManager';
 import Future from 'fibers/future';
 import Fiber from 'fibers';
@@ -64,27 +64,44 @@ export default class Server {
     }
 
     addSender(id, email, connection) {
-        this.messageSender.push({ id, email, connection });
+        let messenger = this.messageSender;
+        messenger.push({ id, email, connection });
+        messenger = this.messageSender;
+    }
+
+    addListener(id, credit, imap) {
+        this.messageListener.push({ id, credit, imap });
+    }
+
+    removeListener(id, credit) {
+        let connections = this.messageListener.filter((listener) => {
+            if (listener.id == id && listener.credit.user === credit.user)
+                listener.imap.end();
+            return listener.id !== id && listener.credit.user !== credit.user;
+        });
+        this.messageListener = connections;
     }
 
     initListener() {
         console.log('Running listener for emails...');
-        Meteor.users.find({ retired: { $exists: false } }).fetch().forEach((user) => {
+        Meteor.users.find({ $or: [{ retired: { $exists: false } }, { retired: 0 }] }).fetch().forEach((user) => {
             if (user.profile.emails)
                 user.profile.emails.forEach((credit) => {
                     if (credit.status === 'connected')
-                        Meteor.call(MessagesAddListener, credit, user._id);
+                        Meteor.call(MessagesAddSender, credit, user._id);
                 });
         });
     }
 
     removeSender(id, email) {
-        let connections = this.messageSender.filter((e) => {
-            return ![{ id, email }].some(function (s) {
-                return s.id === e.id && s.email === e.email;
-            });
+        let connection = {};
+        let connections = this.messageSender.filter((sender) => {
+            if (sender.id == id && sender.email === email)
+                connection = sender;
+            return sender.id !== id && sender.email !== email;
         });
         this.messageSender = connections;
+        return connection;
     }
 
     generateReports() {

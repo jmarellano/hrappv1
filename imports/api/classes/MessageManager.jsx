@@ -29,7 +29,7 @@ export default class MessageManager {
         try {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
             let spawn = child_process.spawn;
-            const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId, '127.0.0.1', 27017]);
+            const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId, '67.205.159.172', 9001]);
             ls.stdout.on('data', (data) => {
                 console.log(`stdout: ${data}`);
             });

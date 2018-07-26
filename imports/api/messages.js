@@ -279,6 +279,7 @@ if (Meteor.isServer) {
                 }));
             }));
             imap.connect();
+            server.addListener(id, credit, imap);
         } else if (credit.pop_host) {
             let count = 1;
             let connection = new POP3Client(credit.pop_port, credit.pop_host, {
@@ -343,11 +344,10 @@ if (Meteor.isServer) {
     };
     functions[MessagesAddSender] = function (credit, id = this.userId) {
         try {
-            check(this.userId, String);
             check(credit, Object);
             check(id, String);
             let user = Meteor.user();
-            if (user && isPermitted(user.profile.role, ROLES.MANAGE_EMAILS)) {
+            if ((user && isPermitted(user.profile.role, ROLES.MANAGE_EMAILS)) || !user) {
                 let connection = new SMTPConnection({
                     port: credit.smtp_port,
                     host: credit.smtp_host,
@@ -359,9 +359,8 @@ if (Meteor.isServer) {
                             user: credit.user,
                             pass: credit.password
                         }
-                    }, Meteor.bindEnvironment((err) => {
-                        if (err) {
-                            console.error(err);
+                    }, Meteor.bindEnvironment((error) => {
+                        if (error) {
                             Meteor.users.update({
                                 _id: id,
                                 'profile.emails': credit
@@ -390,7 +389,16 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(credit, Object);
             check(id, String);
-            server.removeSender(id, credit.user);
+            let obj = server.removeSender(id, credit.user);
+            server.removeListener(id, credit);
+            obj.connection.quit();
+            let user = Meteor.users.findOne({ _id: id });
+            let creditToUpdate = user.profile.emails.filter((email) => {
+                return email.user !== credit.user;
+            });
+            Meteor.users.update({ _id: id }, {
+                $set: { 'profile.emails': creditToUpdate }
+            });
             return true;
         } catch (err) {
             console.error(err);

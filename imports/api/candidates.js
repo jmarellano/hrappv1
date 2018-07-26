@@ -27,7 +27,7 @@ let databaseName = Meteor.settings.public.collections.candidates || 'candidates'
 export const CandidatesDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
-    functions[CandidatesFollower] = function (id, user, follow) {
+    functions[CandidatesFollower] = function(id, user, follow) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
@@ -38,7 +38,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesTransferClaim] = function (id, user) {
+    functions[CandidatesTransferClaim] = function(id, user) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
@@ -49,7 +49,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesClaim] = function (id) {
+    functions[CandidatesClaim] = function(id) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
@@ -59,7 +59,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesUnclaim] = function (id) {
+    functions[CandidatesUnclaim] = function(id) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
@@ -69,7 +69,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesStatus] = function (id, flag) {
+    functions[CandidatesStatus] = function(id, flag) {
         try {
             check(this.userId, String);
             check(id, Mongo.ObjectID);
@@ -79,7 +79,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesInfo] = function (data) {
+    functions[CandidatesInfo] = function(data) {
         try {
             check(this.userId, String);
             check(data, Object);
@@ -96,7 +96,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesAddInfo] = function (contact, info, value) {
+    functions[CandidatesAddInfo] = function(contact, info, value) {
         try {
             check(this.userId, String);
             check(contact, Mongo.ObjectID);
@@ -108,7 +108,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesAddFileStats] = function (contact, info, value) {
+    functions[CandidatesAddFileStats] = function(contact, info, value) {
         try {
             check(this.userId, String);
             check(contact, Mongo.ObjectID);
@@ -121,7 +121,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesRemoveFileStats] = function (contact, info) {
+    functions[CandidatesRemoveFileStats] = function(contact, info) {
         try {
             check(this.userId, String);
             check(contact, Mongo.ObjectID);
@@ -133,7 +133,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesStats] = function (data, contact) {
+    functions[CandidatesStats] = function(data, contact) {
         try {
             check(this.userId, String);
             check(data, Object);
@@ -143,7 +143,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidateCreate] = function (obj) {
+    functions[CandidateCreate] = function(obj) {
         try {
             check(obj, Object);
             let candidate = new CandidateManager(obj);
@@ -153,7 +153,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    functions[CandidatesGetId] = function (email) {
+    functions[CandidatesGetId] = function(email) {
         try {
             check(this.userId, String);
             check(email, String);
@@ -163,7 +163,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     };
-    Meteor.publish(CandidatesPub, function () {
+    Meteor.publish(CandidatesPub, function() {
         try {
             let cursor = CandidatesDB.find({
                 name: { $exists: true },
@@ -266,7 +266,7 @@ if (Meteor.isServer) {
             throw new Meteor.Error('bad', err.message);
         }
     });
-    Meteor.publish(ValidCandidates, function (candidate) {
+    Meteor.publish(ValidCandidates, function(candidate) {
         try {
             let query = { 'retired': VALUE.FALSE, 'category': { $ne: 'SPAMMER' } };
             let or = [];
@@ -404,8 +404,9 @@ if (Meteor.isServer) {
             let count = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 } }).count();
             let cursor = CandidatesDB.find(query, { sort: { 'lastMessage.createdAt': -1 }, limit: candidate.limit });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
+                let obj = CategoriesDB.findOne({ category: doc.category });
                 doc.max = count;
-                doc.categoryColor = CategoriesDB.findOne({ category: doc.category }).color;
+                doc.categoryColor = obj ? obj.color : '#cccccc';
                 return doc;
             });
         } catch (err) {
@@ -414,7 +415,7 @@ if (Meteor.isServer) {
         }
         this.ready();
     });
-    Meteor.publish(MessagesUnreadCountPub, function () {
+    Meteor.publish(MessagesUnreadCountPub, function() {
         Counts.publish(this, MessagesUnreadCountPub, CandidatesDB.find({ retired: VALUE.FALSE, 'lastMessage.read': false }));
         Counts.publish(this, MessagesUnreadCountPub + '_claimed', CandidatesDB.find({ retired: VALUE.FALSE, 'lastMessage.read': false, claimed: { $exists: true } }));
         Counts.publish(this, MessagesUnreadCountPub + '_unclaimed', CandidatesDB.find({ retired: VALUE.FALSE, 'lastMessage.read': false, claimed: { $exists: false } }));
