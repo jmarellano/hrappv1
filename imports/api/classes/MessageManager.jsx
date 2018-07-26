@@ -29,7 +29,13 @@ export default class MessageManager {
         try {
             UserDB.update({ _id: userId }, { $set: { 'profile.importing': VALUE.TRUE } });
             let spawn = child_process.spawn;
-            const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId, '67.205.159.172', 9001]);
+            let emails = UserDB.findOne({ _id: userId }).profile.emails;
+            let addresses = '';
+            if (emails)
+                emails.forEach((email) => {
+                    addresses = addresses + ',' + email.user;
+                });
+            const ls = spawn('java', ['-jar', '/data/JavaPST.jar', file, userId, '67.205.159.172', 9001, addresses]);
             ls.stdout.on('data', (data) => {
                 console.log(`stdout: ${data}`);
             });

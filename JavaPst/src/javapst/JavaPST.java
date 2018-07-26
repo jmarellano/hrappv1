@@ -35,6 +35,8 @@ public class JavaPST {
     private static Logger logger = Logger.getLogger("log");
     private static MessageDigest md = null;
     private static String userId = "";
+    public int duplicateCount = 0;
+    private static String addresses = "";
     public static void main(String[] args) throws Exception {
         new JavaPST(args);
     }
@@ -49,6 +51,7 @@ public class JavaPST {
             MongoCollection<Document> candidates = database.getCollection("candidates");
             md = MessageDigest.getInstance("MD5");
             userId = args[1];
+            addresses = args[4];
             this.contact = pstFile.getMessageStore().getDisplayName();
             processFolder(pstFile.getRootFolder(), messages, candidates, appointments, contacts);
         } catch (Exception err) {
@@ -77,14 +80,16 @@ public class JavaPST {
                 String from = "";
                 String to = "";
                 int status = 0;
-                if(this.contact == email.getSenderEmailAddress()){
-                    from = email.getSenderEmailAddress();
+                from = email.getSenderEmailAddress();
+                if(email.getNumberOfRecipients() > 0)
+                    to = email.getRecipient(0).getEmailAddress();
+                else {
                     to = email.getReceivedByAddress();
-                    contact = email.getReceivedByAddress();
+                }
+                if(addresses.contains(email.getSenderEmailAddress())){
+                    contact = to;
                     status = 2;
                 } else {
-                    to = email.getSenderEmailAddress();
-                    from = email.getReceivedByAddress();
                     contact = email.getSenderEmailAddress();
                     status = 1;
                 }
@@ -200,7 +205,11 @@ public class JavaPST {
                     }catch(Exception err){
                        System.out.println("Error Insert collection: " + err);  
                     }
+                } else {
+                    duplicateCount++;
+                    //.out.println("Duplicate Count:"+duplicateCount);
                 }
+                
                 email = (PSTMessage)folder.getNextChild();
             }
         }
