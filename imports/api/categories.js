@@ -28,7 +28,6 @@ if (Meteor.isServer) {
     };
     functions[CategoriesRemove] = function (categoryId) {
         try {
-            categoryId = new Mongo.ObjectID(categoryId);
             check(this.userId, String);
             check(categoryId, Meteor.Collection.ObjectID);
             if (isPermitted(Meteor.user().profile.role, ROLES.VIEW_CATEGORIES))
