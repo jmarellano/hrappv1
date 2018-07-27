@@ -20,6 +20,7 @@ class Category {
         this.portfolio = obj.portfolio;
         this.resume = obj.resume;
         this.values = obj.values;
+        this.technical = obj.technical;
     }
 
 }
