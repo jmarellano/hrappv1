@@ -1,5 +1,5 @@
 import { Mongo } from 'meteor/mongo';
-import { FormsDB, FormsCandidatesDataDB } from '../forms';
+import { FormsDB, FormsCandidatesDataDB, FormsUsersDataDB } from '../forms';
 import { CandidatesDB } from '../candidates';
 import { VALUE } from './Const';
 import moment from 'moment-timezone';
@@ -62,35 +62,64 @@ export default class FormManager {
             });
             if (dup)
                 throw new Meteor.Error('BAD', 'Duplicate submission of form');
-        }
-        dup = CandidatesDB.findOne({ _id: new Mongo.ObjectID(data.applicantId) });
-        if (!dup)
-            throw new Meteor.Error('BAD', 'Applicant does not exist');
-        FormsCandidatesDataDB.insert({
-            'form_id': new Mongo.ObjectID(data._id),
-            'data': data.obj,
-            'version': data.version,
-            'createdAt': moment().utc().valueOf(),
-            'applicantId': applicantId,
-            'applicantName': dup.name || dup.email || dup.contact,
-            'removed': VALUE.FALSE
-        }, function () {
-            let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });
-            let set = {};
-            set['headers.' + data.version] = data.obj.map((item) => item.label).filter(item => item.length > 0);
-            if (fData) {
-                FormsDB.update({ _id: new Mongo.ObjectID(data._id) }, {
-                    $set: set,
-                    $push: {
-                        progress: {
-                            member: null,
-                            message: 'A data is added to this form.',
-                            dateAdded: moment().utc().valueOf()
+            dup = CandidatesDB.findOne({ _id: new Mongo.ObjectID(data.applicantId) });
+            if (!dup)
+                throw new Meteor.Error('BAD', 'Applicant does not exist');
+            FormsCandidatesDataDB.insert({
+                'form_id': new Mongo.ObjectID(data._id),
+                'data': data.obj,
+                'version': data.version,
+                'createdAt': moment().utc().valueOf(),
+                'applicantId': applicantId,
+                'applicantName': dup.name || dup.email || dup.contact,
+                'removed': VALUE.FALSE
+            }, function () {
+                let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });
+                let set = {};
+                set['headers.' + data.version] = data.obj.map((item) => item.label).filter(item => item.length > 0);
+                if (fData) {
+                    FormsDB.update({ _id: new Mongo.ObjectID(data._id) }, {
+                        $set: set,
+                        $push: {
+                            progress: {
+                                member: null,
+                                message: 'A data is added to this form.',
+                                dateAdded: moment().utc().valueOf()
+                            }
                         }
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        } else {
+            dup = Meteor.users.findOne({ _id: data.userId });
+            if (!dup)
+                throw new Meteor.Error('BAD', 'Applicant does not exist');
+            FormsUsersDataDB.insert({
+                'form_id': new Mongo.ObjectID(data._id),
+                'data': data.obj,
+                'version': data.version,
+                'createdAt': moment().utc().valueOf(),
+                'applicantId': data.userId,
+                'applicantName': dup.username,
+                'removed': VALUE.FALSE
+            }, function () {
+                let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });
+                let set = {};
+                set['headers.' + data.version] = data.obj.map((item) => item.label).filter(item => item.length > 0);
+                if (fData) {
+                    FormsDB.update({ _id: new Mongo.ObjectID(data._id) }, {
+                        $set: set,
+                        $push: {
+                            progress: {
+                                member: null,
+                                message: 'A data is added to this form.',
+                                dateAdded: moment().utc().valueOf()
+                            }
+                        }
+                    });
+                }
+            });
+        }
         return ('Form saved.');
     }
 }

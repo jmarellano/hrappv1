@@ -14,7 +14,8 @@ import {
     UsersRetire,
     UsersRemove,
     UpdateUserLogin,
-    UserMarkTask, UserAddTask
+    UserMarkTask, UserAddTask,
+    UserUpdateInbox
 } from '../users';
 import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
@@ -658,6 +659,11 @@ class Candidate {
             callback(err, result);
         });
     }
+
+    updateInbox(display) {
+        Meteor.call(UserUpdateInbox, display);
+    }
+
 }
 
 class Statistics {

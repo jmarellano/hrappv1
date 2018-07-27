@@ -15,7 +15,7 @@ import TooltipInbox from './TooltipInbox';
 class Messages extends React.Component {
     constructor(props) {
         super(props);
-        let display = [
+        let display = props.user.default_inbox || [
             SEARCH.CATEGORIES,
             SEARCH.NAME,
             SEARCH.EMAIL,
@@ -153,6 +153,7 @@ class Messages extends React.Component {
             tooltip: null
         }, () => {
             this.searchCandidate();
+            this.props.Candidate.updateInbox(display);
             this.setState({
                 tooltip: (
                     <ReactTooltip id={"selected_options"} place="bottom" aria-haspopup="true" role="example">
@@ -219,6 +220,7 @@ Messages.propTypes = {
     Message: PropTypes.object,
     claimed: PropTypes.number,
     unclaimed: PropTypes.number,
+    user: PropTypes.object,
 };
 
 export default withTracker(() => {

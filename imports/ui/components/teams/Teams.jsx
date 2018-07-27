@@ -5,7 +5,8 @@ import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
 import User from '../../../api/classes/User';
-import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import TeamForms from './TeamForms';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Teams extends React.Component {
@@ -106,45 +107,46 @@ class Teams extends React.Component {
     }
 
     retireModal(user, unRetire, role) {
-        this.setState({ retire: !this.state.retire, user, unRetire, selectedUserRole : unRetire ? role : null});
+        this.setState({ retire: !this.state.retire, user, unRetire, selectedUserRole: unRetire ? role : null });
     }
 
     removeModal(user) {
         this.setState({ remove: !this.state.remove, user });
     }
 
-    userRole(cell, user){
+    userRole(cell, user) {
         let role = user.role || ROLES.GUESTS;
         return (
             <div>
-                <select ref={ "role" + user.index } className="form-control"
-                        value={ role }
-                        onChange={ this.selectRole.bind(this, user) }>
-                    <option value={ ROLES.ADMIN }>admin</option>
-                    <option value={ ROLES.STAFFS }>staff</option>
-                    <option value={ ROLES.GUESTS }>guest</option>
+                <select ref={"role" + user.index} className="form-control"
+                    value={role}
+                    onChange={this.selectRole.bind(this, user)}>
+                    <option value={ROLES.ADMIN}>admin</option>
+                    <option value={ROLES.STAFFS}>staff</option>
+                    <option value={ROLES.GUESTS}>guest</option>
                 </select>
             </div>
         );
     }
 
-    userAction(cell, user){
+    userAction(cell, user) {
         let role = user.role || ROLES.GUESTS;
-        return  (
+        return (
             <div>
+                <TeamForms selectedUser={user} Candidate={this.props.Candidate} user={this.props.user} location={this.props.location} />
                 {(role === ROLES.GUESTS) &&
-                <a href="#removeModal m-r-sm"
-                   data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
+                    <a href="#removeModal m-r-sm"
+                        data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
                 {(role !== ROLES.GUESTS) &&
-                <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, false, role)} className="btn btn-warning">Retire</a>}
+                    <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, false, role)} className="btn btn-warning">Retire</a>}
             </div>
         );
     }
 
-    userUnRetireAction(cell, user){
+    userUnRetireAction(cell, user) {
         let role = user.role || ROLES.GUESTS;
         let role_ = null;
-        switch(role){
+        switch (role) {
             case ROLES.ADMIN:
                 role_ = "ADMIN";
                 break;
@@ -166,24 +168,24 @@ class Teams extends React.Component {
             <div className="pull-left main">
                 <div className="table-responsive">
                     <BootstrapTable data={this.props.users} striped hover>
-                        <TableHeaderColumn isKey dataField='username' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } } width={150}>Members</TableHeaderColumn>
-                        <TableHeaderColumn dataField='firstName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a First Name' } } width={130}>First Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } } width={130}>Last Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Email Add' } }>Email Add</TableHeaderColumn>
-                        <TableHeaderColumn dataField='dateJoined' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Joined' } }>Date Joined</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastLoggedInDt' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Time' } }>Last Logged In Date and Time</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={150}>Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={130}>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={130}>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }}>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }}>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastLoggedInDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }}>Last Logged In Date and Time</TableHeaderColumn>
                         <TableHeaderColumn dataField='select' dataFormat={this.userRole} width={120} >Roles</TableHeaderColumn>
-                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} width={90} >Actions</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} width={120} >Actions</TableHeaderColumn>
                     </BootstrapTable>
                     <h3 className="ml-1">
                         Retired Users
                     </h3>
                     <BootstrapTable data={this.state.retiredUsers} striped hover>
-                        <TableHeaderColumn isKey dataField='username' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Members' } } >Members</TableHeaderColumn>
-                        <TableHeaderColumn dataField='firstName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a First Name' } }>First Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastName' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Last Name' } }>Last Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Email Add' } }>Email Add</TableHeaderColumn>
-                        <TableHeaderColumn dataField='dateJoined' filter={ { type: 'RegexFilter', placeholder: 'Please enter a Date Joined' } }>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} >Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }}>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }}>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }}>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }}>Date Joined</TableHeaderColumn>
                         <TableHeaderColumn dataField='actions' dataFormat={this.userUnRetireAction} >Actions</TableHeaderColumn>
                     </BootstrapTable>
                     {this.state.retrieving && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}

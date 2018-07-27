@@ -29,6 +29,7 @@ class User {
         this.importing = obj.profile.importing;
         this.drive_uploading = obj.profile.drive_uploading;
         this.drive = obj.profile.drive;
+        this.default_inbox = obj.profile.default_inbox || null;
     }
 
     getPrimaryEmail() {

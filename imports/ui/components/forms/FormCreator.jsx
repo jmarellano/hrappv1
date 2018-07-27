@@ -66,7 +66,7 @@ class FormCreator extends React.Component {
     render() {
         return (
             <div className="container-fluid">
-                <form id="tmq-form-builder" onSubmit={this.onSubmit} className="main">
+                <form id="tmq-form-builder" onSubmit={this.onSubmit} className="main" style={{ width: '785px' }}>
                     <div id="tmq-form-builder-form-title">
                         <input id="form-title" type="text" defaultValue="Untitled Form" required />
                         <button type="button" className="form-options" onClick={this.exec.bind(this, 'italic')}><b>I</b></button>

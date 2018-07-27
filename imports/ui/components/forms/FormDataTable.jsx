@@ -11,6 +11,8 @@ class FormDataTable extends Component {
     }
 
     renderHeader() {
+        if (!this.props.headers)
+            return null;
         return this.props.headers.map((item, index) => {
             return (
                 <th key={index} scope="col">{item}</th>
@@ -19,6 +21,8 @@ class FormDataTable extends Component {
     }
 
     renderDataValues(data) {
+        if (!this.props.headers)
+            return null;
         return this.props.headers.map((item, index) => {
             let itemValue = data.data.filter((dataItem) => dataItem.label === item)[0];
             return (
@@ -30,6 +34,8 @@ class FormDataTable extends Component {
     }
 
     renderData() {
+        if (!this.props.data)
+            return null;
         return this.props.data.map((item, index) => {
             return (
                 <tr key={index}>

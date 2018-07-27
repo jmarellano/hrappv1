@@ -13,6 +13,7 @@ export const DeleteForm = 'forms_delete';
 export const FormsSubmit = 'forms_submit';
 export const FormHeaders = 'forms_header';
 export const CandidateFormData = 'forms_candidate';
+export const UsersFormData = 'forms_users';
 
 let databaseName = Meteor.settings.public.collections.forms || 'forms';
 let databaseName2 = Meteor.settings.public.collections.formsData || 'forms_candidates_data';
@@ -69,6 +70,7 @@ if (Meteor.isServer) {
     functions[FormsSubmit] = function (data) {
         try {
             check(data, Object);
+            data.userId = this.userId;
             return FormManager.formSubmit(data);
         } catch (err) {
             console.error(err);
@@ -120,6 +122,31 @@ if (Meteor.isServer) {
             let count = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 } }).count();
             cursor = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 } });
             Util.setupHandler(this, databaseName2, cursor, (doc) => {
+                let newDoc = {};
+                newDoc.createdAt = doc.createdAt;
+                newDoc.version = doc.version;
+                newDoc.data = doc.data.filter((item) => {
+                    return item.label !== '';
+                });
+                newDoc.max = count;
+                newDoc.form = FormsDB.findOne({ _id: doc.form_id }).name;
+                newDoc.formId = doc.form_id;
+                return newDoc;
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
+    Meteor.publish(UsersFormData, function (key) {
+        let cursor = null;
+        try {
+            check(this.userId, String);
+            key.removed = VALUE.FALSE;
+            let count = FormsUsersDataDB.find(key, { sort: { createdAt: -1 } }).count();
+            cursor = FormsUsersDataDB.find(key, { sort: { createdAt: -1 } });
+            Util.setupHandler(this, databaseName3, cursor, (doc) => {
                 let newDoc = {};
                 newDoc.createdAt = doc.createdAt;
                 newDoc.version = doc.version;

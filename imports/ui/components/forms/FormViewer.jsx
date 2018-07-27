@@ -80,12 +80,8 @@ class FormViewer extends React.Component {
 
     saveForm(e) {
         e.preventDefault();
-        if (!this.state.allowed && this.props.applicant) {
+        if (!this.state.allowed) {
             Bert.alert('ReCaptcha is not valid', 'danger', 'growl-top-right');
-            return null;
-        }
-        if (!this.props.applicant) {
-            Bert.alert('Submit form in this page is not valid', 'danger', 'growl-top-right');
             return null;
         }
         let array = $(':input').map(function () {
@@ -158,7 +154,7 @@ class FormViewer extends React.Component {
     render() {
         return (
             <div className="container">
-                <form onSubmit={this.saveForm.bind(this)} className="main">
+                <form onSubmit={this.saveForm.bind(this)} className="main" style={{ width: '100%' }}>
                     <div id="tmq-form-builder" className="row">
                         <div className="col-md-12 p-3">
                             <div id="tmq-form-builder-left">
@@ -201,7 +197,7 @@ class FormViewer extends React.Component {
                                     </button>
                                 }
                                 {
-                                    this.props.location.pathname.split("/")[3] &&
+                                    this.props.location.pathname.split("/")[2] &&
                                     <ReCAPTCHA
                                         className="text-center"
                                         ref={(el) => { this.captcha = el; }}

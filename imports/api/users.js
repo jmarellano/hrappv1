@@ -22,6 +22,7 @@ export const UsersChangeRole = 'users_change_role';
 export const UsersRetire = 'users_retire';
 export const UsersRemove = 'users_remove';
 export const UpdateUserLogin = 'update_user_login';
+export const UserUpdateInbox = 'update_user_inbox';
 
 if (Meteor.isServer) {
     functions[UsersRegister] = function (data) {
@@ -39,6 +40,15 @@ if (Meteor.isServer) {
             user.email = data.email;
             user.password = data.password;
             Accounts.createUser(user);
+        } catch (err) {
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[UserUpdateInbox] = function (display) {
+        try {
+            check(display, Array);
+            check(this.userId, String);
+            Meteor.users.update({ _id: this.userId }, { $set: { 'profile.default_inbox': display } });
         } catch (err) {
             throw new Meteor.Error('bad', err.message);
         }
@@ -158,13 +168,13 @@ if (Meteor.isServer) {
             check(data.selectedTask, Object);
             check(data.selectedStatus, String);
             let selectedAppointment = AppointmentDB.findOne({ _id: data.selectedTask._id });
-            if(!selectedAppointment)
+            if (!selectedAppointment)
                 throw new Meteor.Error('bad', 'Task Does not Exist');
             let qry = {
                 taskStatus: data.selectedStatus,
                 friendlyStatus: data.friendlyStatus,
             };
-            if(data.startTime && data.endTime) {
+            if (data.startTime && data.endTime) {
                 qry.startTime = moment(data.startTime).valueOf();
                 qry.endTime = moment(data.endTime).valueOf();
             }
@@ -182,23 +192,23 @@ if (Meteor.isServer) {
             check(data, Object);
             let messageId = Util.hash(`${moment().valueOf()}${data.appointmentTo}${data.appointmentSubject}${data.appointmentMessage}${this.userId}`);
             return AppointmentDB.insert({
-                "createdAt" : moment().valueOf(),
-                "read" : true,
-                "contact" : data.appointmentFrom,
-                "from" : data.appointmentFrom,
-                "to" : data.appointmentTo,
-                "cc" : "",
-                "bcc" : "",
-                "html" : "",
-                "text" : data.appointmentMessage,
-                "subject" : data.appointmentSubject,
-                "type" : 1,
-                "status" : 1,
-                "messageId" : messageId,
-                "attachments" : [],
-                "importedBy" : this.userId,
-                "startTime" : moment(data.startTime).valueOf(),
-                "endTime" : moment(data.endTime).valueOf(),
+                "createdAt": moment().valueOf(),
+                "read": true,
+                "contact": data.appointmentFrom,
+                "from": data.appointmentFrom,
+                "to": data.appointmentTo,
+                "cc": "",
+                "bcc": "",
+                "html": "",
+                "text": data.appointmentMessage,
+                "subject": data.appointmentSubject,
+                "type": 1,
+                "status": 1,
+                "messageId": messageId,
+                "attachments": [],
+                "importedBy": this.userId,
+                "startTime": moment(data.startTime).valueOf(),
+                "endTime": moment(data.endTime).valueOf(),
             });
         } catch (err) {
             console.error(err);
