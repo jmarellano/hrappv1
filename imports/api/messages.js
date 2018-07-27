@@ -391,7 +391,8 @@ if (Meteor.isServer) {
             check(id, String);
             let obj = server.removeSender(id, credit.user);
             server.removeListener(id, credit);
-            obj.connection.quit();
+            if (obj.connection)
+                obj.connection.quit();
             let user = Meteor.users.findOne({ _id: id });
             let creditToUpdate = user.profile.emails.filter((email) => {
                 return email.user !== credit.user;

@@ -1,5 +1,5 @@
 import { Mongo } from 'meteor/mongo';
-import { FormsDB, FormsDDB } from '../forms';
+import { FormsDB, FormsCandidatesDataDB } from '../forms';
 import { CandidatesDB } from '../candidates';
 import { VALUE } from './Const';
 import moment from 'moment-timezone';
@@ -55,7 +55,7 @@ export default class FormManager {
         let dup = null,
             applicantId = data.applicantId ? data.applicantId : null;
         if (data.applicantId) {
-            dup = FormsDDB.findOne({
+            dup = FormsCandidatesDataDB.findOne({
                 form_id: new Mongo.ObjectID(data._id),
                 applicantId: data.applicantId,
                 removed: VALUE.FALSE
@@ -66,7 +66,7 @@ export default class FormManager {
         dup = CandidatesDB.findOne({ _id: new Mongo.ObjectID(data.applicantId) });
         if (!dup)
             throw new Meteor.Error('BAD', 'Applicant does not exist');
-        FormsDDB.insert({
+        FormsCandidatesDataDB.insert({
             'form_id': new Mongo.ObjectID(data._id),
             'data': data.obj,
             'version': data.version,

@@ -158,7 +158,7 @@ class FormViewer extends React.Component {
     render() {
         return (
             <div className="container">
-                <form onSubmit={this.saveForm.bind(this)}>
+                <form onSubmit={this.saveForm.bind(this)} className="main">
                     <div id="tmq-form-builder" className="row">
                         <div className="col-md-12 p-3">
                             <div id="tmq-form-builder-left">

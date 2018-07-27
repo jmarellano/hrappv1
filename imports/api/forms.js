@@ -15,9 +15,11 @@ export const FormHeaders = 'forms_header';
 export const CandidateFormData = 'forms_candidate';
 
 let databaseName = Meteor.settings.public.collections.forms || 'forms';
-let databaseName2 = Meteor.settings.public.collections.formsData || 'formsd';
+let databaseName2 = Meteor.settings.public.collections.formsData || 'forms_candidates_data';
+let databaseName3 = Meteor.settings.public.collections.formsUserData || 'forms_users_data';
 export const FormsDB = new Mongo.Collection(databaseName, { idGeneration: 'MONGO' });
-export const FormsDDB = new Mongo.Collection(databaseName2, { idGeneration: 'MONGO' });
+export const FormsCandidatesDataDB = new Mongo.Collection(databaseName2, { idGeneration: 'MONGO' });
+export const FormsUsersDataDB = new Mongo.Collection(databaseName3, { idGeneration: 'MONGO' });
 
 if (Meteor.isServer) {
     functions[GetForm] = function (id, applicant) {
@@ -98,8 +100,8 @@ if (Meteor.isServer) {
             key.form_id = new Mongo.ObjectID(key.form_id);
             key.removed = VALUE.FALSE;
             key.version = parseInt(key.version);
-            let count = FormsDDB.find(key, { sort: { createdAt: -1 } }).count();
-            cursor = FormsDDB.find(key, { sort: { createdAt: -1 }, limit });
+            let count = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 } }).count();
+            cursor = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 }, limit });
             Util.setupHandler(this, databaseName2, cursor, (doc) => {
                 doc.max = count;
                 return doc;
@@ -115,8 +117,8 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             key.removed = VALUE.FALSE;
-            let count = FormsDDB.find(key, { sort: { createdAt: -1 } }).count();
-            cursor = FormsDDB.find(key, { sort: { createdAt: -1 } });
+            let count = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 } }).count();
+            cursor = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 } });
             Util.setupHandler(this, databaseName2, cursor, (doc) => {
                 let newDoc = {};
                 newDoc.createdAt = doc.createdAt;

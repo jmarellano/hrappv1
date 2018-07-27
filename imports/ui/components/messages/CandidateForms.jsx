@@ -1,6 +1,6 @@
 import { withTracker } from 'meteor/react-meteor-data';
 import React, { Component } from 'react';
-import { CandidateFormData, FormsDDB } from '../../../api/forms';
+import { CandidateFormData, FormsCandidatesDataDB } from '../../../api/forms';
 import { ROUTES } from '../../../api/classes/Const';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -224,6 +224,6 @@ CandidateForms.propTypes = {
 export default withTracker((props) => {
     Meteor.subscribe(CandidateFormData, { applicantId: props.selectedCandidate.id._str });
     return {
-        formsData: FormsDDB.find({}, { sort: { createdAt: -1 } }).fetch()
+        formsData: FormsCandidatesDataDB.find({}, { sort: { createdAt: -1 } }).fetch()
     };
 })(CandidateForms);

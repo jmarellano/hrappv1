@@ -15,10 +15,10 @@
             },
             {
                 "name": "TMQ",
-                "imap_host": "mail.txtmequick.com",
+                "imap_host": "newhost2.txtmequick.com",
                 "imap_port": "993",
                 "smtp_host": "newhost2.txtmequick.com",
-                "smtp_port": "26",
+                "smtp_port": "465",
                 "mailbox_incoming": "INBOX",
                 "mailbox_outgoing": "INBOX.Sent"
             }
