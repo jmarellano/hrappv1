@@ -6,6 +6,8 @@ import Button from '../extras/Button';
 import Modal from '../extras/Modal';
 import CategoryClass from '../../../api/classes/Category';
 import { GithubPicker } from 'react-color';
+import { BootstrapTable, TableHeaderColumn } from "react-bootstrap-table";
+import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Category extends React.Component {
     constructor() {
@@ -43,10 +45,13 @@ class Category extends React.Component {
         };
         this.addCategory = this.addCategory.bind(this);
         this.removeCategory = this.removeCategory.bind(this);
+        this.deleteCategory = this.deleteCategory.bind(this);
+        this.editCategory = this.editCategory.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
         this.toggleModal = this.toggleModal.bind(this);
         this.confirmationModal = this.confirmationModal.bind(this);
         this.handleChangeColor = this.handleChangeColor.bind(this);
+        this.reset = this.reset.bind(this);
         this.styleSet = {
             overlay: {
                 zIndex: '8888',
@@ -104,6 +109,91 @@ class Category extends React.Component {
         });
     }
 
+    editCategoryInfo(category){
+        this.setState({
+            category: category.category,
+            resume: category.resume,
+            portfolio: category.portfolio,
+            disc: category.disc,
+            values: category.values,
+            iq: category.iq,
+            TEST_METEOR: category.TEST_METEOR,
+            TEST_LIVE: category.TEST_LIVE,
+            TEST_WRITING: category.TEST_WRITING,
+            VIDEO: category.VIDEO,
+            INTERVIEW: category.INTERVIEW,
+            MANAGER: category.MANAGER,
+            TEST_IMAGE: category.TEST_IMAGE,
+            TEST_CREATIVE: category.TEST_CREATIVE,
+            TEST_WEBFLOW: category.TEST_WEBFLOW,
+            TEST_MOCK: category.TEST_MOCK,
+            TEST_SIMULATION: category.TEST_SIMULATION,
+            others: category.others,
+            technical: category.technical,
+            color: category.color,
+            category_id: category.id
+        });
+        if (this.categoryForm)
+            this.categoryForm.scrollIntoView({ behavior: "smooth" });
+    }
+
+    editCategory(cell, category) {
+        return (
+            <button
+                className="btn btn-info ml10"
+                onClick={this.editCategoryInfo.bind(this, category)}
+            >
+                Edit
+            </button>
+        )
+    }
+
+    deleteSelectedCategory(category){
+        this.setState({
+            confirmation: true,
+            category_id: category.id
+        });
+    }
+
+    deleteCategory(cell, category) {
+        return (
+            <button
+                className="btn btn-warning ml10"
+                onClick={this.deleteSelectedCategory.bind(this, category)}
+            >
+                Delete
+            </button>
+        )
+    }
+
+    reset(){
+        this.setState({
+            category: '',
+            resume: 0,
+            portfolio: 0,
+            disc: 0,
+            values: 0,
+            iq: 0,
+            TEST_METEOR: 0,
+            TEST_LIVE: 0,
+            TEST_WRITING: 0,
+            VIDEO: 0,
+            INTERVIEW: 0,
+            MANAGER: 0,
+            TEST_IMAGE: 0,
+            TEST_CREATIVE: 0,
+            TEST_WEBFLOW: 0,
+            TEST_MOCK: 0,
+            TEST_SIMULATION: 0,
+            others: 0,
+            technical: "true",
+            color: '#ccc',
+            category_id: null
+        });
+        if (this.categoryForm)
+            this.categoryForm.scrollIntoView({ behavior: "smooth" });
+    }
+
     addCategory(e) {
         e.preventDefault();
         this.setState({ processing: true });
@@ -128,13 +218,13 @@ class Category extends React.Component {
             others: this.state.others,
             technical: this.state.technical,
             color: this.state.color
-        }
+        };
+
         this.props.Category.add(data, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
                 this.setState({
-                    categoryModal: false,
                     category: '',
                     resume: 0,
                     portfolio: 0,
@@ -169,7 +259,7 @@ class Category extends React.Component {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else {
-                this.setState({ categoryModal: false, confirmation: false });
+                this.setState({ confirmation: false });
                 Bert.alert('Category removed', 'success', 'growl-top-right', 'fa-check');
             }
             this.setState({ processing: false });
@@ -217,33 +307,28 @@ class Category extends React.Component {
                             </div>
                         </div>
                         <div className="panel-body p-2">
-                            <nav>
-                                <div className="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a
-                                        className="nav-link text-primary active"
-                                        data-toggle="tab"
-                                        href="#add"
-                                        role="tab">
-                                        Add Category
-                                    </a>
-                                    <a
-                                        className="nav-link text-primary"
-                                        data-toggle="tab"
-                                        href="#remove"
-                                        role="tab">
-                                        Remove Category
-                                    </a>
+                            <div className="col-md-12 ">
+                                <div className="table-responsive">
+                                    <BootstrapTable data={this.props.categories} striped hover maxHeight='calc(100% - 60px)'>
+                                        <TableHeaderColumn isKey dataField='category'
+                                                           filter={{ type: 'RegexFilter', placeholder: 'Category' }}
+                                                           width={"130"}>Name</TableHeaderColumn>
+                                        <TableHeaderColumn dataField='type' width={"130"} filter={{ type: 'RegexFilter', placeholder: 'Type' }}>Type</TableHeaderColumn>
+                                        <TableHeaderColumn dataField='editInfo' dataFormat={this.editCategory} width={"70"}>Edit</TableHeaderColumn>
+                                        <TableHeaderColumn dataField='editInfo' dataFormat={this.deleteCategory} width={"90"}>Delete</TableHeaderColumn>
+                                    </BootstrapTable>
                                 </div>
-                            </nav>
-                            <div className="tab-content" id="nav-tabContent">
-                                <div
-                                    id="add"
+                            </div>
+                            <div
                                     className="tab-pane fade show active"
                                     role="tabpanel"
                                     aria-labelledby="add-tab">
                                     <form
                                         role="form"
                                         className="form-horizontal mb-1"
+                                        ref={(el) => {
+                                            this.categoryForm = el;
+                                        }}
                                         onSubmit={this.addCategory}>
                                         <div className="form-group panel-body pt-2 row">
                                             <div className="col-md-6">
@@ -591,46 +676,21 @@ class Category extends React.Component {
                                             </tbody>
                                         </table>
                                         Color:
-                                        <GithubPicker color={this.state.color} onChange={this.handleChangeColor} className="ml-5" />;
+                                        <GithubPicker color={this.state.color} onChange={this.handleChangeColor} className="ml-5" />
                                         <Button
                                             className="btn btn-primary m-2"
                                             type="submit"
                                             processing={this.state.processing}>
-                                            Add
+                                            {this.state.category_id ? "Edit" : "Add"}
                                         </Button>
+                                        {this.state.category_id &&
+                                        <button
+                                            className="btn btn-warning m-2"
+                                            onClick={this.reset}>
+                                            Reset
+                                        </button>}
                                     </form>
                                 </div>
-                                <div id="remove" className="tab-pane fade" role="tabpanel" aria-labelledby="remove-tab">
-                                    <div className="form-group panel-body pt-2">
-                                        <label className="col-lg-2 control-label">Category</label>
-                                        <div className="col-lg-10">
-                                            <select
-                                                className="form-control selectpicker"
-                                                data-style="btn-primary"
-                                                value={this.state.category_id}
-                                                name="category_id"
-                                                onChange={this.handleChangeInput}
-                                                required
-                                            >
-                                                <option value={''}>Select Category</option>
-                                                {this.renderCategories()}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="form-group panel-body">
-                                        <div className="col-md-12 text-warning">
-                                            NOTE: Removing Category will make candidates to be uncategorized and
-                                            unclaimed.
-                                        </div>
-                                        <div className="col-md-12">
-                                            <button className="btn btn-danger"
-                                                disabled={!this.props.categories.length || !this.state.category_id.length} type="button"
-                                                onClick={this.confirmationModal}>Remove
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </Modal>
@@ -672,9 +732,15 @@ Category.propTypes = {
 };
 
 export default withTracker(() => {
-
     return {
         isReady: Meteor.subscribe(ValidCategories).ready(),
-        categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => new CategoryClass(item))
+        categories: CategoriesDB.find({}, { sort: { category: 1 } }).fetch().map((item) => {
+            let category = new CategoryClass(item);
+            if(category.technical && category.technical === "true")
+                category.type = "Technical";
+            else
+                category.type = "Non-Technical";
+            return category;
+        })
     };
 })(Category);
