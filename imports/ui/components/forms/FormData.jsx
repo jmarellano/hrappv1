@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FormsCandidatesDataDB } from '../../../api/forms';
+import { FormsCandidatesDataDB, FormsUsersDataDB } from '../../../api/forms';
 import { matchPath } from 'react-router';
 import PropTypes from 'prop-types';
 
@@ -65,6 +65,7 @@ class FormData extends Component {
     }
 
     render() {
+        console.log('test', this.props.data);
         return (
             <div className="main">
                 <h4 className="mb-4 container">
@@ -103,7 +104,7 @@ export default withTracker((props) => {
         strict: false
     });
     return {
-        data: FormsCandidatesDataDB.find({}, { sort: { createdAt: -1 } }).fetch().map((formData) => new FormDataClass(formData)),
+        data: FormsCandidatesDataDB.find({}, { sort: { createdAt: -1 } }).fetch().map((formData) => new FormDataClass(formData)).concat(FormsUsersDataDB.find({}, { sort: { createdAt: -1 } }).fetch().map((formData) => new FormDataClass(formData))),
         id: match.params.data
     };
 })(FormData);

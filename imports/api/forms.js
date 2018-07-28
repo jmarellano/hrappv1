@@ -7,6 +7,7 @@ import FormManager from './classes/FormManager';
 
 export const ValidForms = 'forms_valid';
 export const FormsDPub = 'formsd';
+export const FormsDPub2 = 'formsd2';
 export const FormsSave = 'forms_save';
 export const GetForm = 'forms_get';
 export const DeleteForm = 'forms_delete';
@@ -105,6 +106,25 @@ if (Meteor.isServer) {
             let count = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 } }).count();
             cursor = FormsCandidatesDataDB.find(key, { sort: { createdAt: -1 }, limit });
             Util.setupHandler(this, databaseName2, cursor, (doc) => {
+                doc.max = count;
+                return doc;
+            });
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+        this.ready();
+    });
+    Meteor.publish(FormsDPub2, function (key, limit) {
+        let cursor = null;
+        try {
+            check(this.userId, String);
+            key.form_id = new Mongo.ObjectID(key.form_id);
+            key.removed = VALUE.FALSE;
+            key.version = parseInt(key.version);
+            let count = FormsUsersDataDB.find(key, { sort: { createdAt: -1 } }).count();
+            cursor = FormsUsersDataDB.find(key, { sort: { createdAt: -1 }, limit });
+            Util.setupHandler(this, databaseName3, cursor, (doc) => {
                 doc.max = count;
                 return doc;
             });

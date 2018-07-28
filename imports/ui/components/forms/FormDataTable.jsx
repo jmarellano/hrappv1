@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
-import { FormsDPub } from '../../../api/forms';
+import { FormsDPub, FormsDPub2 } from '../../../api/forms';
 import { matchPath } from 'react-router';
 import PropTypes from 'prop-types';
 
@@ -34,8 +34,6 @@ class FormDataTable extends Component {
     }
 
     renderData() {
-        if (!this.props.data)
-            return null;
         return this.props.data.map((item, index) => {
             return (
                 <tr key={index}>
@@ -108,8 +106,9 @@ export default withTracker((props) => {
         strict: false
     });
     let loading = true,
-        formDSub = Meteor.subscribe(FormsDPub, { form_id: match.params.data, version: props.version }, props.limit);
-    if (formDSub.ready())
+        formDSub = Meteor.subscribe(FormsDPub, { form_id: match.params.data, version: props.version }, props.limit),
+        formDSub2 = Meteor.subscribe(FormsDPub2, { form_id: match.params.data, version: props.version }, props.limit);
+    if (formDSub.ready() && formDSub2.ready())
         loading = false;
     return {
         loading,
