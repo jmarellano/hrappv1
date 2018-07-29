@@ -47,12 +47,15 @@ if (Meteor.isServer) {
     }
     functions[DriveCreateFolder] = function (email) {
         check(this.userId, String);
-        if (!Meteor.user().profile.drive) {
+        let drive = Meteor.user().profile.drive;
+        if (!drive) {
             let folder = functions[DriveAddFolder].call(this, Meteor.user().username, email);
-            if (folder)
-                return Meteor.users.update({ _id: this.userId }, { $set: { 'profile.drive': folder.id } });
+            if (folder) {
+                Meteor.users.update({ _id: this.userId }, { $set: { 'profile.drive': folder.id } });
+                return folder.id;
+            }
         }
-        return 1;
+        return drive;
     }
     functions[DriveInsertPermission] = function (file, value, type, role) {
         try {

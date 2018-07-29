@@ -166,7 +166,6 @@ class FormCreator extends React.Component {
                         <div className="modal-content">
                             <div className="modal-header">
                                 <span className="close">&times;</span>
-                                <h2>Edit Field</h2>
                             </div>
                             <div className="modal-body">
 

@@ -46,7 +46,7 @@ export default class FormManager {
     }
     static getHeaders(id, version) {
         let form = FormsDB.findOne({ _id: new Mongo.ObjectID(id) });
-        return { headers: (form && form.headers) ? form.headers[version] : [], max: (form && form.headers) ? Object.keys(form.headers).length : 0 };
+        return { headers: (form && form.headers) ? form.headers[version] : [], max: (form && form.headers) ? Object.keys(form.headers) : [] };
     }
     static removeForm(id) {
         return FormsDB.update({ _id: id }, { $set: { retired: VALUE.TRUE } });
@@ -73,7 +73,7 @@ export default class FormManager {
                 'applicantId': applicantId,
                 'applicantName': dup.name || dup.email || dup.contact,
                 'removed': VALUE.FALSE
-            }, function () {
+            }, function() {
                 let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });
                 let set = {};
                 set['headers.' + data.version] = data.obj.map((item) => item.label).filter(item => item.length > 0);
@@ -102,7 +102,7 @@ export default class FormManager {
                 'applicantId': data.userId,
                 'applicantName': dup.username,
                 'removed': VALUE.FALSE
-            }, function () {
+            }, function() {
                 let fData = FormsDB.findOne({ _id: new Mongo.ObjectID(data._id) });
                 let set = {};
                 set['headers.' + data.version] = data.obj.map((item) => item.label).filter(item => item.length > 0);

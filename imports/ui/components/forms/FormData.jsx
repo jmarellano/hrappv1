@@ -16,7 +16,7 @@ class FormData extends Component {
             remove: false,
             formDataId: null,
             headers: [],
-            max: 0,
+            max: [],
             version: 1,
             limit: 20
         };
@@ -58,14 +58,13 @@ class FormData extends Component {
 
     renderVersion() {
         let options = [];
-        for (let i = 0; i < this.state.max; i++) {
-            options.push(<option key={i} value={i + 1}>Version {i + 1}</option>);
-        }
+        this.state.max.forEach((value, index) => {
+            options.push(<option key={index} value={value}>Version {value}</option>);
+        });
         return options;
     }
 
     render() {
-        console.log('test', this.props.data);
         return (
             <div className="main">
                 <h4 className="mb-4 container">

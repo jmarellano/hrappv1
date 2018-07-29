@@ -111,9 +111,8 @@ class Drive extends React.Component {
                         this.sync(this.props.user.drive);
                         this.getToken();
                         this.getFiles(null, true);
-                    }
-                    //} else
-                    //   intervalCheck();
+                    } else
+                        intervalCheck();
                 });
             }
             intervalCheck();

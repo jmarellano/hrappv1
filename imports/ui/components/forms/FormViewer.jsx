@@ -90,6 +90,8 @@ class FormViewer extends React.Component {
                 val = ($(this).is(':checked')) ? $(this).val() : '';
             } else
                 val = $(this).val();
+            if ((($(this).is(':radio') || $(this).is(':checkbox')) && val === '') || $(this).prevAll('label:first').text() === '')
+                return null;
             return {
                 label: $(this).prevAll('label:first').text(),
                 val: val
