@@ -264,39 +264,42 @@ class Teams extends React.Component {
                     <BootstrapTable data={this.props.validCandidates} striped hover maxHeight='calc(100% - 60px)'>
                         <TableHeaderColumn isKey dataField='name'
                             filter={{ type: 'RegexFilter', placeholder: 'Members' }}
-                            width={"130"}>Name</TableHeaderColumn>
+                            width={"130"} dataSort>Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='category'
+                            filter={{ type: 'RegexFilter', placeholder: 'Position' }}
+                            width={"100"} dataSort>Position</TableHeaderColumn>
                         <TableHeaderColumn dataField='email' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Please enter a First Name'
-                        }}>Email</TableHeaderColumn>
+                        }} dataSort>Email</TableHeaderColumn>
                         <TableHeaderColumn dataField='number'
                             filter={{ type: 'RegexFilter', placeholder: 'Phone Number' }}
-                            width={"170"}>Phone Number</TableHeaderColumn>
+                            width={"170"} dataSort>Phone Number</TableHeaderColumn>
                         <TableHeaderColumn dataField='address' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Enter Email Add'
-                        }}>Address</TableHeaderColumn>
+                        }} dataSort>Address</TableHeaderColumn>
                         <TableHeaderColumn dataField='joinedDt'
                             filter={{ type: 'RegexFilter', placeholder: 'Date Time' }}
-                            width={"150"}>Joined Date</TableHeaderColumn>
+                            width={"150"} dataSort>Joined Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='claimedBy'
                             filter={{ type: 'RegexFilter', placeholder: 'UserName' }}
-                            width={"150"}>Claimed By</TableHeaderColumn>
+                            width={"150"} dataSort>Claimed By</TableHeaderColumn>
                         <TableHeaderColumn dataField='friendlyStatus'
                             filter={{ type: 'RegexFilter', placeholder: 'Status' }}
                             dataFormat={this.candidateStatus}
-                            width={"150"}>Status</TableHeaderColumn>
+                            width={"150"} dataSort>Status</TableHeaderColumn>
                         <TableHeaderColumn dataField='isReApplicantFriendly'
                             filter={{ type: 'RegexFilter', placeholder: 'Status' }}
                             dataFormat={this.candidateReApplicant}
-                            width={"150"}>Re-Applicant</TableHeaderColumn>
+                            width={"120"} dataSort>Re-Applicant</TableHeaderColumn>
                         <TableHeaderColumn dataField='friendlySite'
                             filter={{ type: 'RegexFilter', placeholder: 'Source' }}
                             dataFormat={this.candidateSource}
-                            width={"150"}>Source</TableHeaderColumn>
+                            width={"150"} dataSort>Source</TableHeaderColumn>
                         <TableHeaderColumn dataField='country'
                             filter={{ type: 'RegexFilter', placeholder: 'Country' }}
-                            width={"100"}>Country</TableHeaderColumn>
+                            width={"100"} dataSort>Country</TableHeaderColumn>
                         <TableHeaderColumn dataField='editInfo' dataFormat={this.editInfo} width={"70"}>Info</TableHeaderColumn>
                     </BootstrapTable>
                     {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) ? <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
@@ -400,47 +403,41 @@ class Teams extends React.Component {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="number">Mobile Number <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="number">Mobile Number</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="number" value={this.state.number} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="number" value={this.state.number} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="address">Address <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="address">Address</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="city">City <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="city">City</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="state">State <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="state">State</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="country">Country <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="country">Country </label>
                                             <div className="col-sm-12">
-                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange} required>
+                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange}>
                                                     {this.renderCountries()}
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="zip">Zip Code <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="zip">Zip Code</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">

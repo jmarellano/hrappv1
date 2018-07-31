@@ -106,13 +106,13 @@ export default class SettingManager {
             }
         });
         let query = { timestamp: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } };
-        let query2 = { createdAt: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } };
+        let query2 = { joinedDate: { $lte: dayEnd.valueOf(), $gte: dayStart.valueOf() } };
         if (country) {
             query['country'] = country.toString();
             query2['country'] = COUNTRIES[country.toString()].name;
         }
         let posts2 = PostingDB.find(query, { sort: { timestamp: 1 } }).fetch();
-        let newApplicants2 = CandidatesDB.find(query2, { sort: { createdAt: 1 } }).fetch();
+        let newApplicants2 = CandidatesDB.find(query2, { sort: { joinedDate: 1 } }).fetch();
 
         let postData = [];
         let newData = [];

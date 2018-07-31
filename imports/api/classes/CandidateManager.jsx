@@ -48,6 +48,10 @@ export default class CandidateManager {
         return (this.json.contact = CandidatesDB.insert(this.json));
     }
     static updateCandidateInfo(contact, data) {
+        let candidate = CandidatesDB.findOne({ contact: contact });
+        let joinedDate = candidate.joinedDate;
+        if (!candidate.joinedDate)
+            joinedDate = moment().valueOf();
         return CandidatesDB.update({ contact: contact }, {
             $set: {
                 'name': data.name,
@@ -59,7 +63,8 @@ export default class CandidateManager {
                 'zip': data.zip,
                 'email': data.email,
                 'remarks': data.remarks,
-                'number': data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : ''
+                'number': data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : '',
+                joinedDate: joinedDate
             }
         });
     }

@@ -93,6 +93,7 @@ class TemplateCreator extends React.Component {
                         <div className="col-md-10">
                             Codes:
                             <span className="link badge badge-success m-2" onClick={this.addCode.bind(this, "staff_name")}>Staff Name</span>
+                            <span className="link badge badge-success m-2" onClick={this.addCode.bind(this, "staff_username")}>Staff Username</span>
                             <span className="link badge badge-success m-2" onClick={this.addCode.bind(this, "applicant_name")}>Applicant Name</span>
                             <span className="link badge badge-success m-2" onClick={this.addCode.bind(this, "current_date")}>Current Date</span>
                             <span className="link badge badge-success m-2" onClick={this.addCode.bind(this, "application_position")}>Application Position</span>

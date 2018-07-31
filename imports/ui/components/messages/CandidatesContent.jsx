@@ -100,7 +100,13 @@ class CandidatesContent extends React.Component {
                                 this.props.user.id === candidate.claimed ||
                                 (candidate.followers && candidate.followers.filter((item) => item.id === this.props.user.id).length) ?
                                 <CandidateMessages {...this.props} limit={this.state.limit} viewMore={this.viewMore} setSearch={this.search} search={this.state.search.length ? this.state.search : null} start={this.state.start} end={this.state.end} sort={this.state.sort} sortDate={this.sortDate} /> :
-                                <div>You need to be follower of this candidate or claim it to view messages.</div>
+                                <div>
+                                    You need to be follower of this candidate or claim it to view messages.
+                                    <br />
+                                    ***** Last Message *****<br />
+                                    from: {candidate.lastMessage.from}<br />
+                                    to: {candidate.lastMessage.to}<br />
+                                </div>
                         }
                     </div>
                 </div>

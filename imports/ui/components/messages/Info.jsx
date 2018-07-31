@@ -172,40 +172,35 @@ class Info extends Component {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="address">Address <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="address">Address</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="city">City <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="city">City</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="state">State <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="state">State</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="country">Country <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="country">Country</label>
                                             <div className="col-sm-12">
-                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange} required>
+                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange}>
                                                     {this.renderCountries()}
                                                 </select>
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="zip">Zip Code <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="zip">Zip Code</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">

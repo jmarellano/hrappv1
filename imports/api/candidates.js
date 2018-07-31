@@ -178,8 +178,7 @@ if (Meteor.isServer) {
             Util.setupHandler(this, databaseName, cursor, (doc) => {
                 //setup doc
                 let newDoc = doc;
-                if (doc.createdAt)
-                    newDoc.joinedDt = moment(doc.createdAt).format('MMMM DD, YYYY');
+                newDoc.joinedDt = moment(doc.joinedDate ? doc.joinedDate : doc.createdAt).format('MMMM DD, YYYY');
                 if (doc.status) {
                     let friendlyStatus = "";
                     switch (parseInt(doc.status)) {

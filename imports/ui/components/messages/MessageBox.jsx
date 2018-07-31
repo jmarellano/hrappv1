@@ -94,8 +94,9 @@ class MessageBox extends React.Component {
             let target = this;
             return target.replace(new RegExp(search, 'g'), replacement);
         };
-        let staff = this.props.user.username;
-        value = value.replaceAll('{{staff_name}}', staff);
+        let staff = this.props.user;
+        value = value.replaceAll('{{staff_name}}', staff.firstName + ' ' + staff.lastName);
+        value = value.replaceAll('{{staff_username}}', staff.username);
         value = value.replaceAll('{{current_date}}', new Date().toDateString());
         this.quillRef.setText(value);
         this.setState({ text: value });

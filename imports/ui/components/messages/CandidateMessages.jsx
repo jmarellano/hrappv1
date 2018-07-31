@@ -98,10 +98,11 @@ class CandidateMessages extends React.Component {
             let target = this;
             return target.replace(new RegExp(search, 'g'), replacement);
         };
-        let staff = this.props.user.username;
+        let staff = this.props.user;
         let name = (this.props.candidate && this.props.candidate.name) ? this.props.candidate.name : '';
         let category = (this.props.candidate && this.props.candidate.category) ? this.props.candidate.category : '';
-        value = value.replaceAll('{{staff_name}}', staff);
+        value = value.replaceAll('{{staff_name}}', staff.firstName + ' ' + staff.lastName);
+        value = value.replaceAll('{{staff_username}}', staff.username);
         value = value.replaceAll('{{current_date}}', new Date().toDateString());
         value = value.replaceAll('{{applicant_name}}', name);
         value = value.replaceAll('{{application_position}}', category);
@@ -346,6 +347,34 @@ class CandidateMessages extends React.Component {
                                             {this.renderEmails()}
                                             {this.renderCredSMS()}
                                         </select>
+                                    </div>
+                                </div>
+                                <div className="row p-0 m-0">
+                                    <div className="col-md-6 mt-1">
+                                        {
+                                            type === MESSAGES_TYPE.EMAIL &&
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="BCC"
+                                                name="bcc"
+                                                required
+                                                onChange={this.handleChangeInput}
+                                            />
+                                        }
+                                    </div>
+                                    <div className="col-md-6 mt-1">
+                                        {
+                                            type === MESSAGES_TYPE.EMAIL &&
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="CC"
+                                                name="cc"
+                                                required
+                                                onChange={this.handleChangeInput}
+                                            />
+                                        }
                                     </div>
                                 </div>
                                 <div className="row p-3 m-0 mb-4">
