@@ -58,6 +58,7 @@ export default class CandidateManager {
                 'state': data.state,
                 'zip': data.zip,
                 'email': data.email,
+                'remarks': data.remarks,
                 'number': data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : ''
             }
         });

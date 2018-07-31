@@ -215,6 +215,30 @@ class Drive {
         else return false;
         return myFuture.wait();
     }
+    newFolder(name, parent, mimeType) {
+        let self = this;
+        this.getToken();
+        let myFuture = server.createFuture();
+        let options = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            data: {
+                'name': name,
+                'mimeType': mimeType,
+                'parents': parent
+            }
+        };
+        HTTP.call('POST', 'https://www.googleapis.com/drive/v3/files/', options, function (error, response) {
+            if (error && error !== null) {
+                console.error(error);
+                myFuture.throw(new Meteor.Error(error.message));
+            }
+            self.insertPermission({ id: response.data.id }, Meteor.settings.public.oAuth.google.owner, 'user', 'writer');
+            myFuture.return(response.data);
+        });
+        return myFuture.wait();
+    }
     moveToFolder(fileId, folderId) {
         let params = {
             'fileId': fileId.id,

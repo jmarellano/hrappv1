@@ -23,6 +23,7 @@ class Candidate {
         this.state = obj.state;
         this.country = obj.country;
         this.zip = obj.zip;
+        this.remarks = obj.remarks;
         this.resume = obj.resume;
         this.portfolio = obj.portfolio;
         this.disc = obj.disc;

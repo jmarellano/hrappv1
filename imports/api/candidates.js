@@ -301,7 +301,24 @@ if (Meteor.isServer) {
                 or1.push({ claimed: this.userId });
             if (candidate.filter.indexOf(SEARCH.FOLLOWING) > -1)
                 or1.push({ 'followers.id': this.userId });
-
+            if (candidate.filter.indexOf(SEARCH.STAFF_EMAIL) > -1) {
+                let emails = [];
+                let users = [];
+                users = Meteor.users.find({ $or: [{ retired: 0 }, { retired: { $exists: false } }] }).fetch();
+                users.forEach((user) => {
+                    if (user.profile.emails)
+                        user.profile.emails.forEach((email) => {
+                            if (email.status === 'connected')
+                                emails.push(email.user);
+                        });
+                });
+                var optRegexp = [];
+                emails.forEach(function (opt) {
+                    optRegexp.push(new RegExp(opt, "i"));
+                });
+                or1.push({ 'lastMessage.from': { $in: optRegexp } });
+                or1.push({ 'lastMessage.to': { $in: optRegexp } });
+            }
             if (candidate.filter.indexOf(CANDIDATE_STATUS.NA) > -1)
                 or2.push({ 'status': { $exists: false } });
             if (candidate.filter.indexOf(CANDIDATE_STATUS.ABANDONED) > -1)

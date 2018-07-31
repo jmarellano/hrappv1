@@ -21,6 +21,7 @@ class Info extends Component {
             state: props.selectedCandidate.state,
             zip: props.selectedCandidate.zip,
             category: props.selectedCandidate.category,
+            remarks: props.selectedCandidate.remarks,
             processing: false
         };
         this.styleSet = {
@@ -54,6 +55,7 @@ class Info extends Component {
                 state: this.props.selectedCandidate.state,
                 zip: this.props.selectedCandidate.zip,
                 category: this.props.selectedCandidate.category,
+                remarks: this.props.selectedCandidate.remarks,
             });
     }
 
@@ -72,7 +74,8 @@ class Info extends Component {
             state: this.state.state,
             zip: this.state.zip,
             category: this.state.category,
-            contact: this.props.selectedCandidate.contact
+            contact: this.props.selectedCandidate.contact,
+            remarks: this.state.remarks
         }, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -163,10 +166,9 @@ class Info extends Component {
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="number">Mobile Number <span
-                                                className="text-danger">*</span></label>
+                                            <label className="col-sm-3 control-label" htmlFor="number">Mobile Number</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="number" value={this.state.number} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="number" value={this.state.number} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                         <div className="form-group">
@@ -204,6 +206,12 @@ class Info extends Component {
                                                 className="text-danger">*</span></label>
                                             <div className="col-sm-12">
                                                 <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} required />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label" htmlFor="zip">Remarks</label>
+                                            <div className="col-sm-12">
+                                                <textarea className="form-control" name="remarks" value={this.state.remarks} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                     </div>

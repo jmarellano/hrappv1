@@ -85,6 +85,7 @@ export const SEARCH = {
     UNCLAIMED: 10,
     TITLE: 11,
     CONTEXT: 12,
+    STAFF_EMAIL: 13,
     resume: 'resume',
     portfolio: 'portfolio',
     disc: 'disc',

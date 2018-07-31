@@ -20,6 +20,7 @@ class Messages extends React.Component {
             SEARCH.NAME,
             SEARCH.EMAIL,
             SEARCH.NUMBER,
+            SEARCH.STAFF_EMAIL,
             SEARCH.CLAIMER,
             SEARCH.ASSIGNED,
             CANDIDATE_STATUS.NA,
@@ -67,6 +68,7 @@ class Messages extends React.Component {
                         { value: SEARCH.CLAIMED, label: 'Claimed', element: <span>{'Claimed'}<span className="pull-right mt-1 badge badge-warning">{props.claimed}</span></span> },
                         { value: SEARCH.FOLLOWING, label: 'Following' },
                         { value: SEARCH.UNCLAIMED, label: 'Unclaim', element: <span>{'Unclaimed'}<span className="pull-right mt-1 badge badge-warning">{props.unclaimed}</span></span> },
+                        { value: SEARCH.STAFF_EMAIL, label: 'Staff Email' },
                     ]
                 },
                 {

@@ -1,13 +1,11 @@
 import React from 'react';
-import { CANDIDATE_STATUS, isPermitted, ROLES } from '../../../api/classes/Const';
+import { CANDIDATE_STATUS } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
-import User from '../../../api/classes/User';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
-import { ValidUsers } from "../../../api/users";
 import { CandidatesDB, CandidatesPub } from "../../../api/candidates";
 import Candidate from "../../../api/classes/Candidate";
 import { PostingSitesDB } from "../../../api/settings";
@@ -205,6 +203,7 @@ class Teams extends React.Component {
             state: candidate.state,
             zip: candidate.zip,
             category: candidate.category,
+            remarks: candidate.remarks,
             editCandidateInfo: true
         });
     }
@@ -248,6 +247,7 @@ class Teams extends React.Component {
             state: this.state.state,
             zip: this.state.zip,
             category: this.state.category,
+            remarks: this.state.remarks,
             contact: this.state.selectedCandidate.contact
         }, (err) => {
             if (err)
@@ -441,6 +441,12 @@ class Teams extends React.Component {
                                                 className="text-danger">*</span></label>
                                             <div className="col-sm-12">
                                                 <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} required />
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label className="col-sm-3 control-label" htmlFor="remarks">Remarks</label>
+                                            <div className="col-sm-12">
+                                                <textarea className="form-control" name="remarks" value={this.state.remarks} onChange={this.handleInputChange} />
                                             </div>
                                         </div>
                                     </div>
