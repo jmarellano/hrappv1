@@ -11,7 +11,7 @@ class Message {
         this.html = obj.html;
         this.read = obj.read;
         this.status = obj.status;
-        this.subject = obj.subject;
+        this.subject = obj.subject || '';
         this.text = obj.text;
         this.to = obj.to;
         this.type = obj.type;

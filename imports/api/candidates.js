@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { ROLES, isPermitted, VALUE, SEARCH, CANDIDATE_STATUS } from './classes/Const';
+import { VALUE, SEARCH, CANDIDATE_STATUS } from './classes/Const';
 import { check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { CategoriesDB } from './categories';
@@ -85,12 +85,12 @@ if (Meteor.isServer) {
             check(data, Object);
             if (CandidatesDB.findOne({
                 $or: [
-                    { name: data.name, contact: { $ne: data.contact } },
-                    { email: data.email, contact: { $ne: data.contact } }
+                    { name: data.name, contact: { '$regex': '^((?!' + data.contact + ').)*$', '$options': 'i' } },
+                    { email: data.email, contact: { '$regex': '^((?!' + data.contact + ').)*$', '$options': 'i' } }
                 ]
             }))
                 throw new Meteor.Error('BAD', 'Duplicate contact');
-            return CandidateManager.updateCandidateInfo(data.contact.toLowerCase(), data);
+            return CandidateManager.updateCandidateInfo(data.contact, data);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -302,15 +302,12 @@ if (Meteor.isServer) {
                 or1.push({ 'followers.id': this.userId });
             if (candidate.filter.indexOf(SEARCH.STAFF_EMAIL) > -1) {
                 let emails = [];
-                let users = [];
-                users = Meteor.users.find({ $or: [{ retired: 0 }, { retired: { $exists: false } }] }).fetch();
-                users.forEach((user) => {
-                    if (user.profile.emails)
-                        user.profile.emails.forEach((email) => {
-                            if (email.status === 'connected')
-                                emails.push(email.user);
-                        });
-                });
+                let user = Meteor.user();
+                if (user.profile.emails)
+                    user.profile.emails.forEach((email) => {
+                        if (email.status === 'connected')
+                            emails.push(email.user);
+                    });
                 var optRegexp = [];
                 emails.forEach(function (opt) {
                     optRegexp.push(new RegExp(opt, "i"));

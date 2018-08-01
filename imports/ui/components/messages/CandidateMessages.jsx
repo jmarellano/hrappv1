@@ -358,7 +358,6 @@ class CandidateMessages extends React.Component {
                                                 className="form-control"
                                                 placeholder="BCC"
                                                 name="bcc"
-                                                required
                                                 onChange={this.handleChangeInput}
                                             />
                                         }
@@ -371,7 +370,6 @@ class CandidateMessages extends React.Component {
                                                 className="form-control"
                                                 placeholder="CC"
                                                 name="cc"
-                                                required
                                                 onChange={this.handleChangeInput}
                                             />
                                         }

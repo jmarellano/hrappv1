@@ -150,7 +150,9 @@ export const CANDIDATE_STATUS = {
     SCHED_INT: 919,
     SCHED_LT: 920,
     WITHDREW: 921,
-    PRE_QUALIFIED: 922
+    PRE_QUALIFIED: 922,
+    RESIGNED: 923,
+    TERMED: 924
 }
 
 export const REQUEST = {

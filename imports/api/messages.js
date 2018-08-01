@@ -168,8 +168,8 @@ if (Meteor.isServer) {
                                                                         startEvent = '',
                                                                         endEvent = '',
                                                                         description = '',
-                                                                        location = '',
                                                                         attendee = '',
+                                                                        location = '',
                                                                         summary = '';
                                                                     if (/BEGIN:VCALENDAR/i.test(content)) {
                                                                         if (/METHOD:ACCEPTED/i.test(content) || /PARTSTAT=ACCEPTED/i.test(content)) {
@@ -194,6 +194,7 @@ if (Meteor.isServer) {
                                                                                 html: description,
                                                                                 text: description,
                                                                                 subject: summary,
+                                                                                location: location,
                                                                                 type: 1,
                                                                                 status: 1,
                                                                                 importedBy: Meteor.users.findOne({ 'profile.emails.user': credit.user })._id,
@@ -461,7 +462,7 @@ if (Meteor.isServer) {
                             status: MESSAGES_STATUS.SENDING,
                         }
                     });
-                    transporter.sendMail(mailOptions, Meteor.bindEnvironment((error, infoObj) => {
+                    transporter.sendMail(mailOptions, Meteor.bindEnvironment((error) => {
                         if (error && error !== null) {
                             console.error(`Error re-sending EMAIL with '${message.from}'(EMAIL):`, error);
                             MessagesDB.update({ _id: message._id }, {
@@ -733,13 +734,13 @@ if (Meteor.isServer) {
             let count = null,
                 cursor = null;
             let candidate = CandidatesDB.findOne({ contact });
-            let or = [{ contact: candidate.contact }];
+            let or = [{ contact: { $regex: candidate.contact, $options: 'i' } }];
             let or2 = [];
             if (search)
                 or2 = [{ text: { $regex: search, $options: 'i' } }, { html: { $regex: search, $options: 'i' } }, { subject: { $regex: search, $options: 'i' } }];
             let user = Meteor.user();
             if (candidate.email)
-                or.push({ contact: candidate.email });
+                or.push({ contact: { $regex: candidate.email, $options: 'i' } });
             if (candidate.number)
                 or.push({ contact: candidate.number });
             let query = { $or: or };

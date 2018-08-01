@@ -1,5 +1,6 @@
 import React from 'react';
 import { CANDIDATE_STATUS } from '../../../api/classes/Const';
+import { Mongo } from 'meteor/mongo';
 import { withTracker } from 'meteor/react-meteor-data';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
@@ -161,6 +162,8 @@ class Teams extends React.Component {
                     <option value={CANDIDATE_STATUS.SCHED_LT}>SCHED_LT</option>
                     <option value={CANDIDATE_STATUS.WITHDREW}>WITHDREW</option>
                     <option value={CANDIDATE_STATUS.PRE_QUALIFIED}>PRE_QUALIFIED</option>
+                    <option value={CANDIDATE_STATUS.RESIGNED}>RESIGNED</option>
+                    <option value={CANDIDATE_STATUS.TERMED}>TERMED</option>
                 </select>
             </div>
         );
@@ -467,7 +470,12 @@ class Teams extends React.Component {
 
 Teams.propTypes = {
     Account: PropTypes.object,
-    users: PropTypes.array
+    users: PropTypes.array,
+    Candidate: PropTypes.object,
+    postingSites: PropTypes.array,
+    categories: PropTypes.array,
+    validCandidates: PropTypes.array,
+
 };
 
 export default withTracker(() => {
