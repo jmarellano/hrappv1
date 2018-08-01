@@ -171,9 +171,9 @@ class Teams extends React.Component {
                         <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={150}>Members</TableHeaderColumn>
                         <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={130}>First Name</TableHeaderColumn>
                         <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={130}>Last Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }}>Email Add</TableHeaderColumn>
-                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }}>Date Joined</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastLoggedInDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }}>Last Logged In Date and Time</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }} width={150}>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }} width={150}>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastLoggedInDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }} width={150}>Last Logged In Date and Time</TableHeaderColumn>
                         <TableHeaderColumn dataField='select' dataFormat={this.userRole} width={120} >Roles</TableHeaderColumn>
                         <TableHeaderColumn dataField='actions' dataFormat={this.userAction} width={120} >Actions</TableHeaderColumn>
                     </BootstrapTable>
@@ -181,12 +181,12 @@ class Teams extends React.Component {
                         Retired Users
                     </h3>
                     <BootstrapTable data={this.state.retiredUsers} striped hover>
-                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} >Members</TableHeaderColumn>
-                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }}>First Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }}>Last Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }}>Email Add</TableHeaderColumn>
-                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }}>Date Joined</TableHeaderColumn>
-                        <TableHeaderColumn dataField='actions' dataFormat={this.userUnRetireAction} >Actions</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={130}>Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={130}>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={130}>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }} width={150}>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }} width={150}>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userUnRetireAction} width={150}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                     {this.state.retrieving && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
                 </div>

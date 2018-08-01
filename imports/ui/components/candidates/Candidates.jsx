@@ -263,7 +263,7 @@ class Teams extends React.Component {
     render() {
         return (
             <div className="pull-left main">
-                <div className="table-responsive">
+                <div className="table-responsive" style={{ marginBottom: '10px' }}>
                     <BootstrapTable data={this.props.validCandidates} striped hover maxHeight='calc(100% - 60px)'>
                         <TableHeaderColumn isKey dataField='name'
                             filter={{ type: 'RegexFilter', placeholder: 'Members' }}
@@ -274,14 +274,14 @@ class Teams extends React.Component {
                         <TableHeaderColumn dataField='email' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Please enter a First Name'
-                        }} dataSort>Email</TableHeaderColumn>
+                        }} width={"150"} dataSort>Email</TableHeaderColumn>
                         <TableHeaderColumn dataField='number'
                             filter={{ type: 'RegexFilter', placeholder: 'Phone Number' }}
                             width={"170"} dataSort>Phone Number</TableHeaderColumn>
                         <TableHeaderColumn dataField='address' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Enter Email Add'
-                        }} dataSort>Address</TableHeaderColumn>
+                        }} width={"150"} dataSort>Address</TableHeaderColumn>
                         <TableHeaderColumn dataField='joinedDt'
                             filter={{ type: 'RegexFilter', placeholder: 'Date Time' }}
                             width={"150"} dataSort>Joined Date</TableHeaderColumn>
@@ -361,7 +361,7 @@ class Teams extends React.Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.editCandidateInfo}
-                    onRequestClose={()=>{this.setState({editCandidateInfo: false})}}
+                    onRequestClose={() => { this.setState({ editCandidateInfo: false }) }}
                     style={this.styleSet2}
                     contentLabel="Change Status"
                 >

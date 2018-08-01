@@ -90,7 +90,7 @@ if (Meteor.isServer) {
                 ]
             }))
                 throw new Meteor.Error('BAD', 'Duplicate contact');
-            return CandidateManager.updateCandidateInfo(data.contact, data);
+            return CandidateManager.updateCandidateInfo(data.contact, data, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -102,7 +102,7 @@ if (Meteor.isServer) {
             check(contact, Mongo.ObjectID);
             check(info, String);
             check(value, String);
-            return CandidateManager.updateCandidateSelectedInfo(contact, info, value);
+            return CandidateManager.updateCandidateSelectedInfo(contact, info, value, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -115,7 +115,7 @@ if (Meteor.isServer) {
             check(info, String);
             check(value, String);
             let info_trim = info.replace(/_notes|_file/gi, '');
-            return CandidateManager.updateCandidateSelectedInfo(contact, info, value, `${Meteor.user().username} attached a file / notes to ${info_trim}`);
+            return CandidateManager.updateCandidateSelectedInfo(contact, info, value, `${Meteor.user().username} attached a file / notes to ${info_trim}`, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -127,7 +127,7 @@ if (Meteor.isServer) {
             check(contact, Mongo.ObjectID);
             check(info, String);
             let info_trim = info.replace(/_notes|_file/gi, '');
-            return CandidateManager.updateCandidateSelectedRemoveFile(contact, info, `${Meteor.user().username} removed a file to ${info_trim}`);
+            return CandidateManager.updateCandidateSelectedRemoveFile(contact, info, `${Meteor.user().username} removed a file to ${info_trim}`, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
@@ -137,7 +137,7 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(data, Object);
-            return CandidateManager.updateCandidateStats(contact, data);
+            return CandidateManager.updateCandidateStats(contact, data, this.userId);
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

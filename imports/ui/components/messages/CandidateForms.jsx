@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { CandidateFormData, FormsCandidatesDataDB } from '../../../api/forms';
 import { ROUTES } from '../../../api/classes/Const';
 import moment from 'moment';
+import Util from '../../../api/classes/Utilities';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal/components/Modal';
 import Button from '../extras/Button';
@@ -103,7 +104,7 @@ class CandidateForms extends Component {
             formData.data.forEach((data, i) => {
                 arr.push(
                     <span key={i}>
-                        <b>{data.label}</b> {data.val} <br />
+                        <b>{Util.strip(data.label)}</b> {Util.strip(data.val)} <br />
                     </span>
                 )
             });

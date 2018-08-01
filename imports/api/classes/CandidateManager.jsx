@@ -47,11 +47,12 @@ export default class CandidateManager {
             }
         return (this.json.contact = CandidatesDB.insert(this.json));
     }
-    static updateCandidateInfo(contact, data) {
+    static updateCandidateInfo(contact, data, userId) {
         let candidate = CandidatesDB.findOne({ contact: contact });
         let joinedDate = candidate.joinedDate;
+        let updatedTimestamp = moment().valueOf();
         if (!candidate.joinedDate)
-            joinedDate = moment().valueOf();
+            joinedDate = updatedTimestamp;
         return CandidatesDB.update({ contact: contact }, {
             $set: {
                 'name': data.name,
@@ -64,37 +65,48 @@ export default class CandidateManager {
                 'email': data.email,
                 'remarks': data.remarks,
                 'number': data.number && Util.numberValidator(data.number).isValid ? Util.numberValidator(data.number).e164Format : '',
-                joinedDate: joinedDate
+                joinedDate: joinedDate,
+                updatedTimestamp,
+                updatedBy: userId
             }
         });
     }
-    static updateCandidateSelectedInfo(contact, info, value, text) {
+    static updateCandidateSelectedInfo(contact, info, value, text, userId) {
         let set = {};
+        let updatedTimestamp = moment().valueOf();
         set[info] = value;
+        set['updatedTimestamp'] = updatedTimestamp;
+        set['updatedBy'] = userId;
         let info_trim = info.replace(/_notes|_file/gi, '');
         let obj = {
             $set: set
         };
         if (text)
-            obj['$push'] = { [info_trim + '_history']: { text, date: moment().valueOf() } };
+            obj['$push'] = { [info_trim + '_history']: { text, date: updatedTimestamp } };
         return CandidatesDB.update({ _id: contact }, obj);
     }
-    static updateCandidateSelectedRemoveFile(contact, info, text) {
+    static updateCandidateSelectedRemoveFile(contact, info, text, userId) {
         let set = {};
+        let updatedTimestamp = moment().valueOf();
         set[info] = '';
+        set['updatedTimestamp'] = updatedTimestamp;
+        set['updatedBy'] = userId;
         let info_trim = info.replace(/_notes|_file/gi, '');
         let obj = {
             $set: set
         };
         if (text)
-            obj['$push'] = { [info_trim + '_history']: { text, date: moment().valueOf() } };
+            obj['$push'] = { [info_trim + '_history']: { text, date: updatedTimestamp } };
         return CandidatesDB.update({ _id: contact }, obj);
     }
-    static updateCandidateStats(contact, data) {
+    static updateCandidateStats(contact, data, userId) {
         let temp = {};
+        let updatedTimestamp = moment().valueOf();
         Object.keys(data).forEach((item) => {
             temp[item] = data[item];
         });
+        temp['updatedTimestamp'] = updatedTimestamp;
+        temp['updatedBy'] = userId;
         return CandidatesDB.update({ contact: contact }, {
             $set: temp
         });

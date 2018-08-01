@@ -3,6 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { FormsDPub, FormsDPub2 } from '../../../api/forms';
 import { matchPath } from 'react-router';
 import PropTypes from 'prop-types';
+import Util from '../../../api/classes/Utilities';
 
 class FormDataTable extends Component {
     constructor(props) {
@@ -15,7 +16,7 @@ class FormDataTable extends Component {
             return null;
         return this.props.headers.map((item, index) => {
             return (
-                <th key={index} scope="col">{item}</th>
+                <th key={index} scope="col">{Util.strip(item)}</th>
             );
         });
     }
@@ -27,7 +28,7 @@ class FormDataTable extends Component {
             let itemValue = data.data.filter((dataItem) => dataItem.label === item)[0];
             return (
                 <td key={index}>
-                    {itemValue ? data.data.filter((dataItem) => dataItem.label === item)[0].val : 'N/A'}
+                    {Util.strip(itemValue ? data.data.filter((dataItem) => dataItem.label === item)[0].val : 'N/A')}
                 </td>
             );
         });
