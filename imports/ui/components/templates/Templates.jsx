@@ -107,7 +107,7 @@ class Templates extends Component {
                 <button type="button" className="btn btn-default" data-tip="Templates" href="#" onClick={this.toggleModal}>
                     Templates
                 </button>
-                <Modal isOpen={this.state.templates} contentLabel="TemplatesModal" style={this.styleSet}>
+                <Modal isOpen={this.state.templates} onRequestClose={this.toggleModal} contentLabel="TemplatesModal" style={this.styleSet}>
                     <div className="panel panel-primary" onSubmit={this.save}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -180,6 +180,7 @@ class Templates extends Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.confirmation}
+                    onRequestClose={this.confirmationModal}
                     style={this.styleSetSmall}
                     contentLabel="TemplateConfirmationModal"
                 >

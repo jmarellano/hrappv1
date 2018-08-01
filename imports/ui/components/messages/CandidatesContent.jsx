@@ -110,7 +110,7 @@ class CandidatesContent extends React.Component {
                         }
                     </div>
                 </div>
-                <Modal isOpen={this.state.map} contentLabel="MapModal" style={this.styleSet}>
+                <Modal isOpen={this.state.map} onRequestClose={this.toggle} contentLabel="MapModal" style={this.styleSet}>
                     <form className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

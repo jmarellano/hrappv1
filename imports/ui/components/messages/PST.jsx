@@ -143,7 +143,7 @@ class PST extends Component {
                 <a className="nav-link" href="#" data-tip="Import PST" onClick={this.toggleModal} disabled={this.props.user.importing}>
                     {!this.props.user.importing ? <i className="fa fa-2x fa-upload" /> : <i className="fa fa-2x fa-spin fa-spinner" />}
                 </a>
-                <Modal isOpen={this.state.pst} contentLabel="SettingsModal" style={this.styleSet}>
+                <Modal isOpen={this.state.pst} onRequestClose={this.toggleModal} contentLabel="SettingsModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

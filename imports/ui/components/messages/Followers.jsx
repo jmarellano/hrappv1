@@ -121,7 +121,7 @@ class Followers extends Component {
             <button className="link badge badge-success text-light pull-right ml-1 mr-1" data-tip="View followers" onClick={this.toggleModal}>
                 <i className="fa fa-eye" />&nbsp;
                 {this.props.candidate.followers ? this.props.candidate.followers.length : 0} Followers
-                <Modal isOpen={this.state.follow} contentLabel="FollowModal" style={this.styleSet}>
+                <Modal isOpen={this.state.follow} onRequestClose={this.toggleModal} contentLabel="FollowModal" style={this.styleSet}>
                     <form className="panel panel-primary" onSubmit={null}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -159,6 +159,7 @@ class Followers extends Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.confirmation}
+                    onRequestClose={this.toggleConfirmation}
                     style={this.styleSetSmall}
                     contentLabel="FollowConfirmationModal"
                 >

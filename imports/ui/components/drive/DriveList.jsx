@@ -285,7 +285,7 @@ class DriveList extends React.Component {
                         {this.renderFiles()}
                     </tbody>
                 </table>
-                <Modal isOpen={this.state.preview} contentLabel="PreviewModal" style={this.styleSet}>
+                <Modal isOpen={this.state.preview} onRequestClose={this.onClose} contentLabel="PreviewModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -304,7 +304,7 @@ class DriveList extends React.Component {
                         </div>
                     </div>
                 </Modal>
-                <Modal isOpen={this.state.share} contentLabel="ShareModal" style={this.styleSet}>
+                <Modal isOpen={this.state.share} onRequestClose={this.onClose} contentLabel="ShareModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -330,7 +330,7 @@ class DriveList extends React.Component {
                         </form>
                     </div>
                 </Modal>
-                <Modal isOpen={this.state.rename} contentLabel="RenameModal" style={this.styleSetSmall}>
+                <Modal isOpen={this.state.rename} onRequestClose={this.onClose} contentLabel="RenameModal" style={this.styleSetSmall}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -350,7 +350,7 @@ class DriveList extends React.Component {
                         </form>
                     </div>
                 </Modal>
-                <Modal isOpen={this.state.trash} contentLabel="SettingsModal" style={this.styleSetSmall}>
+                <Modal isOpen={this.state.trash} onRequestClose={this.onClose} contentLabel="SettingsModal" style={this.styleSetSmall}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

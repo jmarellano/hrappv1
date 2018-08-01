@@ -447,7 +447,7 @@ class Stats extends Component {
             return null;
         return (
             <a className="link badge badge-success text-light mr-1" data-tip="Edit Stats"><i className="fa fa-tasks" onClick={this.toggleModal} />
-                <Modal isOpen={this.state.stats} contentLabel="StatsModal" style={this.styleSet}>
+                <Modal isOpen={this.state.stats} onRequestClose={this.toggleModal} contentLabel="StatsModal" style={this.styleSet}>
                     <form className="panel panel-primary" onSubmit={this.save}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -487,7 +487,7 @@ class Stats extends Component {
                         </div>
                     </form>
                 </Modal>
-                <Modal isOpen={this.state.notes} contentLabel="NotesModal" style={this.styleSetSmall}>
+                <Modal isOpen={this.state.notes} onRequestClose={this.toggleNotes.bind(this, this.state.selectedStat)} contentLabel="NotesModal" style={this.styleSetSmall}>
                     <form className="panel panel-primary" onSubmit={this.saveNotes}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -513,7 +513,7 @@ class Stats extends Component {
                         </div>
                     </form>
                 </Modal>
-                <Modal isOpen={this.state.confirmation} contentLabel="NotesModal" style={this.styleSetSmall}>
+                <Modal isOpen={this.state.confirmation} onRequestClose={this.toggleConfirmation} contentLabel="NotesModal" style={this.styleSetSmall}>
                     <form className="panel panel-primary" onSubmit={this.removeFile}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -539,7 +539,7 @@ class Stats extends Component {
                         </div>
                     </form>
                 </Modal>
-                <Modal isOpen={this.state.history} contentLabel="NotesModal" style={this.styleSetSmall}>
+                <Modal isOpen={this.state.history} onRequestClose={this.toggleHistory} contentLabel="NotesModal" style={this.styleSetSmall}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

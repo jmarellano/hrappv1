@@ -70,6 +70,7 @@ class Timezone extends React.Component {
                 <i className="fa fa-2x fa-globe" aria-hidden="true" />
                 <Modal
                     isOpen={!!this.state.timezoneModal}
+                    onRequestClose={this.setTimezone.bind(this, false)}
                     style={this.styleSet}
                     contentLabel="TimezoneModal"
                 >

@@ -189,7 +189,7 @@ class Record extends Component {
                 <a className={class_} data-tip="Calendar" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-calendar" aria-hidden="true" />
                 </a>
-                <Modal isOpen={this.state.isOpen} contentLabel="RecordStatModal" style={this.styleSet}>
+                <Modal isOpen={this.state.isOpen} onRequestClose={this.toggleModal} contentLabel="RecordStatModal" style={this.styleSet}>
                     <div className="panel panel-primary maxHeight">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -224,7 +224,7 @@ class Record extends Component {
                                 eventPropGetter={this.styleGetter}
                             />
                         </div>
-                        <Modal isOpen={this.state.isAppointmentOpen} contentLabel="RecordStatModal" style={this.styleSet2}>
+                        <Modal isOpen={this.state.isAppointmentOpen} onRequestClose={this.toggleModal2} contentLabel="RecordStatModal" style={this.styleSet2}>
                             <div className="panel panel-primary maxHeight">
                                 <div className="panel-heading bg-secondary text-white p-2">
                                     <div className="panel-title">
@@ -240,7 +240,9 @@ class Record extends Component {
                                 {this.state.selectAppointmentInfo}
                             </div>
                         </Modal>
-                        <Modal isOpen={this.state.addAppointment} contentLabel="RecordStatModal" style={this.styleSet2}>
+                        <Modal isOpen={this.state.addAppointment} onRequestClose={ () => {
+                            this.setState({ addAppointment: false })
+                        } } contentLabel="RecordStatModal" style={this.styleSet2}>
                             <div className="panel panel-primary maxHeight">
                                 <div className="panel-heading bg-secondary text-white p-2">
                                     <div className="panel-title">

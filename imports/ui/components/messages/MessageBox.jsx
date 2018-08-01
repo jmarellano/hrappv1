@@ -248,6 +248,7 @@ class MessageBox extends React.Component {
                 <i className="fa fa-2x fa-plus" aria-hidden="true" />
                 <Modal
                     isOpen={this.state.messageModal}
+                    onRequestClose={this.setMessageBox.bind(this, false)}
                     style={this.state.event ? this.styleSet2 : this.styleSet}
                     contentLabel="MessageModal"
                 >

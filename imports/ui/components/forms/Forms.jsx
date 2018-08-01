@@ -115,7 +115,7 @@ class Forms extends Component {
                 <a className="nav-link" data-tip="Forms" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-th-list" />
                 </a>
-                <Modal isOpen={this.state.forms} contentLabel="FormsModal" style={this.styleSet}>
+                <Modal isOpen={this.state.forms} onRequestClose={this.toggleModal} contentLabel="FormsModal" style={this.styleSet}>
                     <div className="panel panel-primary" onSubmit={this.save}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -191,6 +191,7 @@ class Forms extends Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.confirmation}
+                    onRequestClose={this.confirmationModal}
                     style={this.styleSetSmall}
                     contentLabel="FormConfirmationModal"
                 >

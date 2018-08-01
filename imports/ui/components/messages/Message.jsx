@@ -283,7 +283,7 @@ class Message extends React.Component {
                         </div>
                     }
                 </div>
-                <Modal isOpen={this.state.confirmation} contentLabel="ConfirmationModal" style={this.styleSet}>
+                <Modal isOpen={this.state.confirmation} onRequestClose={this.toggleConfirmation} contentLabel="ConfirmationModal" style={this.styleSet}>
                     <form className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

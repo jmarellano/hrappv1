@@ -214,7 +214,7 @@ class FormViewer extends React.Component {
                         </div>
                     </div>
                 </form>
-                <Modal isOpen={this.state.share} contentLabel="FormShareModal" style={this.styleSet}>
+                <Modal isOpen={this.state.share} onRequestClose={this.toggleModal} contentLabel="FormShareModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

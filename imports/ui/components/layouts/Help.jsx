@@ -66,7 +66,7 @@ class Help extends Component {
         return (
             <a className="nav-link" href="#" data-tip="Help" onClick={this.toggleModal}>
                 <i className="fa fa-2x fa-question-circle" aria-hidden="true" />
-                <Modal isOpen={this.state.help} contentLabel="SettingsModal" style={this.styleSet}>
+                <Modal isOpen={this.state.help} onRequestClose={this.toggleModal} contentLabel="SettingsModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

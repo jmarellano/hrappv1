@@ -291,6 +291,7 @@ class Category extends React.Component {
                 </a>
                 <Modal
                     isOpen={this.state.categoryModal}
+                    onRequestClose={this.toggleModal}
                     contentLabel="CategoryModal"
                     style={this.styleSet}
                 >
@@ -696,6 +697,7 @@ class Category extends React.Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.confirmation}
+                    onRequestClose={this.confirmationModal}
                     style={this.styleSetSmall}
                     contentLabel="CategoryModal"
                 >
