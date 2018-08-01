@@ -383,7 +383,7 @@ class Drive extends React.Component {
 
     render() {
         return (
-            <div id="drive" className="pull-left">
+            <div id="drive" className="pull-left main">
                 {
                     !this.state.signin &&
                     <div className="container bg-secondary">
@@ -542,9 +542,9 @@ class Drive extends React.Component {
                         }
                     </div>
                 }
-                <Modal isOpen={this.state.signin} onRequestClose={ () => {
+                <Modal isOpen={this.state.signin} onRequestClose={() => {
                     this.setState({ signin: false })
-                } } contentLabel="SignInModal" style={this.styleSet}>
+                }} contentLabel="SignInModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
