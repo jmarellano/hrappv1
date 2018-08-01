@@ -173,7 +173,7 @@ class Record extends Component {
                 <a className={class_} data-tip="Task List" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-tasks" aria-hidden="true" />
                 </a>
-                <Modal isOpen={this.state.isOpen} contentLabel="RecordStatModal" style={this.styleSet}>
+                <Modal isOpen={this.state.isOpen} onRequestClose={this.toggleModal} contentLabel="RecordStatModal" style={this.styleSet}>
                     <div className="panel panel-primary maxHeight">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -194,6 +194,11 @@ class Record extends Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.changeStatus}
+                    onRequestClose={() => {
+                        this.setState({
+                            changeStatus: false,
+                        });
+                    }}
                     style={this.styleSet2}
                     contentLabel="Change Status"
                 >

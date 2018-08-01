@@ -79,7 +79,7 @@ class Global extends Component {
                 <a className="nav-link" data-tip="Global Settings" href="#" onClick={this.openSettings}>
                     <i className="fa fa-2x fa-cog" aria-hidden="true" />
                 </a>
-                <Modal isOpen={this.state.settings} contentLabel="SettingsModal" style={this.styleSet}>
+                <Modal isOpen={this.state.settings} onRequestClose={this.openSettings} contentLabel="SettingsModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

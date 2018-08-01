@@ -266,6 +266,7 @@ class Emails extends Component {
                 </div>
                 <Modal
                     isOpen={this.state.create}
+                    onRequestClose={this.close}
                     style={this.styleSet}
                     contentLabel="EmailModal"
                 >
@@ -325,6 +326,7 @@ class Emails extends Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.remove}
+                    onRequestClose={this.closeRemove}
                     style={this.styleSetSmall}
                     contentLabel="RemoveModal"
                 >
@@ -350,6 +352,7 @@ class Emails extends Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.first}
+                    onRequestClose={this.firstClose}
                     style={this.styleSetSmall}
                     contentLabel="FirstModal"
                 >

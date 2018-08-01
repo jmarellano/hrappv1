@@ -74,7 +74,7 @@ class Transfer extends Component {
                 data-tip="Transfer Claim"
                 onClick={this.toggleModal}>
                 <i className="fa fa-exchange" /> Transfer
-                <Modal isOpen={this.state.transfer} contentLabel="TransferModal" style={this.styleSet}>
+                <Modal isOpen={this.state.transfer} onRequestClose={this.toggleModal} contentLabel="TransferModal" style={this.styleSet}>
                     <form className="panel panel-primary" onSubmit={this.transferClaim}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

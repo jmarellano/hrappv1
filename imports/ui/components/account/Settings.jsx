@@ -72,7 +72,7 @@ class Settings extends Component {
                     <b className="ml-1">{this.props.user.username}</b>
                     <span className="text-light">[{this.props.user.getRole()}]</span>
                 </a>
-                <Modal isOpen={this.state.settings} contentLabel="SettingsModal" style={this.styleSet}>
+                <Modal isOpen={this.state.settings} onRequestClose={this.toggleModal} contentLabel="SettingsModal" style={this.styleSet}>
                     <form className="panel panel-primary" onSubmit={this.save}>
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

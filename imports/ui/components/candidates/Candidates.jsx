@@ -309,6 +309,13 @@ class Teams extends React.Component {
                 </div>
                 <Modal
                     isOpen={this.state.changeStatus || this.state.changeSite || this.state.changeReApplicantStatus}
+                    onRequestClose={() => {
+                        this.setState({
+                            changeStatus: false,
+                            changeSite: false,
+                            changeReApplicantStatus: false
+                        });
+                    }}
                     style={this.styleSet}
                     contentLabel="Change Status"
                 >
@@ -354,6 +361,7 @@ class Teams extends React.Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.editCandidateInfo}
+                    onRequestClose={()=>{this.setState({editCandidateInfo: false})}}
                     style={this.styleSet2}
                     contentLabel="Change Status"
                 >

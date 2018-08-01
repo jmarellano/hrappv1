@@ -192,6 +192,7 @@ class Teams extends React.Component {
                 </div>
                 <Modal
                     isOpen={this.state.role}
+                    onRequestClose={this.roleModal}
                     style={this.styleSet}
                     contentLabel="RoleModal"
                 >
@@ -218,6 +219,7 @@ class Teams extends React.Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.retire}
+                    onRequestClose={this.retireModal}
                     style={this.styleSet}
                     contentLabel="RetireModal"
                 >
@@ -243,6 +245,7 @@ class Teams extends React.Component {
                 </Modal>
                 <Modal
                     isOpen={this.state.remove}
+                    onRequestClose={this.removeModal}
                     style={this.styleSet}
                     contentLabel="RemoveModal"
                 >

@@ -406,7 +406,7 @@ class Record extends Component {
                 <a className="nav-link" data-tip="Record Job Posting" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-edit" aria-hidden="true" />
                 </a>
-                <Modal isOpen={this.state.isOpen} contentLabel="RecordStatModal" style={this.styleSet}>
+                <Modal isOpen={this.state.isOpen}  onRequestClose={this.toggleModal} contentLabel="RecordStatModal" style={this.styleSet} >
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
@@ -563,7 +563,7 @@ class Record extends Component {
                     </div>
                     <ReactTooltip />
                 </Modal>
-                <Modal isOpen={this.state.modal2Open} contentLabel="RecordStatModal" style={this.styleSet2}>
+                <Modal isOpen={this.state.modal2Open} onRequestClose={this.toggleModal2} contentLabel="RecordStatModal" style={this.styleSet2}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">

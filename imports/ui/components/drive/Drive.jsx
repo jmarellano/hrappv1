@@ -542,7 +542,9 @@ class Drive extends React.Component {
                         }
                     </div>
                 }
-                <Modal isOpen={this.state.signin} contentLabel="SignInModal" style={this.styleSet}>
+                <Modal isOpen={this.state.signin} onRequestClose={ () => {
+                    this.setState({ signin: false })
+                } } contentLabel="SignInModal" style={this.styleSet}>
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
