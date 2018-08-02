@@ -147,8 +147,9 @@ class Candidate {
 
     getSubject() {
         let subject = this.lastMessage.subject || this.lastMessage.html;
-        if(subject)
-            return Util.trunc(subject ? subject : this.lastMessage.text, 22);
+        subject = Util.trunc(subject ? subject : this.lastMessage.text, 22);
+        if (subject)
+            return subject;
     }
 
     getContact() {
