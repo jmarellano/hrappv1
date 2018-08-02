@@ -24,7 +24,8 @@ class CandidateMessages extends React.Component {
             bcc: '',
             cc: '',
             sender: props.user.default_email || -1,
-            text: '',
+            editorHtml: '',
+            theme: 'snow',
             files: [],
             uploading: false,
             reply: false,
@@ -74,6 +75,26 @@ class CandidateMessages extends React.Component {
         this.sortDate = this.sortDate.bind(this);
         this.quillRef = null;
         this.reactQuillRef = null;
+        this.modules = {
+            toolbar: [
+                [{ 'header': '1'}, {'header': '2'}],
+                [{size: []}],
+                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                [{'list': 'ordered'}, {'list': 'bullet'},
+                    {'indent': '-1'}, {'indent': '+1'}],
+                ['link'],
+                ['clean']
+            ],
+            clipboard: {
+                matchVisual: false,
+            }
+        };
+        this.formats = [
+                'header', 'size',
+            'bold', 'italic', 'underline', 'strike', 'blockquote',
+            'list', 'bullet', 'indent',
+            'link',
+        ];
     }
 
     componentDidMount() {
@@ -107,7 +128,7 @@ class CandidateMessages extends React.Component {
         value = value.replaceAll('{{applicant_name}}', name);
         value = value.replaceAll('{{application_position}}', category);
         this.quillRef.setText(value);
-        this.setState({ text: value });
+        this.setState({ editorHtml: value });
     }
 
     attachQuillRefs() {
@@ -212,7 +233,7 @@ class CandidateMessages extends React.Component {
                     cc: this.state.cc,
                     sender: this.props.user.connectedEmails[this.state.sender],
                     text: this.quillRef.getText(0),
-                    html: this.state.text,
+                    html: this.state.editorHtml,
                     files: this.state.files,
                     event: this.state.event,
                     startEvent: this.state.startEvent,
@@ -249,7 +270,7 @@ class CandidateMessages extends React.Component {
                         bcc: '',
                         cc: '',
                         sender: this.props.user.default_email || -1,
-                        text: '',
+                        editorHtml: '',
                         files: [],
                         uploading: false,
                         type: MESSAGES_TYPE.EMAIL,
@@ -263,7 +284,7 @@ class CandidateMessages extends React.Component {
     }
 
     handleChange(value) {
-        this.setState({ text: value })
+        this.setState({ editorHtml: value })
     }
 
     renderMessages() {
@@ -358,6 +379,7 @@ class CandidateMessages extends React.Component {
                                                 className="form-control"
                                                 placeholder="BCC"
                                                 name="bcc"
+                                                required
                                                 onChange={this.handleChangeInput}
                                             />
                                         }
@@ -370,17 +392,23 @@ class CandidateMessages extends React.Component {
                                                 className="form-control"
                                                 placeholder="CC"
                                                 name="cc"
+                                                required
                                                 onChange={this.handleChangeInput}
                                             />
                                         }
                                     </div>
                                 </div>
-                                <div className="row p-3 m-0 mb-4">
+                                <div className="row p-3 m-0 mb-4 candidateEditor">
                                     <ReactQuill
                                         ref={(el) => { this.reactQuillRef = el }}
                                         style={{ width: '100%', height: '220px' }}
-                                        value={this.state.text}
+                                        value={this.state.editorHtml}
                                         onChange={this.handleChange}
+                                        theme={this.state.theme}
+                                        modules={this.modules}
+                                        formats={this.formats}
+                                        bounds={'.candidateEditor'}
+                                        placeholder={"Enter Message Here"}
                                     />
                                 </div>
                                 {
