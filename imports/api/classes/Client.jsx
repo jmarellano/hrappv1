@@ -212,7 +212,6 @@ class Drive {
     }
     sync(drive, callback) {
         let pageToken = '';
-        let syncI = 0;
         let syncFunc = () => {
             let options = {
                 'method': 'GET',
@@ -243,7 +242,6 @@ class Drive {
                     else {
                         if (pageToken)
                             setTimeout(() => {
-                                syncI++;
                                 syncFunc();
                             }, Meteor.settings.public.oAuth.google.interval);
                         else
@@ -283,7 +281,7 @@ class Drive {
                     }
                 };
                 request = this.client.request(reqOptions);
-                request.execute((patchResult) => {
+                request.execute(() => {
                     Meteor.call(DriveCopyFile, res.id, res.name, parents, (err, result) => {
                         if (!err) {
                             reqOptions = {
@@ -294,7 +292,7 @@ class Drive {
                                 }
                             };
                             request = this.client.request(reqOptions);
-                            request.execute((deleteResult) => {
+                            request.execute(() => {
                                 reqOptions = {
                                     'method': 'PATCH',
                                     'path': `/drive/v3/files/${result.data.id}`,
@@ -308,7 +306,7 @@ class Drive {
                                     }
                                 };
                                 request = this.client.request(reqOptions);
-                                request.execute((permissionResult) => {
+                                request.execute(() => {
                                 });
                             });
                         }

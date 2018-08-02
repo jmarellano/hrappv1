@@ -98,7 +98,7 @@ class DriveList extends React.Component {
     renaming(e) {
         e.preventDefault();
         this.setState({ processing: true });
-        this.props.Drive.rename({ name: this.state.name, fileId: this.state.file.id }, (err) => {
+        this.props.Drive.rename({ name: this.state.name, fileId: this.state.file.id }, () => {
             this.setState({ processing: false, rename: false });
             this.props.getFiles(null, true);
         });
@@ -146,6 +146,17 @@ class DriveList extends React.Component {
     selectFile(file) {
         this.props.selectFile(file);
     }
+    shareLink(file) {
+        document.addEventListener('copy', (event) => {
+            event.preventDefault();
+            let clip = event.clipboardData;
+            if (clip) {
+                clip.setData('text/plain', file.webViewLink);
+                Bert.alert('Link copied to clipboard', 'success', 'growl-top-right');
+            }
+        });
+        document.execCommand('copy');
+    }
     renderFiles() {
         return this.props.files.map((file, index) => {
             if (!file)
@@ -188,6 +199,12 @@ class DriveList extends React.Component {
                                     className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
                                     onClick={this.share.bind(this, file)}>
                                     <i className="fa fa-user-plus" /> Share
+                                </button>
+                                <button
+                                    disabled={!file.capabilities.canShare || !file.webViewLink}
+                                    className={`btn btn-sm m-1 ${!file.capabilities.canShare || !file.webViewLink ? 'btn-secondary disabled' : 'btn-info'}`}
+                                    onClick={this.shareLink.bind(this, file)}>
+                                    <i className="fa fa-user-plus" /> Shareable Link
                                 </button>
                             </ItemEllipsis>
                         </td>
@@ -249,6 +266,12 @@ class DriveList extends React.Component {
                                 className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
                                 onClick={this.share.bind(this, file)}>
                                 <i className="fa fa-user-plus" /> Share
+                            </button>
+                            <button
+                                disabled={!file.capabilities.canShare || !file.webViewLink}
+                                className={`btn btn-sm m-1 ${!file.capabilities.canShare || !file.webViewLink ? 'btn-secondary disabled' : 'btn-info'}`}
+                                onClick={this.shareLink.bind(this, file)}>
+                                <i className="fa fa-user-plus" /> Shareable Link
                             </button>
                         </ItemEllipsis>
                     </td>
