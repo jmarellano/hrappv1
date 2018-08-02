@@ -1,8 +1,9 @@
 import { Mongo } from 'meteor/mongo';
 import { CategoriesDB } from '../categories';
-import { CandidatesDB } from '../candidates';
 import { SettingsDB, PostingDB, PostingSitesDB, ReportsDB } from '../settings';
 import { CANDIDATE_STATUS, COUNTRIES } from './Const';
+import { CandidatesDB } from '../candidates';
+
 import moment from 'moment-timezone';
 
 export default class SettingManager {
@@ -82,7 +83,7 @@ export default class SettingManager {
             report[1]
         ];
     }
-    static generateReport(dayStart, dayEnd, country = null) {
+    static generateReport(dayStart, dayEnd, PostDB, country = null) {
         let categories = CategoriesDB.find().fetch();
         let positions = {};
         let positionsLabel = [];
@@ -111,7 +112,7 @@ export default class SettingManager {
             query['country'] = country.toString();
             query2['country'] = COUNTRIES[country.toString()].name;
         }
-        let posts2 = PostingDB.find(query, { sort: { timestamp: 1 } }).fetch();
+        let posts2 = PostDB.find(query, { sort: { timestamp: 1 } }).fetch();
         let newApplicants2 = CandidatesDB.find(query2, { sort: { joinedDate: 1 } }).fetch();
 
         let postData = [];

@@ -5,7 +5,6 @@ import SettingManager from './classes/SettingManager';
 import { isPermitted, ROLES } from "./classes/Const";
 import moment from "moment-timezone";
 import { AppointmentDB } from "./messages";
-
 export const SettingsPub = 'settings';
 export const PostingSitesPub = 'posting_sites';
 export const PostPub = 'posts';
@@ -45,7 +44,7 @@ if (Meteor.isServer) {
     functions[GetReports] = function (type, start, country) {
         try {
             check(this.userId, String);
-            return SettingManager.getReports(type, start, country);
+            return SettingManager.getReports(type, start, PostingDB, country);
         } catch (err) {
             console.error(`Method ${GetReports} error:`, err);
             throw new Meteor.Error(403, 'Not authorized');
