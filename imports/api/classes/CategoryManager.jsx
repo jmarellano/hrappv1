@@ -22,6 +22,23 @@ export default class CategoryManager {
             TEST_MOCK: obj.TEST_MOCK || 0,
             TEST_SIMULATION: obj.TEST_SIMULATION || 0,
             others: obj.others || 0,
+            resume_max: obj.resume_max || 100,
+            portfolio_max: obj.portfolio_max || 100,
+            disc_max: obj.disc_max || 100,
+            values_max: obj.values_max || 100,
+            iq_max: obj.iq_max || 100,
+            TEST_METEOR_max: obj.TEST_METEOR_max || 100,
+            TEST_LIVE_max: obj.TEST_LIVE_max || 100,
+            TEST_WRITING_max: obj.TEST_WRITING_max || 100,
+            VIDEO_max: obj.VIDEO_max || 100,
+            INTERVIEW_max: obj.INTERVIEW_max || 100,
+            MANAGER_max: obj.MANAGER_max || 100,
+            TEST_IMAGE_max: obj.TEST_IMAGE_max || 100,
+            TEST_CREATIVE_max: obj.TEST_CREATIVE_max || 100,
+            TEST_WEBFLOW_max: obj.TEST_WEBFLOW_max || 100,
+            TEST_MOCK_max: obj.TEST_MOCK_max || 100,
+            TEST_SIMULATION_max: obj.TEST_SIMULATION_max || 100,
+            others_max: obj.others_max || 100,
             technical: obj.technical || true,
             color: obj.color || '#ccc'
         };
@@ -32,7 +49,7 @@ export default class CategoryManager {
         this.json = obj;
     }
     flush() {
-        if (this.json._d) {
+        if (this.json._id) {
             if (CategoriesDB.update(this.json._id, this.json)) {
                 return;
             }

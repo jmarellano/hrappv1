@@ -35,6 +35,23 @@ class Category extends React.Component {
             TEST_MOCK: 0,
             TEST_SIMULATION: 0,
             others: 0,
+            resume_max: 0,
+            portfolio_max: 0,
+            disc_max: 0,
+            values_max: 0,
+            iq_max: 0,
+            TEST_METEOR_max: 0,
+            TEST_LIVE_max: 0,
+            TEST_WRITING_max: 0,
+            VIDEO_max: 0,
+            INTERVIEW_max: 0,
+            MANAGER_max: 0,
+            TEST_IMAGE_max: 0,
+            TEST_CREATIVE_max: 0,
+            TEST_WEBFLOW_max: 0,
+            TEST_MOCK_max: 0,
+            TEST_SIMULATION_max: 0,
+            others_max: 0,
             technical: "true",
             color: '#ccc'
         };
@@ -114,6 +131,23 @@ class Category extends React.Component {
             TEST_MOCK: category.TEST_MOCK,
             TEST_SIMULATION: category.TEST_SIMULATION,
             others: category.others,
+            resume_max: category.resume_max,
+            portfolio_max: category.portfolio_max,
+            disc_max: category.disc_max,
+            values_max: category.values_max,
+            iq_max: category.iq_max,
+            TEST_METEOR_max: category.TEST_METEOR_max,
+            TEST_LIVE_max: category.TEST_LIVE_max,
+            TEST_WRITING_max: category.TEST_WRITING_max,
+            VIDEO_max: category.VIDEO_max,
+            INTERVIEW_max: category.INTERVIEW_max,
+            MANAGER_max: category.MANAGER_max,
+            TEST_IMAGE_max: category.TEST_IMAGE_max,
+            TEST_CREATIVE_max: category.TEST_CREATIVE_max,
+            TEST_WEBFLOW_max: category.TEST_WEBFLOW_max,
+            TEST_MOCK_max: category.TEST_MOCK_max,
+            TEST_SIMULATION_max: category.TEST_SIMULATION_max,
+            others_max: category.others_max,
             technical: category.technical,
             color: category.color,
             category_id: category.id
@@ -171,6 +205,23 @@ class Category extends React.Component {
             TEST_MOCK: 0,
             TEST_SIMULATION: 0,
             others: 0,
+            resume_max: 0,
+            portfolio_max: 0,
+            disc_max: 0,
+            values_max: 0,
+            iq_max: 0,
+            TEST_METEOR_max: 0,
+            TEST_LIVE_max: 0,
+            TEST_WRITING_max: 0,
+            VIDEO_max: 0,
+            INTERVIEW_max: 0,
+            MANAGER_max: 0,
+            TEST_IMAGE_max: 0,
+            TEST_CREATIVE_max: 0,
+            TEST_WEBFLOW_max: 0,
+            TEST_MOCK_max: 0,
+            TEST_SIMULATION_max: 0,
+            others_max: 0,
             technical: "true",
             color: '#ccc',
             category_id: null
@@ -183,6 +234,7 @@ class Category extends React.Component {
         e.preventDefault();
         this.setState({ processing: true });
         let data = {
+            _id: this.state.category_id,
             category: this.state.category,
             resume: this.state.resume,
             portfolio: this.state.portfolio,
@@ -201,6 +253,23 @@ class Category extends React.Component {
             TEST_MOCK: this.state.TEST_MOCK,
             TEST_SIMULATION: this.state.TEST_SIMULATION,
             others: this.state.others,
+            resume_max: this.state.resume_max,
+            portfolio_max: this.state.portfolio_max,
+            disc_max: this.state.disc_max,
+            values_max: this.state.values_max,
+            iq_max: this.state.iq_max,
+            TEST_METEOR_max: this.state.TEST_METEOR_max,
+            TEST_LIVE_max: this.state.TEST_LIVE_max,
+            TEST_WRITING_max: this.state.TEST_WRITING_max,
+            VIDEO_max: this.state.VIDEO_max,
+            INTERVIEW_max: this.state.INTERVIEW_max,
+            MANAGER_max: this.state.MANAGER_max,
+            TEST_IMAGE_max: this.state.TEST_IMAGE_max,
+            TEST_CREATIVE_max: this.state.TEST_CREATIVE_max,
+            TEST_WEBFLOW_max: this.state.TEST_WEBFLOW_max,
+            TEST_MOCK_max: this.state.TEST_MOCK_max,
+            TEST_SIMULATION_max: this.state.TEST_SIMULATION_max,
+            others_max: this.state.others_max,
             technical: this.state.technical,
             color: this.state.color
         };
@@ -228,6 +297,23 @@ class Category extends React.Component {
                     TEST_MOCK: 0,
                     TEST_SIMULATION: 0,
                     others: 0,
+                    resume_max: 0,
+                    portfolio_max: 0,
+                    disc_max: 0,
+                    values_max: 0,
+                    iq_max: 0,
+                    TEST_METEOR_max: 0,
+                    TEST_LIVE_max: 0,
+                    TEST_WRITING_max: 0,
+                    VIDEO_max: 0,
+                    INTERVIEW_max: 0,
+                    MANAGER_max: 0,
+                    TEST_IMAGE_max: 0,
+                    TEST_CREATIVE_max: 0,
+                    TEST_WEBFLOW_max: 0,
+                    TEST_MOCK_max: 0,
+                    TEST_SIMULATION_max: 0,
+                    others_max: 0,
                     technical: "true",
                     color: '#ccc'
                 });
@@ -347,8 +433,7 @@ class Category extends React.Component {
                                             <tr className="filters">
                                                 <th>Status</th>
                                                 <th>Weight</th>
-                                                <th>Status</th>
-                                                <th>Weight</th>
+                                                <th>Max</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -371,6 +456,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.resume_max}
+                                                        name="resume_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     Portfolio
                                                     </td>
                                                 <td>
@@ -384,6 +485,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.portfolio_max}
+                                                        name="portfolio_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -407,6 +522,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.disc_max}
+                                                        name="disc_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     VALUES
                                                     </td>
                                                 <td>
@@ -420,6 +551,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.values_max}
+                                                        name="values_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -443,6 +588,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.iq_max}
+                                                        name="iq_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     METEOR
                                                     </td>
                                                 <td>
@@ -456,6 +617,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_METEOR_max}
+                                                        name="TEST_METEOR_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -479,6 +654,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_LIVE_max}
+                                                        name="TEST_LIVE_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     Writing
                                                     </td>
                                                 <td>
@@ -492,6 +683,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_WRITING_max}
+                                                        name="TEST_WRITING_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -515,6 +720,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.VIDEO_max}
+                                                        name="VIDEO_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     HR Interview
                                                     </td>
                                                 <td>
@@ -528,6 +749,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.INTERVIEW_max}
+                                                        name="INTERVIEW_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -551,6 +786,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.MANAGER_max}
+                                                        name="MANAGER_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        require
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     CAT 1
                                                     </td>
                                                 <td>
@@ -564,6 +815,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_IMAGE_max}
+                                                        name="TEST_IMAGE_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -587,6 +852,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_CREATIVE_max}
+                                                        name="TEST_CREATIVE_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     CAT 3
                                                     </td>
                                                 <td>
@@ -600,6 +881,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_WEBFLOW_max}
+                                                        name="TEST_WEBFLOW_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -623,6 +918,22 @@ class Category extends React.Component {
                                                     />
                                                 </td>
                                                 <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_MOCK_max}
+                                                        name="TEST_MOCK_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
+                                                        required
+                                                    />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
                                                     Simulation
                                                     </td>
                                                 <td>
@@ -636,6 +947,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.TEST_SIMULATION_max}
+                                                        name="TEST_SIMULATION_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>
@@ -655,6 +980,20 @@ class Category extends React.Component {
                                                         className="form-control"
                                                         onChange={this.handleChangeInput}
                                                         placeholder="%"
+                                                        required
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        min="0"
+                                                        value={this.state.others_max}
+                                                        name="others_max"
+                                                        max="100"
+                                                        step="0.1"
+                                                        className="form-control"
+                                                        onChange={this.handleChangeInput}
+                                                        placeholder="Points"
                                                         required
                                                     />
                                                 </td>

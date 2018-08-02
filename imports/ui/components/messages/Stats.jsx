@@ -411,8 +411,9 @@ class Stats extends Component {
                             }
                         </h4>
                     </label >
-                    <div className="col-sm-4 mt-2">
-                        <input type="number" min="0" step="0.1" className="form-control" name={item.name} value={this.state[item.name]} onChange={this.handleInputChange} />
+                    <div className="col-sm-4 mt-2 input-group">
+                        <input type="number" min="0" step="0.1" className="form-control" name={item.name} max={category[item.name + '_max']} value={this.state[item.name]} onChange={this.handleInputChange} />
+                        {!item.sub && <span className="input-group-addon mt-3">&nbsp; / {category[item.name + '_max']}</span>}
                     </div>
                 </div >
             );
