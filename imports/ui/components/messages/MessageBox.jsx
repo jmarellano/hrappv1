@@ -19,10 +19,11 @@ class MessageBox extends React.Component {
             type: MESSAGES_TYPE.EMAIL,
             contact: '',
             subject: '',
+            theme: 'snow',
             bcc: '',
             cc: '',
             sender: props.user.default_email || -1,
-            text: '',
+            editorHtml: '',
             files: [],
             uploading: false,
             event: false,
@@ -65,6 +66,26 @@ class MessageBox extends React.Component {
         this.template = this.template.bind(this);
         this.quillRef = null;
         this.reactQuillRef = null;
+        this.modules = {
+            toolbar: [
+                [{ 'header': '1'}, {'header': '2'}],
+                [{size: []}],
+                ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+                [{'list': 'ordered'}, {'list': 'bullet'},
+                    {'indent': '-1'}, {'indent': '+1'}],
+                ['link'],
+                ['clean']
+            ],
+            clipboard: {
+                matchVisual: false,
+            }
+        };
+        this.formats = [
+            'header', 'size',
+            'bold', 'italic', 'underline', 'strike', 'blockquote',
+            'list', 'bullet', 'indent',
+            'link',
+        ];
     }
 
     componentDidMount() {
@@ -99,7 +120,7 @@ class MessageBox extends React.Component {
         value = value.replaceAll('{{staff_username}}', staff.username);
         value = value.replaceAll('{{current_date}}', new Date().toDateString());
         this.quillRef.setText(value);
-        this.setState({ text: value });
+        this.setState({ editorHtml: value });
     }
 
     uploadFile(event) {
@@ -194,7 +215,7 @@ class MessageBox extends React.Component {
                     cc: this.state.cc,
                     sender: this.props.user.connectedEmails[this.state.sender],
                     text: this.quillRef.getText(0),
-                    html: this.state.text,
+                    html: this.state.editorHtml,
                     files: this.state.files,
                     event: this.state.event,
                     startEvent: this.state.startEvent,
@@ -224,7 +245,7 @@ class MessageBox extends React.Component {
                         bcc: '',
                         cc: '',
                         sender: this.props.user.default_email || -1,
-                        text: '',
+                        editorHtml: '',
                         files: [],
                         uploading: false,
                         type: MESSAGES_TYPE.EMAIL,
@@ -238,7 +259,7 @@ class MessageBox extends React.Component {
     }
 
     handleChange(value) {
-        this.setState({ text: value })
+        this.setState({ editorHtml: value })
     }
 
     render() {
@@ -296,8 +317,16 @@ class MessageBox extends React.Component {
                                     </select>
                                 </div>
                             </div>
-                            <div className="row p-3 m-0 mb-4">
-                                <ReactQuill ref={(el) => { this.reactQuillRef = el }} style={{ width: '100%', height: '220px' }} value={this.state.text} onChange={this.handleChange} />
+                            <div className="row p-3 m-0 mb-4 messageBoxEditor">
+                                <ReactQuill ref={ (el) => {
+                                    this.reactQuillRef = el
+                                } } style={ { width: '100%', height: '220px' } }
+                                            value={ this.state.editorHtml }
+                                            theme={ this.state.theme }
+                                            modules={ this.modules }
+                                            formats={ this.formats }
+                                            bounds={ '.messageBoxEditor' }
+                                            placeholder={ "Enter Message Here" } onChange={ this.handleChange }/>
                             </div>
                             {
                                 this.state.event &&
