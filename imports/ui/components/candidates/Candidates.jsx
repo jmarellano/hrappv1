@@ -2,6 +2,7 @@ import React from 'react';
 import { CANDIDATE_STATUS } from '../../../api/classes/Const';
 import { Mongo } from 'meteor/mongo';
 import { withTracker } from 'meteor/react-meteor-data';
+import { CSVLink } from 'react-csv';
 import Modal from '../extras/Modal';
 import Button from '../extras/Button';
 import PropTypes from 'prop-types';
@@ -12,6 +13,7 @@ import Candidate from "../../../api/classes/Candidate";
 import { PostingSitesDB } from "../../../api/settings";
 import CategoryClass from "../../../api/classes/Category";
 import { CategoriesDB } from "../../../api/categories";
+import moment from 'moment-timezone';
 
 class Teams extends React.Component {
     constructor() {
@@ -29,7 +31,20 @@ class Teams extends React.Component {
             unRetire: false,
             retiredUsers: [],
             selectedUserRole: null,
-            retrieving: true
+            retrieving: true,
+            csv: [[
+                'Name',
+                'Position',
+                'Email',
+                'Phone Number',
+                'Address',
+                'Joined Date',
+                'Claimed By',
+                'Status',
+                'Re-Applicant',
+                'Source',
+                'Country',
+            ]]
         };
         this.styleSet = {
             overlay: {
@@ -66,6 +81,46 @@ class Teams extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.editInfo = this.editInfo.bind(this);
         this.save = this.save.bind(this);
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.validCandidates !== prevProps.validCandidates) {
+            let csv = [[
+                'Name',
+                'Position',
+                'Email',
+                'Phone Number',
+                'Address',
+                'Joined Date',
+                'Claimed By',
+                'Status',
+                'Re-Applicant',
+                'Source',
+                'Country',
+            ]];
+            this.props.validCandidates.forEach((candidate) => {
+                let row = [];
+                let statusFriendly = '';
+                Object.keys(CANDIDATE_STATUS).forEach((status) => {
+                    if (CANDIDATE_STATUS[status] === parseInt(candidate.status))
+                        statusFriendly = status;
+                });
+                row.push(candidate.name);
+                row.push(candidate.category);
+                row.push(candidate.email);
+                row.push(candidate.number);
+                row.push(candidate.address);
+                row.push(candidate.joinedDt);
+                row.push(candidate.claimedBy);
+                row.push(statusFriendly);
+                row.push(candidate.isReApplicantFriendly)
+                row.push(candidate.source);
+                row.push(candidate.country);
+                csv.push(row);
+            });
+            this.setState({
+                csv
+            });
+        }
     }
     handleInputChange(event) {
         const target = event.target;
@@ -303,7 +358,11 @@ class Teams extends React.Component {
                         <TableHeaderColumn dataField='country'
                             filter={{ type: 'RegexFilter', placeholder: 'Country' }}
                             width={"100"} dataSort>Country</TableHeaderColumn>
-                        <TableHeaderColumn dataField='editInfo' dataFormat={this.editInfo} width={"70"}>Info</TableHeaderColumn>
+                        <TableHeaderColumn dataField='editInfo' dataFormat={this.editInfo} width={"100"}>
+                            Info
+                            <br />
+                            <CSVLink data={this.state.csv} filename={`hrapp-report-${moment().format("MM-DD-YYYY")}.csv`} className="btn btn-success form-control">Export</CSVLink>
+                        </TableHeaderColumn>
                     </BootstrapTable>
                     {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) ? <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
                 </div>
