@@ -25,6 +25,11 @@ class LeftNav extends Component {
         this.routeCandidates = this.routeCandidates.bind(this);
     }
 
+    componentDidUpdate() {
+        if (!this.props.user)
+            this.props.history.replace(ROUTES.LOGIN);
+    }
+
     routeMessages() {
         this.props.history.replace(ROUTES.MESSAGES);
     }
@@ -50,6 +55,8 @@ class LeftNav extends Component {
     }
 
     render() {
+        if (!this.props.user)
+            return null;
         return (
             <div className="left-nav pull-left bg-secondary">
                 <ul className="navbar-nav ml-auto text-center">

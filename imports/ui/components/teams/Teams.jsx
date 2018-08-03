@@ -163,6 +163,8 @@ class Teams extends React.Component {
     }
 
     render() {
+        if (!this.props.user)
+            return null;
         let userObj = this.state.user || { username: "" };
         return (
             <div className="pull-left main">

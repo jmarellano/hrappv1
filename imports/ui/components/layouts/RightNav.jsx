@@ -40,6 +40,8 @@ class RightNav extends Component {
     }
 
     render() {
+        if (!this.props.user)
+            return null;
         let mute = this.props.user.mute ? 'fa fa-2x fa-volume-off' : 'fa fa-2x fa-volume-up';
         return (
             <div className="left-nav pull-right bg-secondary">

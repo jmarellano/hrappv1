@@ -659,8 +659,8 @@ if (Meteor.isServer) {
         server.getICS().createEvent({
             title: data.subject,
             description: data.text,
-            start: moment(data.startEvent).format('YYYY-MM-DD-k-m').split('-'),
-            end: moment(data.endEvent).format('YYYY-MM-DD-k-m').split('-'),
+            start: moment(data.startEvent).format('YYYY-MM-DD-HH-m').split('-'),
+            end: moment(data.endEvent).format('YYYY-MM-DD-HH-m').split('-'),
             location: data.locationEvent,
             organizer: { email: data.sender.user },
             attendees

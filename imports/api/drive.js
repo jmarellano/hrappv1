@@ -47,9 +47,10 @@ if (Meteor.isServer) {
     }
     functions[DriveCreateFolder] = function (email) {
         check(this.userId, String);
+        let user = Meteor.user();
         let drive = Meteor.user().profile.drive;
         if (!drive) {
-            let folder = functions[DriveAddFolder].call(this, Meteor.user().username, email);
+            let folder = functions[DriveAddFolder].call(this, user.profile.first.replace(' ', '-') + '-' + user.profile.last.replace(' ', '-') + '-HRAPP', email);
             if (folder) {
                 Meteor.users.update({ _id: this.userId }, { $set: { 'profile.drive': folder.id } });
                 return folder.id;
@@ -85,7 +86,6 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(id, String);
-            let user = Meteor.user();
             return server.getDrive().removeFile(id, this.userId, undo);
         } catch (err) {
             console.error(err);

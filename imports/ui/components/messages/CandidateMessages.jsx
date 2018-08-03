@@ -77,11 +77,11 @@ class CandidateMessages extends React.Component {
         this.reactQuillRef = null;
         this.modules = {
             toolbar: [
-                [{ 'header': '1'}, {'header': '2'}],
-                [{size: []}],
+                [{ 'header': '1' }, { 'header': '2' }],
+                [{ size: [] }],
                 ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-                [{'list': 'ordered'}, {'list': 'bullet'},
-                    {'indent': '-1'}, {'indent': '+1'}],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' },
+                { 'indent': '-1' }, { 'indent': '+1' }],
                 ['link'],
                 ['clean']
             ],
@@ -90,7 +90,7 @@ class CandidateMessages extends React.Component {
             }
         };
         this.formats = [
-                'header', 'size',
+            'header', 'size',
             'bold', 'italic', 'underline', 'strike', 'blockquote',
             'list', 'bullet', 'indent',
             'link',
@@ -379,7 +379,6 @@ class CandidateMessages extends React.Component {
                                                 className="form-control"
                                                 placeholder="BCC"
                                                 name="bcc"
-                                                required
                                                 onChange={this.handleChangeInput}
                                             />
                                         }
@@ -392,7 +391,6 @@ class CandidateMessages extends React.Component {
                                                 className="form-control"
                                                 placeholder="CC"
                                                 name="cc"
-                                                required
                                                 onChange={this.handleChangeInput}
                                             />
                                         }

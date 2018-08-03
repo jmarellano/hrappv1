@@ -65,6 +65,8 @@ class Settings extends Component {
     }
 
     render() {
+        if (!this.props.user)
+            return null;
         return (
             <div>
                 <a className="nav-link" href="#" onClick={this.toggleModal}>

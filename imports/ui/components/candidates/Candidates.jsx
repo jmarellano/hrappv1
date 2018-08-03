@@ -28,6 +28,7 @@ class Teams extends React.Component {
             permitted: false,
             editCandidateInfo: false,
             changeReApplicantStatus: false,
+            changeJoinedStatus: false,
             unRetire: false,
             retiredUsers: [],
             selectedUserRole: null,
@@ -77,6 +78,7 @@ class Teams extends React.Component {
         this.selectStatus = this.selectStatus.bind(this);
         this.candidateStatus = this.candidateStatus.bind(this);
         this.candidateReApplicant = this.candidateReApplicant.bind(this);
+        this.candidateJoinedDate = this.candidateJoinedDate.bind(this);
         this.candidateSource = this.candidateSource.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.editInfo = this.editInfo.bind(this);
@@ -141,6 +143,8 @@ class Teams extends React.Component {
             qry = { source: new Mongo.ObjectID(this.state.selectedSite) };
         else if (this.state.changeReApplicantStatus)
             qry = { isReApplicant: this.state.isSelectedReApplicant };
+        else if (this.state.changeJoinedStatus)
+            qry = { joinedDate: moment(this.state.isSelectedJoined).utc().valueOf() };
         this.props.Candidate.changeStats(qry, this.state.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -149,6 +153,7 @@ class Teams extends React.Component {
             this.setState({
                 changeStatus: false,
                 changeReApplicantStatus: false,
+                changeJoinedStatus: false,
                 saving: false,
                 changeSite: false,
                 selectedCandidate: null,
@@ -175,6 +180,20 @@ class Teams extends React.Component {
                     <option value="1">Yes</option>
                     <option value="0">No</option>
                 </select>
+            </div>
+        )
+    }
+    candidateJoinedDate(cell, candidate) {
+        return (
+            <div key={"date_key"}>
+                <input type="date" ref={"role" + candidate.index} className="form-control" value={moment(candidate.joinedDt).format("YYYY-MM-DD")} onChange={(e) => {
+                    this.setState({
+                        changeJoinedStatus: true,
+                        selectedCandidate: candidate,
+                        isSelectedJoined: e.target.value
+                    });
+                }}
+                />
             </div>
         )
     }
@@ -339,7 +358,8 @@ class Teams extends React.Component {
                         }} width={"150"} dataSort>Address</TableHeaderColumn>
                         <TableHeaderColumn dataField='joinedDt'
                             filter={{ type: 'RegexFilter', placeholder: 'Date Time' }}
-                            width={"150"} dataSort>Joined Date</TableHeaderColumn>
+                            dataFormat={this.candidateJoinedDate}
+                            width={"200"} dataSort>Joined Date</TableHeaderColumn>
                         <TableHeaderColumn dataField='claimedBy'
                             filter={{ type: 'RegexFilter', placeholder: 'UserName' }}
                             width={"150"} dataSort>Claimed By</TableHeaderColumn>
@@ -367,12 +387,13 @@ class Teams extends React.Component {
                     {(this.props.validCandidates && this.props.validCandidates.length && this.props.validCandidates[0].max !== this.props.validCandidates.length) ? <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div> : null}
                 </div>
                 <Modal
-                    isOpen={this.state.changeStatus || this.state.changeSite || this.state.changeReApplicantStatus}
+                    isOpen={this.state.changeStatus || this.state.changeSite || this.state.changeReApplicantStatus || this.state.changeJoinedStatus}
                     onRequestClose={() => {
                         this.setState({
                             changeStatus: false,
                             changeSite: false,
-                            changeReApplicantStatus: false
+                            changeReApplicantStatus: false,
+                            changeJoinedStatus: false
                         });
                     }}
                     style={this.styleSet}
@@ -399,6 +420,11 @@ class Teams extends React.Component {
                                 You are going to
                                 mark {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} As {this.state.isSelectedReApplicant ? "A Re-Applicant" : "Not A Re-Applicant"} Continue?
                             </h3>}
+                            {this.state.changeJoinedStatus && <h3>
+                                You are going to
+                                set {(this.state.selectedCandidate && this.state.selectedCandidate.name) ? this.state.selectedCandidate.name : "NO_NAME"} Joined Date
+                                to {this.state.isSelectedJoined}. Continue?
+                            </h3>}
                             <button onClick={this.selectStatus} className="btn btn-success"
                                 disabled={this.state.saving}>Yes
                             </button>
@@ -407,6 +433,7 @@ class Teams extends React.Component {
                                     changeStatus: false,
                                     changeSite: false,
                                     changeReApplicantStatus: false,
+                                    changeJoinedStatus: false,
                                     selectedCandidate: null,
                                     friendlyStatus: null,
                                     selectedRole: null,
