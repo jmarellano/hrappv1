@@ -144,7 +144,7 @@ class Teams extends React.Component {
         else if (this.state.changeReApplicantStatus)
             qry = { isReApplicant: this.state.isSelectedReApplicant };
         else if (this.state.changeJoinedStatus)
-            qry = { joinedDate: moment(this.state.isSelectedJoined).utc().valueOf() };
+            qry = { joinedDate: moment(this.state.isSelectedJoined).valueOf() };
         this.props.Candidate.changeStats(qry, this.state.selectedCandidate.contact, (err) => {
             if (err)
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
@@ -186,7 +186,7 @@ class Teams extends React.Component {
     candidateJoinedDate(cell, candidate) {
         return (
             <div key={"date_key"}>
-                <input type="date" ref={"role" + candidate.index} className="form-control" value={moment(candidate.joinedDt).format("YYYY-MM-DD")} onChange={(e) => {
+                <input type="date" ref={"role" + candidate.index} className="form-control" value={candidate.joinedDt} onChange={(e) => {
                     this.setState({
                         changeJoinedStatus: true,
                         selectedCandidate: candidate,
@@ -341,21 +341,21 @@ class Teams extends React.Component {
                     <BootstrapTable data={this.props.validCandidates} striped hover maxHeight='calc(100% - 60px)'>
                         <TableHeaderColumn isKey dataField='name'
                             filter={{ type: 'RegexFilter', placeholder: 'Members' }}
-                            width={"130"} dataSort>Name</TableHeaderColumn>
+                            width={"180"} dataSort>Name</TableHeaderColumn>
                         <TableHeaderColumn dataField='category'
                             filter={{ type: 'RegexFilter', placeholder: 'Position' }}
                             width={"100"} dataSort>Position</TableHeaderColumn>
                         <TableHeaderColumn dataField='email' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Please enter a First Name'
-                        }} width={"150"} dataSort>Email</TableHeaderColumn>
+                        }} width={"200"} dataSort>Email</TableHeaderColumn>
                         <TableHeaderColumn dataField='number'
                             filter={{ type: 'RegexFilter', placeholder: 'Phone Number' }}
                             width={"170"} dataSort>Phone Number</TableHeaderColumn>
                         <TableHeaderColumn dataField='address' filter={{
                             type: 'RegexFilter',
                             placeholder: 'Enter Email Add'
-                        }} width={"150"} dataSort>Address</TableHeaderColumn>
+                        }} width={"180"} dataSort>Address</TableHeaderColumn>
                         <TableHeaderColumn dataField='joinedDt'
                             filter={{ type: 'RegexFilter', placeholder: 'Date Time' }}
                             dataFormat={this.candidateJoinedDate}

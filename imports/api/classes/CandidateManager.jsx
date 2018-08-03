@@ -53,6 +53,8 @@ export default class CandidateManager {
         let updatedTimestamp = moment().valueOf();
         if (!candidate.joinedDate)
             joinedDate = updatedTimestamp;
+        else
+            joinedDate = moment(joinedDate).valueOf();
         return CandidatesDB.update({ contact: contact }, {
             $set: {
                 'name': data.name,

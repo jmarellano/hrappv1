@@ -153,18 +153,18 @@ export default class SettingManager {
         posts2.forEach((post) => {
             let category = positions[post.category._str];
             if (category) {
-                let date = moment(post.timestamp).tz('America/New_York').format('MMM-DD-YYYY');
+                let date = moment(post.timestamp).tz('EST').format('MMM-DD-YYYY');
                 let index = postData.map(function (e) { return e.date; }).indexOf(date);
                 postData[index][category]++;
             } else {
                 category = positions2[post.category._str];
-                let date = moment(post.timestamp).tz('America/New_York').format('MMM-DD-YYYY');
+                let date = moment(post.timestamp).tz('EST').format('MMM-DD-YYYY');
                 let index = postData2.map(function (e) { return e.date; }).indexOf(date);
                 postData2[index][category]++;
             }
         });
         newApplicants2.forEach((applicant) => {
-            let date = moment(applicant.createdAt).tz('America/New_York').format('MMM-DD-YYYY');
+            let date = moment(applicant.createdAt).tz('EST').format('MMM-DD-YYYY');
             let index = newData.map(function (e) { return e.date; }).indexOf(date);
             if (newData[index][applicant.category] > -1) {
                 newData[index][applicant.category]++;

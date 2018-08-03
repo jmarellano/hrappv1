@@ -176,9 +176,10 @@ if (Meteor.isServer) {
                 ]
             }, { sort: { name: 1, createdAt: -1 } });
             Util.setupHandler(this, databaseName, cursor, (doc) => {
-                //setup doc
                 let newDoc = doc;
-                newDoc.joinedDt = moment(doc.joinedDate ? doc.joinedDate : doc.createdAt).format('MMMM DD, YYYY');
+                let user = Meteor.user();
+                let timezone = user ? user.profile.default_timezone : 'EST';
+                newDoc.joinedDt = moment(doc.joinedDate ? doc.joinedDate : doc.createdAt).tz(timezone).format('YYYY-MM-DD');
                 if (doc.status) {
                     let friendlyStatus = "";
                     switch (parseInt(doc.status)) {
