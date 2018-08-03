@@ -710,17 +710,19 @@ if (Meteor.isServer) {
     Meteor.publish(AppointmentsPub, function (currentUserOnly) {
         try {
             let cursor = AppointmentDB.find({});
+            let timezone = Meteor.user() && Meteor.user().profile.default_timezone ? Meteor.user().profile.default_timezone : moment.tz.guess();
             if (currentUserOnly && this.userId) {
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);
                 let tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 tomorrow.setHours(0, 0, 0, 0);
-                cursor = AppointmentDB.find({ importedBy: this.userId, startTime: { $gte: moment(today).valueOf(), $lt: moment(tomorrow).valueOf() } });
+                cursor = AppointmentDB.find({ importedBy: this.userId, startTime: { $gte: moment(today).tz(timezone).valueOf(), $lt: moment(tomorrow).tz(timezone).valueOf() } });
             }
             Util.setupHandler(this, currentUserOnly ? "#task-lists" : databaseAppointments, cursor, (doc) => {
                 if (doc.subject)
                     doc.title = doc.subject;
+                doc.html = doc.html && doc.html.length ? doc.html : doc.text;
                 return doc;
             });
         } catch (err) {

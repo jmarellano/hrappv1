@@ -1,24 +1,20 @@
 import React, { Component } from 'react';
-import { ValidCategories, CategoriesDB } from '../../../api/categories';
-import { PostPub, PostingDB } from '../../../api/settings';
-import { isPermitted, JOB_SITES, ROLES } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
-import CategoryClass from '../../../api/classes/Category';
 import PropTypes from 'prop-types';
 import Modal from '../extras/Modal';
-import Button from '../extras/Button';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment-timezone';
-import Select from 'react-select';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { AppointmentDB, AppointmentsPub } from "../../../api/messages";
 import DateTimePicker from "react-datetime-picker";
+
 BigCalendar.momentLocalizer(moment);
 
 class Record extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            appointment: {},
             isOpen: false,
             processing: false,
             addAppointment: false,
@@ -69,6 +65,15 @@ class Record extends Component {
         this.styleGetter = this.styleGetter.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.saveAppointment = this.saveAppointment.bind(this);
+        this.iFrame = null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.appointment !== prevState.appointment)
+            setTimeout(() => {
+                if (this.iFrame)
+                    this.iFrame.contentDocument.body.innerHTML = this.state.appointment.html;
+            }, 1000);
     }
 
     handleInputChange(event) {
@@ -79,18 +84,18 @@ class Record extends Component {
                 this.setState({ [target.name]: value });
         }
     }
-    saveAppointment(){
-        if(!this.state.startTime || !this.state.endTime)
+    saveAppointment() {
+        if (!this.state.startTime || !this.state.endTime)
             return Bert.alert("WARNING: Start/End Date & Time is Required", 'warning', 'growl-top-right');
-        if(!this.state.appointmentName)
+        if (!this.state.appointmentName)
             return Bert.alert("WARNING: Appointment Name is Required", 'warning', 'growl-top-right');
-        if(!this.state.appointmentSubject)
+        if (!this.state.appointmentSubject)
             return Bert.alert("WARNING: Appointment Subject is Required", 'warning', 'growl-top-right');
-        if(!this.state.appointmentFrom)
+        if (!this.state.appointmentFrom)
             return Bert.alert("WARNING: Appointment From is Required", 'warning', 'growl-top-right');
-        if(!this.state.appointmentTo)
+        if (!this.state.appointmentTo)
             return Bert.alert("WARNING: Appointment To is Required", 'warning', 'growl-top-right');
-        if(!this.state.appointmentMessage)
+        if (!this.state.appointmentMessage)
             return Bert.alert("WARNING: Appointment Message is Required", 'warning', 'growl-top-right');
 
         this.setState({
@@ -114,8 +119,6 @@ class Record extends Component {
             });
         });
     }
-    componentDidMount(){
-    }
 
     toggleModal() {
         this.setState({ isOpen: !this.state.isOpen });
@@ -123,29 +126,10 @@ class Record extends Component {
     toggleModal2() {
         this.setState({ isAppointmentOpen: !this.state.isAppointmentOpen, selectAppointmentInfo: null });
     }
-    toggleAppointment(appointment){
+    toggleAppointment(appointment) {
         this.setState({
             isAppointmentOpen: true,
-            selectAppointmentInfo: (
-                <div className="panel-body p-2 maxHeight" key="wakandaporeber">
-                    <div className="col-md-12 row maxHeight">
-                        <ul className="list-group">
-                            <li className="list-group-item">
-                                Subject: {appointment.subject}
-                            </li>
-                            <li className="list-group-item">
-                                From: {appointment.from}
-                            </li>
-                            <li className="list-group-item">
-                                To: {appointment.to}
-                            </li>
-                            <li className="list-group-item">
-                                Message: {appointment.text}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            )
+            appointment: appointment
         });
     }
     styleGetter(event, start, end, isSelected) {
@@ -159,7 +143,7 @@ class Record extends Component {
         };
         if (event.endTime < moment().valueOf())
             style.backgroundColor = "#ffc6c6";
-        switch(status){
+        switch (status) {
             case "1":
                 style.backgroundColor = "rgb(177, 236, 179)";
                 break;
@@ -182,7 +166,7 @@ class Record extends Component {
     }
     render() {
         let class_ = 'nav-link';
-        if(this.props.taskList && this.props.taskList.length)
+        if (this.props.taskList && this.props.taskList.length)
             class_ += ' haveTask';
         return (
             <div className="maxHeight">
@@ -196,7 +180,7 @@ class Record extends Component {
                                 Calendar
                                 <span className="pull-right">
                                     <a href="#" className="close-modal"
-                                       onClick={this.toggleModal}>
+                                        onClick={this.toggleModal}>
                                         <i className="fa fa-remove" />
                                     </a>
                                 </span>
@@ -212,7 +196,7 @@ class Record extends Component {
                                 startAccessor='startTime'
                                 endAccessor='endTime'
                                 onSelectSlot={slotInfo => {
-                                    if(slotInfo){
+                                    if (slotInfo) {
                                         this.setState({
                                             addAppointment: true,
                                             slotInfo: slotInfo,
@@ -230,31 +214,49 @@ class Record extends Component {
                                     <div className="panel-title">
                                         Calendar Appointment
                                         <span className="pull-right">
-                                        <a href="#" className="close-modal"
-                                           onClick={this.toggleModal2}>
-                                            <i className="fa fa-remove" />
-                                        </a>
-                                    </span>
+                                            <a href="#" className="close-modal"
+                                                onClick={this.toggleModal2}>
+                                                <i className="fa fa-remove" />
+                                            </a>
+                                        </span>
                                     </div>
                                 </div>
-                                {this.state.selectAppointmentInfo}
+
+                                <div className="panel-body p-2 maxHeight" key="wakandaporeber">
+                                    <div className="col-md-12 row maxHeight">
+                                        <ul className="list-group">
+                                            <li className="list-group-item">
+                                                Subject: {this.state.appointment.subject}
+                                            </li>
+                                            <li className="list-group-item">
+                                                From: {this.state.appointment.from}
+                                            </li>
+                                            <li className="list-group-item">
+                                                To: {this.state.appointment.to}
+                                            </li>
+                                        </ul>
+                                        <div className="col-md-12 row">
+                                            <iframe ref={(e) => { this.iFrame = e; }} style={{ width: "100%", height: "calc(100vh - 380px)", overflow: "auto" }} />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </Modal>
-                        <Modal isOpen={this.state.addAppointment} onRequestClose={ () => {
+                        <Modal isOpen={this.state.addAppointment} onRequestClose={() => {
                             this.setState({ addAppointment: false })
-                        } } contentLabel="RecordStatModal" style={this.styleSet2}>
+                        }} contentLabel="RecordStatModal" style={this.styleSet2}>
                             <div className="panel panel-primary maxHeight">
                                 <div className="panel-heading bg-secondary text-white p-2">
                                     <div className="panel-title">
                                         Add Calendar Appointment
                                         <span className="pull-right">
-                                        <a href="#" className="close-modal"
-                                           onClick={ () => {
-                                               this.setState({ addAppointment: false })
-                                           } }>
-                                            <i className="fa fa-remove" />
-                                        </a>
-                                    </span>
+                                            <a href="#" className="close-modal"
+                                                onClick={() => {
+                                                    this.setState({ addAppointment: false })
+                                                }}>
+                                                <i className="fa fa-remove" />
+                                            </a>
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="form-horizontal mt-3">
@@ -299,7 +301,7 @@ class Record extends Component {
                                                 <label className="control-label" htmlFor="name">Start Date & Time <span
                                                     className="text-danger">*</span></label>
                                                 <DateTimePicker
-                                                    onChange={(date) => {this.setState({ startTime: date })}}
+                                                    onChange={(date) => { this.setState({ startTime: date }) }}
                                                     value={this.state.startTime}
                                                     minDate={new Date()}
                                                 />
@@ -310,7 +312,7 @@ class Record extends Component {
                                                 <label className="control-label" htmlFor="name">End Date & Time <span
                                                     className="text-danger">*</span></label>
                                                 <DateTimePicker
-                                                    onChange={(date) => {this.setState({ endTime: date })}}
+                                                    onChange={(date) => { this.setState({ endTime: date }) }}
                                                     value={this.state.endTime}
                                                     minDate={new Date()}
                                                 />
@@ -318,10 +320,10 @@ class Record extends Component {
                                         </div>
                                     </div>
                                     <div className="text-center">
-                                        <button onClick={ this.saveAppointment } className="btn btn-success"
-                                                disabled={ this.state.saving }>Yes
+                                        <button onClick={this.saveAppointment} className="btn btn-success"
+                                            disabled={this.state.saving}>Yes
                                         </button>
-                                        <button onClick={ () => {
+                                        <button onClick={() => {
                                             this.setState({
                                                 addAppointment: false,
                                                 saving: false,
@@ -333,7 +335,7 @@ class Record extends Component {
                                                 startTime: null,
                                                 endTime: null,
                                             })
-                                        } } className="btn btn-danger" style={ { marginLeft: "10px" } }>No
+                                        }} className="btn btn-danger" style={{ marginLeft: "10px" }}>No
                                         </button>
                                     </div>
                                 </div>
@@ -357,12 +359,12 @@ export default withTracker(() => {
     Meteor.subscribe(AppointmentsPub, true);
     Meteor.subscribe(AppointmentsPub);
     return {
-        appointments: AppointmentDB.find({}, {sort: {startTime: -1}}).fetch().map((appointment, index) => {
+        appointments: AppointmentDB.find({}, { sort: { startTime: -1 } }).fetch().map((appointment, index) => {
             let temp_ = appointment;
             temp_.startTime = new Date(temp_.startTime);
             temp_.endTime = new Date(temp_.endTime);
             return temp_;
         }),
-        taskList: db['#task-lists'].find({}, {sort: {startTime: -1}}).fetch()
+        taskList: db['#task-lists'].find({}, { sort: { startTime: -1 } }).fetch()
     };
 })(Record);

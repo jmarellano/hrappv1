@@ -303,7 +303,7 @@ if (Meteor.isServer) {
             if (candidate.filter.indexOf(SEARCH.STAFF_EMAIL) > -1) {
                 let emails = [];
                 let user = Meteor.user();
-                if (user.profile.emails)
+                if (user && user.profile.emails)
                     user.profile.emails.forEach((email) => {
                         if (email.status === 'connected')
                             emails.push(email.user);

@@ -150,7 +150,7 @@ class Record extends Component {
                                     STATUS: <b>{task.friendlyStatus || "N/A"}</b>
                                 </li>
                             </ul>
-                            <p style={{ paddingRight: "10px" }}>{task.text}</p>
+                            <p style={{ paddingRight: "10px" }} dangerouslySetInnerHTML={{ __html: task.html }}></p>
                         </div>
                     </div>
                 );

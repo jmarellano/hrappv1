@@ -23,18 +23,20 @@ export const ReportsDB = new Mongo.Collection(Meteor.settings.public.collections
 if (Meteor.isServer) {
     functions[CheckAppointments] = function () {
         try {
-            check(this.userId, String);
-            let today = new Date();
-            today.setHours(0, 0, 0, 0);
-            let tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-            let temp_ = AppointmentDB.findOne({
-                importedBy: this.userId,
-                startTime: { $gte: moment(today).valueOf(), $lt: moment(tomorrow).valueOf() }
-            });
-            if (temp_) {
-                AppointmentDB.update({ _id: temp_._id }, { $inc: { tempCounter: 1 } })
+            if (this.userId) {
+                check(this.userId, String);
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+                let tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                let temp_ = AppointmentDB.findOne({
+                    importedBy: this.userId,
+                    startTime: { $gte: moment(today).valueOf(), $lt: moment(tomorrow).valueOf() }
+                });
+                if (temp_) {
+                    AppointmentDB.update({ _id: temp_._id }, { $inc: { tempCounter: 1 } })
+                }
             }
         } catch (err) {
             console.error(`Method ${CheckAppointments} error:`, err);
