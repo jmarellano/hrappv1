@@ -35,6 +35,7 @@ import {
     CandidatesStatus
 } from '../candidates';
 import { RecordJob, GetPostingStat, SettingsSave, GetReports, DeleteJob, AddSite } from '../settings';
+import { RecordJobAd, DeleteJobAd } from '../ads';
 import { PSTFiles } from '../files';
 import '../../ui/components/extras/MediaUploader.js';
 
@@ -49,6 +50,7 @@ export default class Client {
         this.Candidate = new Candidate();
         this.Statistics = new Statistics();
         this.Settings = new Settings();
+        this.Ads = new Ads();
         this.PST = new PST();
     }
 }
@@ -751,6 +753,27 @@ class Statistics {
             callback(err, data);
         });
     }
+}
+
+class Ads {
+    constructor() { }
+
+    recordPosting(data, callback) {
+        Meteor.call(RecordJobAd, data, (err, result) => {
+            if (err)
+                console.error(`Method ${RecordJobAd} error:`, err);
+            if (callback)
+                callback(err, result);
+        });
+    }
+
+    deletePosting(id, callback) {
+        Meteor.call(DeleteJobAd, id, (err) => {
+            if (err && callback)
+                callback(err);
+        });
+    }
+
 }
 
 class Settings {

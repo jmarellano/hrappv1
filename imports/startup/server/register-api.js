@@ -6,3 +6,4 @@ import '/imports/api/files';
 import '/imports/api/messages';
 import '/imports/api/settings';
 import '/imports/api/notifications';
+import '/imports/api/ads';

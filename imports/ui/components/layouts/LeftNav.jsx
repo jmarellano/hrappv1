@@ -8,6 +8,7 @@ import ReactTooltip from 'react-tooltip';
 
 import FormMain from '../forms/FormMain';
 import Category from '../categories/Category';
+import Ads from '../ads/Ads';
 import Record from '../statistics/Record';
 import Global from '../settings/Global';
 import PST from '../messages/PST';
@@ -84,16 +85,19 @@ class LeftNav extends Component {
                     <HeaderNav key={6} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
                         <Record {...this.props} />
                     </HeaderNav>
-                    <HeaderNav key={7} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>
+                    <HeaderNav key={7} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_REPORTS}>
+                        <Ads {...this.props} />
+                    </HeaderNav>
+                    <HeaderNav key={8} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_FORMS}>
                         <FormMain {...this.props} />
                     </HeaderNav>
-                    <HeaderNav key={8} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_DRIVE}>
+                    <HeaderNav key={9} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_DRIVE}>
                         <a className="nav-link" data-tip="Drive" href="#" onClick={this.routeDrive}><i className="fa fa-2x fa-hdd-o" /></a>
                     </HeaderNav>
-                    <HeaderNav key={9} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_EMAILS}>
+                    <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.VIEW_EMAILS}>
                         <a className="nav-link" data-tip="Emails" href="#" onClick={this.routeEmails}><i className="fa fa-2x fa-at" /></a>
                     </HeaderNav>
-                    <HeaderNav key={10} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
+                    <HeaderNav key={11} type="navbar" userRole={this.props.user.role} role={ROLES.MANAGE_SETTINGS}>
                         <Global {...this.props} />
                     </HeaderNav>
                 </ul>
