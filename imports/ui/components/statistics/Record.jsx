@@ -341,6 +341,8 @@ class Record extends Component {
 
     saveAll() {
         this.setState({ processing: true });
+        let states = this.state;
+        states.selectedJobPost = null;
         this.props.Statistics.recordPosting(this.state, true);
         this.setState({
             processing: false,
@@ -369,7 +371,7 @@ class Record extends Component {
         data.timestamp = moment().valueOf();
         data.category = data_.category;
         data.country = data_.country;
-        data.selectedJobPost = this.state.selectedJobPost;
+        data.selectedJobPost = null;
         this.setState({ processing: true });
         this.props.Statistics.recordPosting(data, false);
         this.setState({
@@ -406,7 +408,7 @@ class Record extends Component {
                 <a className="nav-link" data-tip="Record Job Posting" href="#" onClick={this.toggleModal}>
                     <i className="fa fa-2x fa-edit" aria-hidden="true" />
                 </a>
-                <Modal isOpen={this.state.isOpen}  onRequestClose={this.toggleModal} contentLabel="RecordStatModal" style={this.styleSet} >
+                <Modal isOpen={this.state.isOpen} onRequestClose={this.toggleModal} contentLabel="RecordStatModal" style={this.styleSet} >
                     <div className="panel panel-primary">
                         <div className="panel-heading bg-secondary text-white p-2">
                             <div className="panel-title">
