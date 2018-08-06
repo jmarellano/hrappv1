@@ -10,7 +10,8 @@ These instructions will get you a copy of the project up and running on your loc
 2. npm install
 3. Set MONGO_URL environment 
 4. Move JavaPST.jar and lib folder to /data/
-4. meteor run -s settings.json
+5. Move phantomjs.execute.js, phantomjs and phantomjs.exe to /data/
+6. meteor run -s settings.json
 
 ### Prerequisites
 
@@ -37,9 +38,3 @@ See also the list of [contributors](https://github.com/your/project/contributors
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
