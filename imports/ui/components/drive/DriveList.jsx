@@ -167,11 +167,11 @@ class DriveList extends React.Component {
                         <td><img src={file.iconLink} /></td>
                         <th scope="row">{file.name}</th>
                         <td>{file.trashed ? 'Yes' : ''}</td>
-                        <td>{file.modifiedTime ? Util.formatDate(file.modifiedTime) : '-'}</td>
+                        <td>{file.modifiedTime ? Util.formatDate(file.modifiedTime, this.props.user.default_timezone) : '-'}</td>
                         <td>N/A</td>
                         <td>
                             {
-                                !file.trashed &&
+                                !file.trashed && Meteor.settings.public.oAuth.google.Special !== file.id &&
                                 <button
                                     className='btn btn-sm m-1 btn-danger'
                                     onClick={this.trash.bind(this, file)}>
@@ -179,7 +179,7 @@ class DriveList extends React.Component {
                                 </button>
                             }
                             {
-                                file.trashed &&
+                                file.trashed && Meteor.settings.public.oAuth.google.Special !== file.id &&
                                 <Button
                                     className='btn btn-sm m-1 btn-danger'
                                     data={file}
@@ -190,23 +190,26 @@ class DriveList extends React.Component {
                             <button className={`btn btn-sm m-1 ${file.trashed ? 'btn-secondary disabled' : 'btn-success'}`} onClick={file.trashed ? null : this.browse.bind(this, file.id, file.name)}>
                                 <i className="fa fa-folder-open" /> Browse
                             </button>
-                            <ItemEllipsis index={index}>
-                                <a href="#" className='btn btn-sm m-1 btn-primary' onClick={this.rename.bind(this, file)}>
-                                    <i className="fa fa-pencil" /> Rename
+                            {
+                                Meteor.settings.public.oAuth.google.Special !== file.id &&
+                                <ItemEllipsis index={index}>
+                                    <a href="#" className='btn btn-sm m-1 btn-primary' onClick={this.rename.bind(this, file)}>
+                                        <i className="fa fa-pencil" /> Rename
                                 </a>
-                                <button
-                                    disabled={!file.capabilities.canShare}
-                                    className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
-                                    onClick={this.share.bind(this, file)}>
-                                    <i className="fa fa-user-plus" /> Share
+                                    <button
+                                        disabled={!file.capabilities.canShare}
+                                        className={`btn btn-sm m-1 ${!file.capabilities.canShare ? 'btn-secondary disabled' : 'btn-info'}`}
+                                        onClick={this.share.bind(this, file)}>
+                                        <i className="fa fa-user-plus" /> Share
                                 </button>
-                                <button
-                                    disabled={!file.capabilities.canShare || !file.webViewLink}
-                                    className={`btn btn-sm m-1 ${!file.capabilities.canShare || !file.webViewLink ? 'btn-secondary disabled' : 'btn-info'}`}
-                                    onClick={this.shareLink.bind(this, file)}>
-                                    <i className="fa fa-user-plus" /> Shareable Link
+                                    <button
+                                        disabled={!file.capabilities.canShare || !file.webViewLink}
+                                        className={`btn btn-sm m-1 ${!file.capabilities.canShare || !file.webViewLink ? 'btn-secondary disabled' : 'btn-info'}`}
+                                        onClick={this.shareLink.bind(this, file)}>
+                                        <i className="fa fa-user-plus" /> Shareable Link
                                 </button>
-                            </ItemEllipsis>
+                                </ItemEllipsis>
+                            }
                         </td>
                     </tr>
                 );
@@ -215,7 +218,7 @@ class DriveList extends React.Component {
                     <td><img src={file.iconLink} /></td>
                     <th scope="row">{file.name}</th>
                     <td>{file.trashed ? 'Yes' : ''}</td>
-                    <td>{file.modifiedTime ? Util.formatDate(file.modifiedTime) : '-'}</td>
+                    <td>{file.modifiedTime ? Util.formatDate(file.modifiedTime, this.props.user.default_timezone) : '-'}</td>
                     <td>{file.size ? Util.bytesToSize(file.size) : 'N/A'}</td>
                     <td>
                         {

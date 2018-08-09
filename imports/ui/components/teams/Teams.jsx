@@ -87,6 +87,8 @@ class Teams extends React.Component {
                 Bert.alert(err.reason, 'danger', 'growl-top-right');
             else
                 Bert.alert('Member retired!', 'success', 'growl-top-right');
+            if (!this.state.unRetire)
+                this.props.Drive.removePermissions(() => { });
             this.getRetiredUsers();
             this.setState({ retire: false, selectedUserRole: null, unRetire: false });
         });
@@ -278,7 +280,11 @@ class Teams extends React.Component {
 
 Teams.propTypes = {
     Account: PropTypes.object,
-    users: PropTypes.array
+    users: PropTypes.array,
+    Candidate: PropTypes.object,
+    user: PropTypes.object,
+    location: PropTypes.string,
+    Drive: PropTypes.object
 };
 
 export default withTracker(() => {

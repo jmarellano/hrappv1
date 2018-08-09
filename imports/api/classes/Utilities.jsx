@@ -6,8 +6,8 @@ class Utilities {
     constructor() {
 
     }
-    formatDate(date) {
-        return moment(date).format('MMMM DD, YYYY hh:mm A');
+    formatDate(date, timezone = 'EST') {
+        return moment(date).tz(timezone).format('MMMM DD, YYYY hh:mm A');
     }
     trunc(text, max) {
         return text.substr(0, max - 1) + (text.length > max ? '...' : '');

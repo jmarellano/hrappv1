@@ -17,7 +17,7 @@ import {
     UserMarkTask, UserAddTask,
     UserUpdateInbox
 } from '../users';
-import { DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
+import { DriveRemovePermissions, DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessageReSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
@@ -181,6 +181,11 @@ class Drive {
             this.api.load('picker', () => {
                 this.pickerApiLoaded = true;
             });
+        });
+    }
+    removePermissions(callback) {
+        Meteor.call(DriveRemovePermissions, (err, result) => {
+            callback(err, result);
         });
     }
     createPicker(token, failCallback, successCallback) {

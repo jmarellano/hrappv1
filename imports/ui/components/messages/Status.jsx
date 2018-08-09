@@ -31,8 +31,8 @@ class Status extends Component {
                 </div>
             );
         return (
-            <select className="btn-xs pull-right rounded" data-tip="Candidates' Status" value={this.props.candidate.status} onChange={this.status}>
-                <option value={CANDIDATE_STATUS.NA}>N/A Status</option>
+            <select className="btn-xs pull-right rounded" data-tip="Candidates' Status" value={this.props.candidate.status || ''} onChange={this.status}>
+                < option value={CANDIDATE_STATUS.NA} > N / A Status</option >
                 <option value={CANDIDATE_STATUS.ABANDONED}>Abandoned INT</option>
                 <option value={CANDIDATE_STATUS.DEV_METEOR}>DEV - Meteor</option>
                 <option value={CANDIDATE_STATUS.DEV_LT}>DEV - LT</option>
@@ -58,7 +58,7 @@ class Status extends Component {
                 <option value={CANDIDATE_STATUS.PRE_QUALIFIED}>Pre-Qualified</option>
                 <option value={CANDIDATE_STATUS.RESIGNED}>Resigned</option>
                 <option value={CANDIDATE_STATUS.TERMED}>Termed</option>
-            </select>
+            </select >
         );
     }
 }

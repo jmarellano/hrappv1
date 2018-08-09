@@ -267,6 +267,8 @@ class Drive extends React.Component {
         let stateParent = this.state.parent;
         if (stateParent.indexOf(self.props.user.drive) > -1)
             parent = [stateParent[stateParent.length - 1]];
+        if (stateParent.indexOf(Meteor.settings.public.oAuth.google.Special) > -1)
+            parent = [stateParent[stateParent.length - 1]];
         self.setState({ uploading: true });
         if (e.currentTarget.files && e.currentTarget.files[0]) {
             let file = e.currentTarget.files[0];

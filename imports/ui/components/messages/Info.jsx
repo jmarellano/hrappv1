@@ -17,7 +17,7 @@ class Info extends Component {
             number: props.selectedCandidate.number,
             address: props.selectedCandidate.address,
             city: props.selectedCandidate.city,
-            country: props.selectedCandidate.country,
+            country: props.selectedCandidate.country || 'Philippines',
             state: props.selectedCandidate.state,
             zip: props.selectedCandidate.zip,
             category: props.selectedCandidate.category,
@@ -144,14 +144,14 @@ class Info extends Component {
                                             <label className="col-sm-3 control-label" htmlFor="name">Name <span
                                                 className="text-danger">*</span></label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleInputChange} required />
+                                                <input type="text" className="form-control" name="name" value={this.state.name} onChange={this.handleInputChange} required autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="category">Category <span
                                                 className="text-danger">*</span></label>
                                             <div className="col-sm-12">
-                                                <select className="form-control" name="category" value={this.state.category} onChange={this.handleInputChange} required>
+                                                <select className="form-control" name="category" value={this.state.category} onChange={this.handleInputChange} required autoComplete="off">
                                                     <option value={''}>Select Category</option>
                                                     {this.renderCategories()}
                                                     <option value='SPAMMER'>SPAMMER</option>
@@ -162,37 +162,37 @@ class Info extends Component {
                                             <label className="col-sm-3 control-label" htmlFor="email">Email Address <span
                                                 className="text-danger">*</span></label>
                                             <div className="col-sm-12">
-                                                <input type="email" className="form-control" name="email" value={this.state.email} onChange={this.handleInputChange} required />
+                                                <input type="email" className="form-control" name="email" value={this.state.email} onChange={this.handleInputChange} required autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="number">Mobile Number</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="number" value={this.state.number} onChange={this.handleInputChange} />
+                                                <input type="text" className="form-control" name="number" value={this.state.number} onChange={this.handleInputChange} autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="address">Address</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} />
+                                                <input type="text" className="form-control" name="address" value={this.state.address} onChange={this.handleInputChange} autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="city">City</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} />
+                                                <input type="text" className="form-control" name="city" value={this.state.city} onChange={this.handleInputChange} autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="state">State</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} />
+                                                <input type="text" className="form-control" name="state" value={this.state.state} onChange={this.handleInputChange} autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
-                                            <label className="col-sm-3 control-label" htmlFor="country">Country</label>
+                                            <label className="col-sm-3 control-label" htmlFor="country">Country <span className="text-danger">*</span></label>
                                             <div className="col-sm-12">
-                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange}>
+                                                <select className="form-control" name="country" value={this.state.country} onChange={this.handleInputChange} autoComplete="off" required >
                                                     {this.renderCountries()}
                                                 </select>
                                             </div>
@@ -200,13 +200,13 @@ class Info extends Component {
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="zip">Zip Code</label>
                                             <div className="col-sm-12">
-                                                <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} />
+                                                <input type="text" className="form-control" name="zip" value={this.state.zip} onChange={this.handleInputChange} autoComplete="off" />
                                             </div>
                                         </div>
                                         <div className="form-group">
                                             <label className="col-sm-3 control-label" htmlFor="zip">Remarks</label>
                                             <div className="col-sm-12">
-                                                <textarea className="form-control" name="remarks" value={this.state.remarks} onChange={this.handleInputChange} />
+                                                <textarea className="form-control" name="remarks" value={this.state.remarks} onChange={this.handleInputChange} autoComplete="off" />
                                             </div>
                                         </div>
                                     </div>

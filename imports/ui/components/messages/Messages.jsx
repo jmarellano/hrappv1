@@ -54,17 +54,6 @@ class Messages extends React.Component {
             display,
             displayOptions: [
                 {
-                    label: 'ALL TEXT', value: 'all_text', options: [
-                        { value: SEARCH.CATEGORIES, label: 'Category' },
-                        { value: SEARCH.CLAIMER, label: 'Claimer' },
-                        { value: SEARCH.EMAIL, label: 'Email' },
-                        { value: SEARCH.CONTEXT, label: 'Message Context' },
-                        { value: SEARCH.NUMBER, label: 'Mobile' },
-                        { value: SEARCH.NAME, label: 'Name' },
-                        { value: SEARCH.TITLE, label: 'Title' }
-                    ]
-                },
-                {
                     label: 'ALL STATUS', value: 'all_status', options: [
                         { value: SEARCH.ASSIGNED, label: 'Assigned' },
                         { value: SEARCH.CLAIMED, label: 'Claimed', element: <span>{'Claimed'}<span className="pull-right mt-1 badge badge-warning">{props.claimed}</span></span> },
@@ -101,6 +90,17 @@ class Messages extends React.Component {
                         { value: CANDIDATE_STATUS.PRE_QUALIFIED, label: 'PRE_QUALIFIED' },
                         { value: CANDIDATE_STATUS.RESIGNED, label: 'RESIGNED' },
                         { value: CANDIDATE_STATUS.TERMED, label: 'TERMED' }
+                    ]
+                },
+                {
+                    label: 'ALL TEXT', value: 'all_text', options: [
+                        { value: SEARCH.CATEGORIES, label: 'Category' },
+                        { value: SEARCH.CLAIMER, label: 'Claimer' },
+                        { value: SEARCH.EMAIL, label: 'Email' },
+                        { value: SEARCH.CONTEXT, label: 'Message Context' },
+                        { value: SEARCH.NUMBER, label: 'Mobile' },
+                        { value: SEARCH.NAME, label: 'Name' },
+                        { value: SEARCH.TITLE, label: 'Title' }
                     ]
                 },
                 {

@@ -11,6 +11,7 @@ class Drive {
     }
     init() {
         this.setJWT();
+        // FOR REMOVE ALL FILES & RESET DRIVE 
         // this.getFiles().files.forEach((file) => {
         //     this.deleteFile(file.id);
         // });
@@ -164,6 +165,42 @@ class Drive {
             future.return(response.data);
         });
         return future.wait();
+    }
+    removePermissions() {
+        this.getToken();
+        let result = null;
+        let myFuture = server.createFuture();
+        let options = {
+            headers: {
+                'Authorization': 'Bearer ' + this.jwt.credentials.access_token
+            },
+            params: {
+                'fileId': Meteor.settings.public.oAuth.google.folder,
+                'fields': 'permissions'
+            }
+        };
+        HTTP.call('GET', 'https://www.googleapis.com/drive/v3/files/' + Meteor.settings.public.oAuth.google.folder, options, function (err, res) {
+            if (err && err !== null) {
+                console.error(err);
+                myFuture.throw(new Meteor.Error(err.message));
+            }
+            else
+                myFuture.return(res);
+        });
+        result = myFuture.wait();
+        if (result.data.permissions)
+            result.data.permissions.forEach((permission) => {
+                if (permission.emailAddress !== Meteor.settings.public.oAuth.google.owner && permission.emailAddress !== Meteor.settings.public.oAuth.google.acc)
+                    Meteor.setTimeout(() => {
+                        let params = {
+                            'fileId': Meteor.settings.public.oAuth.google.folder,
+                            'permissionId': permission.id,
+                            auth: this.jwt
+                        };
+                        this.drive.permissions.delete(params, function () { });
+                    }, 300);
+            });
+        return result;
     }
     createFolder(name, email) {
         let self = this;

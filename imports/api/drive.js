@@ -16,6 +16,7 @@ export const DriveRenameFile = 'drive_rename_file';
 export const DriveCopyFile = 'drive_copy_file';
 export const DriveNewFolder = 'drive_new_folder';
 export const DrivePST = 'drive_pst';
+export const DriveRemovePermissions = 'drive_remove_permissions';
 
 if (Meteor.isServer) {
     functions[DrivePST] = function (doc) {
@@ -63,6 +64,15 @@ if (Meteor.isServer) {
             check(this.userId, String);
             check(file, Object);
             return server.getDrive().insertPermission(file, value, type, role);
+        } catch (err) {
+            console.error(err);
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
+    functions[DriveRemovePermissions] = function () {
+        try {
+            check(this.userId, String);
+            return server.getDrive().removePermissions();
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);
