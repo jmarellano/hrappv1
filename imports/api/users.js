@@ -3,8 +3,8 @@ import { Accounts } from 'meteor/accounts-base';
 import { ROLES, isPermitted, RETIRED, VERIFIED, VALUE } from './classes/Const';
 import { check } from 'meteor/check';
 import Util from './classes/Utilities';
-import moment from "moment-timezone";
-import { AppointmentDB } from "./messages";
+import moment from 'moment-timezone';
+import { AppointmentDB } from './messages';
 
 export const ValidUsers = 'users_valid';
 export const UsersRegister = 'users_register';
@@ -219,8 +219,19 @@ if (Meteor.isServer) {
         try {
             check(this.userId, String);
             check(id, String);
-            let user = Meteor.user();
+            let user = Meteor.user(),
+                staff = Meteor.users.findOne({ _id: id });
             if (user && isPermitted(user.profile.role, ROLES.VIEW_TEAMS)) {
+                if (staff.profile.role === ROLES.GUESTS)
+                    Meteor.defer(() => {
+                        let fileResource = server.getDrive().newFolder(
+                            `${staff.profile.first || user.username}-${staff.profile.last}-${Meteor.settings.public.config.title}`,
+                            [Meteor.settings.public.oAuth.google.folders[1].id],
+                            'application/vnd.google-apps.folder'
+                        );
+                        if (fileResource)
+                            Meteor.users.update({ _id: staff._id }, { $set: { 'profile.drive': fileResource.id } });
+                    });
                 Meteor.users.update({ _id: id }, { $set: { 'profile.role': parseInt(role) } });
                 return ('Changed Role!');
             }
@@ -264,7 +275,7 @@ if (Meteor.isServer) {
     functions[UsersGetRetired] = function () {
         try {
             check(this.userId, String);
-            return Meteor.users.find({ 'profile.retired': VALUE.TRUE }, { sort: { username_sort: 1 } }).fetch().map((user, index) => {
+            return Meteor.users.find({ 'profile.retired': VALUE.TRUE }, { sort: { username_sort: 1 } }).fetch().map((user) => {
                 if (user.services)
                     delete user.services;
                 if (user.emails && user.emails[0].address)
@@ -291,7 +302,6 @@ if (Meteor.isServer) {
         try {
             let cursor = Meteor.users.find({ 'profile.retired': VALUE.FALSE, 'emails.0.verified': true }, { sort: { username_sort: 1 } });
             Util.setupHandler(this, "#users", cursor, (doc) => {
-                //setup doc
                 let newDoc = doc;
                 if (newDoc.profile.emails)
                     newDoc.profile.emails.forEach((email) => {

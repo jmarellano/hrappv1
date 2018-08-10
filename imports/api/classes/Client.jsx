@@ -1,5 +1,4 @@
 import { Accounts } from 'meteor/accounts-base';
-import { ROLES } from './Const';
 import {
     UsersSendVerificationLink,
     UsersRegister,
@@ -330,13 +329,13 @@ class Drive {
             callback(err, result);
         });
     }
-    setEmail(user) {
-        this.email = this.auth.currentUser.get().getBasicProfile().getEmail();
-        if (user.role === ROLES.ADMIN || user.role === ROLES.SUPERUSER)
-            this.insertAdminPermission({ id: Meteor.settings.public.oAuth.google.folder }, this.email, 'user', 'writer', () => { });
-        if (user.role === ROLES.SUPERVISOR)
-            this.insertSupervisorPermission(this.email, 'user', 'writer', () => { });
-    }
+    // setEmail(user) {
+    //     this.email = this.auth.currentUser.get().getBasicProfile().getEmail();
+    //     if (user.role === ROLES.ADMIN || user.role === ROLES.SUPERUSER)
+    //         this.insertAdminPermission({ id: Meteor.settings.public.oAuth.google.folder }, this.email, 'user', 'writer', () => { });
+    //     if (user.role === ROLES.SUPERVISOR)
+    //         this.insertSupervisorPermission(this.email, 'user', 'writer', () => { });
+    // }
     setDrive(callback) {
         this.addFolder(this.email, (err, res) => {
             callback(err, res);

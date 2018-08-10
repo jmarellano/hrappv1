@@ -34,8 +34,20 @@
                 "apiKey": "AIzaSyDAOoOR3VBGxijpFbcFy5K-yOxoU6TjtZM",
                 "owner": "secondtronixhub@gmail.com",
                 "interval": "60000",
-                "folder": "13Cc4dHHwqfQxB30T9O6yML2Mg6SUUCpR",
-                "Special": "1YU368CpGX-cCDWszBhcwa35LpgeD2CqF",
+                "folders": [
+                    {
+                        "id": "1OGBCCyfXXczJ_PSoTJ9GO6HGADR4qYCu",
+                        "role": 131071
+                    },
+                    {
+                        "id": "1aoLUenk7SogWwrQARlE5zepb3JMOhbda",
+                        "role": 9201
+                    },
+                    {
+                        "id": "1Otq1hDv8Jmu0I67wvNYzyiR1_BMSmO93",
+                        "role": 131071
+                    }
+                ],
                 "acc": "hrapp-235@hrapp-207205.iam.gserviceaccount.com"
             }
         }

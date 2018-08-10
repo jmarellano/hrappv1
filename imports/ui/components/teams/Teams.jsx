@@ -172,25 +172,25 @@ class Teams extends React.Component {
             <div className="pull-left main">
                 <div className="table-responsive">
                     <BootstrapTable data={this.props.users} striped hover>
-                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={150}>Members</TableHeaderColumn>
-                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={130}>First Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={130}>Last Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }} width={150}>Email Add</TableHeaderColumn>
-                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }} width={150}>Date Joined</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastLoggedInDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }} width={150}>Last Logged In Date and Time</TableHeaderColumn>
-                        <TableHeaderColumn dataField='select' dataFormat={this.userRole} width={120} >Roles</TableHeaderColumn>
-                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} width={120} >Actions</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={"150"}>Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={"130"}>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={"130"}>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }} width={"150"}>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }} width={"150"}>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastLoggedInDt' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Time' }} width={"150"}>Last Logged In Date and Time</TableHeaderColumn>
+                        <TableHeaderColumn dataField='select' dataFormat={this.userRole} width={"120"} >Roles</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userAction} width={"120"} >Actions</TableHeaderColumn>
                     </BootstrapTable>
                     <h3 className="ml-1">
                         Retired Users
                     </h3>
                     <BootstrapTable data={this.state.retiredUsers} striped hover>
-                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={130}>Members</TableHeaderColumn>
-                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={130}>First Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={130}>Last Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }} width={150}>Email Add</TableHeaderColumn>
-                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }} width={150}>Date Joined</TableHeaderColumn>
-                        <TableHeaderColumn dataField='actions' dataFormat={this.userUnRetireAction} width={150}>Actions</TableHeaderColumn>
+                        <TableHeaderColumn isKey dataField='username' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Members' }} width={"130"}>Members</TableHeaderColumn>
+                        <TableHeaderColumn dataField='firstName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a First Name' }} width={"130"}>First Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='lastName' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Last Name' }} width={"130"}>Last Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField='email' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Email Add' }} width={"150"}>Email Add</TableHeaderColumn>
+                        <TableHeaderColumn dataField='dateJoined' filter={{ type: 'RegexFilter', placeholder: 'Please enter a Date Joined' }} width={"150"}>Date Joined</TableHeaderColumn>
+                        <TableHeaderColumn dataField='actions' dataFormat={this.userUnRetireAction} width={"150"}>Actions</TableHeaderColumn>
                     </BootstrapTable>
                     {this.state.retrieving && <div className="text-center"><i className="fa fa-spin fa-circle-o-notch" /> Loading...</div>}
                 </div>
@@ -283,7 +283,7 @@ Teams.propTypes = {
     users: PropTypes.array,
     Candidate: PropTypes.object,
     user: PropTypes.object,
-    location: PropTypes.string,
+    location: PropTypes.any,
     Drive: PropTypes.object
 };
 

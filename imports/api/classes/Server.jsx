@@ -59,7 +59,6 @@ export default class Server {
     }
 
     getDrive() {
-        Drive.init();
         return Drive;
     }
 
@@ -111,6 +110,22 @@ export default class Server {
         task.start();
     }
 
+    generateMemberFolders() {
+        Drive.init();
+        if (Meteor.settings.public.oAuth.google.folders)
+            Meteor.users.find({ $or: [{ 'profile.retired': 0 }, { 'profile.retired': { $exists: false } }], 'profile.role': { $ne: 0 } }).fetch().forEach((user) => {
+                if (!user.profile.drive) {
+                    let fileResource = Drive.newFolder(
+                        `${user.profile.first || user.username}-${user.profile.last}-${Meteor.settings.public.config.title}`,
+                        [Meteor.settings.public.oAuth.google.folders[1].id],
+                        'application/vnd.google-apps.folder'
+                    );
+                    if (fileResource)
+                        Meteor.users.update({ _id: user._id }, { $set: { 'profile.drive': fileResource.id } });
+                }
+            });
+    }
+
     run() {
         console.log('Initializing server setup...');
         let appVersion = 'MeteorJS + ReactJS';
@@ -119,6 +134,7 @@ export default class Server {
         console.log('Running server scheduled events...');
         later.date.localTime();
         this.generateReports();
+        this.generateMemberFolders();
         Accounts.validateLoginAttempt((data) => {
             if (data.error)
                 return data.error;

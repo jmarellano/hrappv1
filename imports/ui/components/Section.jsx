@@ -244,7 +244,7 @@ Section.propTypes = {
     user: PropTypes.object,
     users: PropTypes.array,
     settings: PropTypes.object,
-    isReady: PropTypes.bool
+    isReady: PropTypes.any
 };
 
 export default withTracker(() => {

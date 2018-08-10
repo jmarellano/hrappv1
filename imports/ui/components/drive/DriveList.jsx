@@ -1,5 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { ROLES } from '../../../api/classes/Const';
 import PropTypes from 'prop-types';
 import Button from '../extras/Button';
 import Util from '../../../api/classes/Utilities';
@@ -159,7 +160,20 @@ class DriveList extends React.Component {
     }
     renderFiles() {
         return this.props.files.map((file, index) => {
-            if (!file)
+            if (
+                !file ||
+                Meteor.settings.public.oAuth.google.folders.filter((special) => {
+                    return special.id === file.id &&
+                        (
+                            this.props.user.role !== special.role &&
+                            (
+                                special.role === ROLES.ADMIN &&
+                                this.props.user.role !== ROLES.SUPERUSER
+                            )
+                        );
+                }).length ||
+                (Meteor.settings.public.oAuth.google.folders[1].id === this.props.parent[this.props.parent.length - 1] && file.id !== this.props.user.drive && (this.props.user.role !== ROLES.ADMIN && this.props.user.role !== ROLES.SUPERUSER))
+            )
                 return null;
             if (file.mimeType === 'application/vnd.google-apps.folder')
                 return (
@@ -171,7 +185,7 @@ class DriveList extends React.Component {
                         <td>N/A</td>
                         <td>
                             {
-                                !file.trashed && Meteor.settings.public.oAuth.google.Special !== file.id &&
+                                !file.trashed && !Meteor.settings.public.oAuth.google.folders.filter((special) => special.id === file.id).length &&
                                 <button
                                     className='btn btn-sm m-1 btn-danger'
                                     onClick={this.trash.bind(this, file)}>
@@ -179,7 +193,7 @@ class DriveList extends React.Component {
                                 </button>
                             }
                             {
-                                file.trashed && Meteor.settings.public.oAuth.google.Special !== file.id &&
+                                file.trashed && !Meteor.settings.public.oAuth.google.folders.filter((special) => special.id === file.id).length &&
                                 <Button
                                     className='btn btn-sm m-1 btn-danger'
                                     data={file}
@@ -191,7 +205,7 @@ class DriveList extends React.Component {
                                 <i className="fa fa-folder-open" /> Browse
                             </button>
                             {
-                                Meteor.settings.public.oAuth.google.Special !== file.id &&
+                                !Meteor.settings.public.oAuth.google.folders.filter((special) => special.id === file.id).length &&
                                 <ItemEllipsis index={index}>
                                     <a href="#" className='btn btn-sm m-1 btn-primary' onClick={this.rename.bind(this, file)}>
                                         <i className="fa fa-pencil" /> Rename

@@ -21,8 +21,9 @@ class Drive extends React.Component {
             DRIVE.IMAGES,
             DRIVE.VIDEOS
         ];
-        let folder = props.user.role === ROLES.ADMIN || props.user.role === ROLES.SUPERUSER ? Meteor.settings.public.oAuth.google.folder : props.user.drive;
+        let folder = Meteor.settings.public.oAuth.google.folders[0].id;
         this.state = {
+            underConstruction: !Meteor.settings.public.oAuth.google.folders,
             parent: [folder],
             parentName: ['root'],
             uploading: false,
@@ -100,22 +101,10 @@ class Drive extends React.Component {
         }
     }
     updateSigninStatus(isSignedIn) {
-        let drive = this.props.Drive;
         if (isSignedIn) {
             this.setState({ signin: false });
-            drive.setEmail(this.props.user);
-            let intervalCheck = () => {
-                this.setState({ processing: true });
-                drive.setDrive((err, res) => {
-                    if (res) {
-                        this.sync(this.props.user.drive);
-                        this.getToken();
-                        this.getFiles(null, true);
-                    } else
-                        intervalCheck();
-                });
-            }
-            intervalCheck();
+            this.getToken();
+            this.getFiles(null, true);
         } else
             this.setState({ signin: true });
     }
@@ -267,7 +256,7 @@ class Drive extends React.Component {
         let stateParent = this.state.parent;
         if (stateParent.indexOf(self.props.user.drive) > -1)
             parent = [stateParent[stateParent.length - 1]];
-        if (stateParent.indexOf(Meteor.settings.public.oAuth.google.Special) > -1)
+        if (Meteor.settings.public.oAuth.google.folders.filter((special, index) => { return (stateParent.indexOf(special.id) > -1) && index !== 0 }).length)
             parent = [stateParent[stateParent.length - 1]];
         self.setState({ uploading: true });
         if (e.currentTarget.files && e.currentTarget.files[0]) {
@@ -384,6 +373,13 @@ class Drive extends React.Component {
     }
 
     render() {
+        if (this.state.underConstruction)
+            return (
+                <div className="mt-4 text-center pull-left main">
+                    <h3 className="text-warning">Page Under Construction</h3>
+                    Content will be available soon
+                </div>
+            );
         return (
             <div id="drive" className="pull-left main">
                 {

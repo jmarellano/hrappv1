@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ValidCategories, CategoriesDB } from '../../../api/categories';
 import { PostPub, PostingDB, PostingSitesPub, PostingSitesDB } from '../../../api/settings';
-import { isPermitted, JOB_SITES, ROLES, COUNTRIES } from '../../../api/classes/Const';
+import { isPermitted, ROLES, COUNTRIES } from '../../../api/classes/Const';
 import { withTracker } from 'meteor/react-meteor-data';
 import ReactTooltip from 'react-tooltip';
 import CategoryClass from '../../../api/classes/Category';
@@ -449,8 +449,8 @@ class Record extends Component {
                                             Category</TableHeaderColumn>
                                         <TableHeaderColumn dataField='country' dataFormat={this.jobCountry}>Country</TableHeaderColumn>
                                         <TableHeaderColumn dataField='save' dataFormat={this.saveOneBtn}
-                                            width={90}>Save</TableHeaderColumn>
-                                        <TableHeaderColumn dataField='reset' width={90}
+                                            width={"90"}>Save</TableHeaderColumn>
+                                        <TableHeaderColumn dataField='reset' width={"90"}
                                             dataFormat={this.resetField}>Reset</TableHeaderColumn>
                                     </BootstrapTable>
                                     <button className="btn btn-xs btn-success btn-icon mt10 ml10"
@@ -486,17 +486,6 @@ class Record extends Component {
                                             <option value="">---Select---</option>
                                             {this.renderJobOptions()}
                                         </select>
-                                        { /*<Select */}
-                                        { /*TODO fix react-select to work here or find other packages*/}
-                                        { /*className="mb"*/}
-                                        { /*classNamePrefix="mb"*/}
-                                        { /*name="form-field-name"*/}
-                                        { /*value={this.state.site}*/}
-                                        { /*onChange={this.handleSiteChange}*/}
-                                        { /*options={JOB_SITES}*/}
-                                        { /*clearable={ false }*/}
-                                        { /*disabled={ this.state.processing }*/}
-                                        { /*/>*/}
                                     </div>
                                     <div className="mb-1">
                                         Link to Job Ad: <br />
