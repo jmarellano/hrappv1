@@ -52,7 +52,7 @@ class Drive extends React.Component {
             search: '',
             sortOrderBy: 0,
             sortOrder: 0,
-            signin: !props.user.google,
+            signin: false,
             sync: false,
             creatingFolder: false,
             selectedFile: null,
@@ -91,10 +91,12 @@ class Drive extends React.Component {
     }
     componentDidMount() {
         let drive = this.props.Drive;
-        drive.init(() => {
-            drive.auth.isSignedIn.listen(this.updateSigninStatus);
-            this.updateSigninStatus(drive.auth.isSignedIn.get());
-        });
+        this.getToken();
+        this.getFiles(null, true);
+        // drive.init(() => {
+        //     drive.auth.isSignedIn.listen(this.updateSigninStatus);
+        //     this.updateSigninStatus(drive.auth.isSignedIn.get());
+        // });
         if (this.props.Drive.drive_uploading) {
             this.props.Drive.setOnProgress(this.updateProgress);
             this.setState({ uploading: true, uploadProgress: this.props.Drive.drive_uploading });
@@ -492,11 +494,11 @@ class Drive extends React.Component {
                                             <ReactTooltip />
                                         </li>
                                     }
-                                    {!this.state.uploading &&
+                                    {/* {!this.state.uploading &&
                                         <li className="mr-2 mt-2 ml-3">
                                             <Button className="btn btn-danger" onClick={this.signOut}><i className="fa fa-google" /> Logout</Button>
                                         </li>
-                                    }
+                                    } */}
                                 </ul>
                             </div>
                         </div>
