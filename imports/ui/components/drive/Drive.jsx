@@ -74,6 +74,7 @@ class Drive extends React.Component {
         this.newFolder = this.newFolder.bind(this);
         this.selectFile = this.selectFile.bind(this);
         this.paste = this.paste.bind(this);
+        this.sync = this.sync.bind(this);
         this.styleSet = {
             overlay: {
                 zIndex: '8888',
@@ -90,23 +91,24 @@ class Drive extends React.Component {
         };
     }
     componentDidMount() {
-        let drive = this.props.Drive;
         this.getToken();
         this.getFiles(null, true);
-        // drive.init(() => {
-        //     drive.auth.isSignedIn.listen(this.updateSigninStatus);
-        //     this.updateSigninStatus(drive.auth.isSignedIn.get());
-        // });
         if (this.props.Drive.drive_uploading) {
             this.props.Drive.setOnProgress(this.updateProgress);
             this.setState({ uploading: true, uploadProgress: this.props.Drive.drive_uploading });
         }
     }
+    sync() {
+        let drive = this.props.Drive;
+        drive.init(() => {
+            drive.auth.isSignedIn.listen(this.updateSigninStatus);
+            this.updateSigninStatus(drive.auth.isSignedIn.get());
+        });
+    }
     updateSigninStatus(isSignedIn) {
         if (isSignedIn) {
             this.setState({ signin: false });
-            this.getToken();
-            this.getFiles(null, true);
+            this.syncFolder();
         } else
             this.setState({ signin: true });
     }
@@ -170,7 +172,7 @@ class Drive extends React.Component {
         this.props.Drive.getFiles(options, (err, result) => {
             let files = fileList.concat(result.files);
             if (this.state)
-                this.setState({ files, pageToken: result.nextPageToken || '' });
+                this.setState({ files, pageToken: result.pageToken || '' });
             this.setState({ processing: false });
             if (callback)
                 callback(files);
@@ -209,8 +211,10 @@ class Drive extends React.Component {
         let q = [];
         let mimetypes = ["mimeType contains 'application/vnd.google-apps.folder'"];
         let display = this.state.display;
-        if (display.indexOf(DRIVE.DOCUMENTS) > -1)
+        if (display.indexOf(DRIVE.DOCUMENTS) > -1) {
             mimetypes.push("mimeType contains 'document'");
+            mimetypes.push("mimeType contains 'msword'");
+        }
         if (display.indexOf(DRIVE.FILES) > -1) {
             mimetypes.push("mimeType contains 'stream'");
             mimetypes.push("mimeType contains 'file'");
@@ -218,6 +222,13 @@ class Drive extends React.Component {
             mimetypes.push("mimeType contains 'text'");
             mimetypes.push("mimeType contains 'xml'");
             mimetypes.push("mimeType contains 'html'");
+            mimetypes.push("mimeType contains 'zip'");
+            mimetypes.push("mimeType contains 'rar'");
+            mimetypes.push("mimeType contains 'tar'");
+            mimetypes.push("mimeType contains 'arj'");
+            mimetypes.push("mimeType contains 'cab'");
+            mimetypes.push("mimeType contains 'htm'");
+            mimetypes.push("mimeType contains 'default'");
         }
         if (display.indexOf(DRIVE.AUDIO) > -1)
             mimetypes.push("mimeType contains 'audio'");
@@ -225,8 +236,13 @@ class Drive extends React.Component {
             mimetypes.push("mimeType contains 'image'");
         if (display.indexOf(DRIVE.VIDEOS) > -1)
             mimetypes.push("mimeType contains 'video'");
-        if (display.indexOf(DRIVE.SHEETS) > -1)
+        if (display.indexOf(DRIVE.SHEETS) > -1) {
             mimetypes.push("mimeType contains 'spreadsheet'");
+            mimetypes.push("mimeType contains 'xls'");
+            mimetypes.push("mimeType contains 'xlsx'");
+            mimetypes.push("mimeType contains 'ods'");
+            mimetypes.push("mimeType contains 'csv'");
+        }
         if (display.indexOf(DRIVE.PDF) > -1)
             mimetypes.push("mimeType contains 'pdf'");
         if (display.indexOf(DRIVE.TRASHED) > -1)
@@ -351,17 +367,12 @@ class Drive extends React.Component {
     }
 
     goBack() {
-        //this.setState({
-        //    uploading: false,
-        //    uploadProgress: 0,
-        //});
-        //Meteor.logout();
-        this.props.history.replace(ROUTES.MESSAGES);
+        this.setState({ sync: false });
     }
 
-    sync(drive) {
+    syncFolder() {
         this.setState({ sync: true });
-        this.props.Drive.sync(drive, () => {
+        this.props.Drive.sync(() => {
             this.setState({ sync: false });
         });
     }
@@ -494,11 +505,11 @@ class Drive extends React.Component {
                                             <ReactTooltip />
                                         </li>
                                     }
-                                    {/* {!this.state.uploading &&
+                                    {!this.state.uploading && !this.state.sync &&
                                         <li className="mr-2 mt-2 ml-3">
-                                            <Button className="btn btn-danger" onClick={this.signOut}><i className="fa fa-google" /> Logout</Button>
+                                            <Button className="btn btn-warning" onClick={this.sync}><i className="fa fa-exchange" /> GDrive Sync</Button>
                                         </li>
-                                    } */}
+                                    }
                                 </ul>
                             </div>
                         </div>
@@ -554,9 +565,6 @@ class Drive extends React.Component {
                         <div className="panel-body p-2 text-center">
                             <button type="button" className="btn btn-success form-control mb-2" onClick={this.signIn}>
                                 <i className="fa fa-google" /> Sign in with Google
-                            </button>
-                            <button type="button" className="btn btn-primary form-control" onClick={this.goBack}>
-                                <i className="fa fa-arrow-left"></i> Go Home
                             </button>
                         </div>
                     </div>

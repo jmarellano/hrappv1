@@ -57,6 +57,7 @@ class Drive {
         };
         this.drive.files.list(query, function (err, res) {
             if (err) {
+                console.log(err);
                 throw new Meteor.Error(err);
             } else {
                 retval.files = res.data.files;
@@ -97,7 +98,7 @@ class Drive {
         });
         return myFuture.wait();
     }
-    copy(id, name, parent) {
+    copy(id, name, parent, properties) {
         this.getToken();
         let myFuture = server.createFuture();
         let options = {
@@ -112,6 +113,8 @@ class Drive {
                 'parents': parent
             }
         };
+        if (properties)
+            options.data.properties = properties
         HTTP.call('POST', 'https://www.googleapis.com/drive/v3/files/' + id + '/copy', options, function (err, res) {
             if (err && err !== null) {
                 console.error(err);

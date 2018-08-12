@@ -17,8 +17,14 @@ export const DriveCopyFile = 'drive_copy_file';
 export const DriveNewFolder = 'drive_new_folder';
 export const DrivePST = 'drive_pst';
 export const DriveRemovePermissions = 'drive_remove_permissions';
+export const DriveSync = 'drive_sync';
 
 if (Meteor.isServer) {
+    functions[DriveSync] = function (fileId, name) {
+        if (server.getDrive().getFiles({ q: `'${Meteor.user().profile.drive}' in parents and properties has { key='synced' and value='${fileId}' }` }).files.length > 0)
+            return { data: { id: 1 } };
+        return server.getDrive().copy(fileId, name, [Meteor.user().profile.drive], { synced: fileId });
+    }
     functions[DrivePST] = function (doc) {
         return server.getDrive().downloadPST(doc, this.userId, Meteor.users);
     }

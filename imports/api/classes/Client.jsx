@@ -16,7 +16,7 @@ import {
     UserMarkTask, UserAddTask,
     UserUpdateInbox
 } from '../users';
-import { DriveRemovePermissions, DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
+import { DriveSync, DriveRemovePermissions, DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
 import { CategoriesAdd, CategoriesRemove } from '../categories';
 import { MessagesAddSender, MessagesSend, MessageReSend, MessagesRemoveSender, MessagesRemove, MessagesRead, MessagesImport, MessagesSaveTemplate, MessagesGetTemplate, MessagesDeleteTemplate } from '../messages';
@@ -214,7 +214,7 @@ class Drive {
             picker.setVisible(true);
         }
     }
-    sync(drive, callback) {
+    sync(callback) {
         let pageToken = '';
         let syncFunc = () => {
             let options = {
@@ -223,7 +223,7 @@ class Drive {
                 'params': {
                     'fields': 'files, nextPageToken',
                     'q': `trashed=false and not appProperties has { key='synced' and value='true' }`,
-                    'pageSize': 1, //1000
+                    'pageSize': 1000, //1000
                     'pageToken': pageToken
                 }
             };
@@ -231,14 +231,16 @@ class Drive {
             request.execute((response) => {
                 pageToken = response.nextPageToken;
                 if (response.files) {
-                    let files = response.files.filter((file) => file.ownedByMe);
+                    let files = response.files.filter((file) => file.mimeType !== 'application/vnd.google-apps.folder');
                     if (files.length) {
                         let i = 0;
                         let interval = setInterval(() => {
                             if (i < files.length) {
                                 let file = files[i];
                                 i++;
-                                this.syncToMain(file.id, file.name, [drive]);
+                                this.syncToMain(file.id, file.name);
+                                if (i === files.length)
+                                    callback();
                             } else
                                 clearInterval(interval);
                         }, 1000);
@@ -251,72 +253,32 @@ class Drive {
                         else
                             callback();
                     }
-                }
-                callback();
+                } else
+                    callback();
             });
         };
         syncFunc();
     }
-    syncToMain(fileId, name, parents) {
+    syncToMain(fileId, name) {
         let reqOptions = {
             'method': 'POST',
-            'path': `/drive/v3/files/${fileId}/copy`,
+            'path': `/drive/v3/files/${fileId}/permissions`,
             'params': {
                 fileId
             },
             'body': {
-                name,
-                parents
+                role: 'writer',
+                type: 'user',
+                emailAddress: Meteor.settings.public.oAuth.google.acc
             }
         };
         let request = this.client.request(reqOptions);
         request.execute((res) => {
-            if (res.id) {
-                reqOptions = {
-                    'method': 'PATCH',
-                    'path': `/drive/v3/files/${fileId}`,
-                    'params': {
-                        fileId: fileId
-                    },
-                    'body': {
-                        appProperties: {
-                            synced: true
-                        }
-                    }
-                };
-                request = this.client.request(reqOptions);
-                request.execute(() => {
-                    Meteor.call(DriveCopyFile, res.id, res.name, parents, (err, result) => {
-                        if (!err) {
-                            reqOptions = {
-                                'method': 'DELETE',
-                                'path': `/drive/v3/files/${res.id}`,
-                                'params': {
-                                    fileId: res.id
-                                }
-                            };
-                            request = this.client.request(reqOptions);
-                            request.execute(() => {
-                                reqOptions = {
-                                    'method': 'PATCH',
-                                    'path': `/drive/v3/files/${result.data.id}`,
-                                    'params': {
-                                        fileId: result.data.id
-                                    },
-                                    'body': {
-                                        appProperties: {
-                                            synced: true
-                                        }
-                                    }
-                                };
-                                request = this.client.request(reqOptions);
-                                request.execute(() => {
-                                });
-                            });
-                        }
-                    });
+            if (res.id)
+                Meteor.call(DriveSync, fileId, name, (err, result) => {
+                    if (!result.data || !result.data.id)
+                        this.syncToMain(fileId, name);
                 });
-            }
         });
     }
     newFolder(parent, callback) {
