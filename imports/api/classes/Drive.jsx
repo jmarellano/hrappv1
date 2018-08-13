@@ -12,9 +12,9 @@ class Drive {
     init() {
         this.setJWT();
         // FOR REMOVE ALL FILES & RESET DRIVE 
-        this.getFiles().files.forEach((file) => {
-            this.deleteFile(file.id);
-        });
+        // this.getFiles().files.forEach((file) => {
+        //     this.deleteFile(file.id);
+        // });
     }
     setJWT() {
         this.jwt = new google.auth.JWT(
