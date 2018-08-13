@@ -656,11 +656,12 @@ if (Meteor.isServer) {
     };
     functions[MessagesICS] = function (data, attendees) {
         let future = server.createFuture();
+        let user = Meteor.user();
         server.getICS().createEvent({
             title: data.subject,
             description: data.text,
-            start: moment(data.startEvent).format('YYYY-MM-DD-HH-m').split('-'),
-            end: moment(data.endEvent).format('YYYY-MM-DD-HH-m').split('-'),
+            start: moment(data.startEvent).tz(user.profile.default_timezone).format('YYYY-MM-DD-HH-m').split('-'),
+            end: moment(data.endEvent).tz(user.profile.default_timezone).format('YYYY-MM-DD-HH-m').split('-'),
             location: data.locationEvent,
             organizer: { email: data.sender.user },
             attendees

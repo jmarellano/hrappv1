@@ -55,18 +55,18 @@ export default class SettingManager {
             result = {};
         switch (type) {
             case 0:
-                dayStart = moment().subtract(10, 'days').startOf('day');
-                dayEnd = moment().endOf('day');
+                dayStart = moment().tz('EST').subtract(10, 'days').startOf('day');
+                dayEnd = moment().tz('EST').endOf('day');
                 report = this.generateReport(dayStart, dayEnd, country);
                 break;
             case 1:
-                dayStart = moment().startOf('month');
-                dayEnd = moment().endOf('month');
+                dayStart = moment().tz('EST').startOf('month');
+                dayEnd = moment().tz('EST').endOf('month');
                 report = this.generateReport(dayStart, dayEnd, country);
                 break;
             case 2:
-                dayStart = moment().startOf('week');
-                dayEnd = moment().endOf('week');
+                dayStart = moment().tz('EST').startOf('week');
+                dayEnd = moment().tz('EST').endOf('week');
                 report = this.generateReport(dayStart, dayEnd, country);
                 break;
             case 3:
@@ -132,7 +132,7 @@ export default class SettingManager {
         let advData2 = [];
         let countDiff = dayEnd.diff(dayStart, 'days');
         for (let i = 0; i < (countDiff + 1); i++) {
-            let date = dayStart.format('MMM-DD-YYYY');
+            let date = dayStart.tz('EST').format('MMM-DD-YYYY');
             postLabel.push(date);
             postData.push({ date, ...positionsObj });
             newData.push({ date, ...positionsObj });
@@ -148,7 +148,7 @@ export default class SettingManager {
             quaData2.push({ date, ...positionsObj2 });
             hiredData2.push({ date, ...positionsObj2 });
             advData2.push({ date, 'METEOR_TEST': 0, 'LIVE_TEST': 0, 'GD_LIVE_TEST': 0 });
-            dayStart.add(1, 'days').format('MMM-DD-YYYY');
+            dayStart.tz('EST').add(1, 'days').format('MMM-DD-YYYY');
         }
         posts2.forEach((post) => {
             let category = positions[post.category._str];
@@ -166,35 +166,37 @@ export default class SettingManager {
         newApplicants2.forEach((applicant) => {
             let date = moment(applicant.createdAt).tz('EST').format('MMM-DD-YYYY');
             let index = newData.map(function (e) { return e.date; }).indexOf(date);
-            if (newData[index][applicant.category] > -1) {
-                newData[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
-                    preData[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.INT.toString())
-                    intData[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
-                    quaData[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
-                    hiredData[index][applicant.category]++;
-                if (applicant.TEST_METEOR)
-                    advData2[index]['METEOR_TEST']++;
-                if (applicant.TEST_LIVE) {
-                    if (applicant.category === 'Dev')
-                        advData2[index]['LIVE_TEST']++;
-                    else
-                        advData2[index]['GD_LIVE_TEST']++;
+            if (index > -1) {
+                if (newData[index][applicant.category] > -1) {
+                    newData[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
+                        preData[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.INT.toString())
+                        intData[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
+                        quaData[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
+                        hiredData[index][applicant.category]++;
+                    if (applicant.TEST_METEOR)
+                        advData2[index]['METEOR_TEST']++;
+                    if (applicant.TEST_LIVE) {
+                        if (applicant.category === 'Dev')
+                            advData2[index]['LIVE_TEST']++;
+                        else
+                            advData2[index]['GD_LIVE_TEST']++;
+                    }
+                } else {
+                    index = newData2.map(function (e) { return e.date; }).indexOf(date);
+                    newData2[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
+                        preData2[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.INT.toString())
+                        intData2[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
+                        quaData2[index][applicant.category]++;
+                    if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
+                        hiredData2[index][applicant.category]++;
                 }
-            } else {
-                index = newData2.map(function (e) { return e.date; }).indexOf(date);
-                newData2[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.PRE_QUALIFIED.toString())
-                    preData2[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.INT.toString())
-                    intData2[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.QUALIFIED.toString())
-                    quaData2[index][applicant.category]++;
-                if (applicant.status === CANDIDATE_STATUS.HIRED.toString())
-                    hiredData2[index][applicant.category]++;
             }
         });
         return [

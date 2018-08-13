@@ -171,6 +171,7 @@ class Drive extends React.Component {
             fileList = [];
         this.props.Drive.getFiles(options, (err, result) => {
             let files = fileList.concat(result.files);
+            console.log(files);
             if (this.state)
                 this.setState({ files, pageToken: result.pageToken || '' });
             this.setState({ processing: false });
