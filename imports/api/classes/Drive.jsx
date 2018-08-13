@@ -93,7 +93,7 @@ class Drive {
         };
         HTTP.call('DELETE', 'https://www.googleapis.com/drive/v3/files/' + id, options, function (err, res) {
             if (err && err !== null)
-                myFuture.throw(new Meteor.Error(err.message));
+                myFuture.return(new Meteor.Error(err.message));
             myFuture.return(res);
         });
         return myFuture.wait();
