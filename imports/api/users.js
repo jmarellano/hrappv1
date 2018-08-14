@@ -23,8 +23,19 @@ export const UsersRetire = 'users_retire';
 export const UsersRemove = 'users_remove';
 export const UpdateUserLogin = 'update_user_login';
 export const UserUpdateInbox = 'update_user_inbox';
+export const UsersChangePassword = 'update_user_password';
 
 if (Meteor.isServer) {
+    functions[UsersChangePassword] = function (data) {
+        try {
+            check(data, Object);
+            check(data.new, String);
+            check(data.id, String);
+            return Accounts.setPassword(data.id, data.new);
+        } catch (err) {
+            throw new Meteor.Error('bad', err.message);
+        }
+    };
     functions[UsersRegister] = function (data) {
         try {
             check(data, Object);

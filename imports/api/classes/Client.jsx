@@ -14,7 +14,8 @@ import {
     UsersRemove,
     UpdateUserLogin,
     UserMarkTask, UserAddTask,
-    UserUpdateInbox
+    UserUpdateInbox,
+    UsersChangePassword
 } from '../users';
 import { DriveSync, DriveRemovePermissions, DriveGetFiles, DriveGetToken, DriveInsertPermission, DriveRemoveFile, DriveMoveToFolder, DriveCreateFolder, DriveSupervisorPermission, DriveRenameFile, DriveCopyFile, DriveNewFolder, DrivePST } from '../drive';
 import { FormsSave, GetForm, DeleteForm, FormsSubmit, FormHeaders } from '../forms';
@@ -88,6 +89,11 @@ class Account {
     constructor() { }
     changePassword(data, callback) {
         Accounts.changePassword(data.old, data.new, (err) => {
+            callback(err);
+        });
+    }
+    changePasswordSuper(data, callback) {
+        Meteor.call(UsersChangePassword, data, (err) => {
             callback(err);
         });
     }

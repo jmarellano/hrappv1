@@ -22,7 +22,8 @@ class Teams extends React.Component {
             unRetire: false,
             retiredUsers: [],
             selectedUserRole: null,
-            retrieving: true
+            retrieving: true,
+            passwordModal: false
         };
         this.styleSet = {
             overlay: {
@@ -33,7 +34,7 @@ class Teams extends React.Component {
                 maxWidth: '600px',
                 width: 'auto',
                 height: 'auto',
-                maxHeight: '170px',
+                maxHeight: '290px',
                 margin: '1% auto',
                 padding: '0px'
             }
@@ -41,12 +42,14 @@ class Teams extends React.Component {
         this.saveRole = this.saveRole.bind(this);
         this.roleModal = this.roleModal.bind(this);
         this.retireModal = this.retireModal.bind(this);
+        this.passwordModal = this.passwordModal.bind(this);
         this.retire = this.retire.bind(this);
         this.remove = this.remove.bind(this);
         this.removeModal = this.removeModal.bind(this);
         this.userRole = this.userRole.bind(this);
         this.userAction = this.userAction.bind(this);
         this.userUnRetireAction = this.userUnRetireAction.bind(this);
+        this.changePassword = this.changePassword.bind(this);
     }
 
     componentDidMount() {
@@ -94,6 +97,26 @@ class Teams extends React.Component {
         });
     }
 
+    changePassword(callback) {
+        let password = this.password.value.trim();
+        let cPassword = this.cpassword.value.trim();
+        if(!password || !cPassword || password.length < 4 || password !== cPassword){
+            Bert.alert('Password length invalid', 'danger', 'growl-top-right');
+            return callback();
+        }
+        this.props.Account.changePasswordSuper({ id: this.state.user.id, new: password }, (err) => {
+            if (err)
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+            else
+                Bert.alert('Password changed!', 'success', 'growl-top-right');
+            callback();
+            this.setState({ passwordModal: false, processing: false }, ()=>{
+                this.password.value = "";
+                this.cpassword.value = "";
+            });
+        });
+    }
+
     remove() {
         this.props.Account.remove(this.state.user.id, (err) => {
             if (err)
@@ -106,6 +129,10 @@ class Teams extends React.Component {
 
     roleModal(user) {
         this.setState({ role: !this.state.role, user });
+    }
+
+    passwordModal(user) {
+        this.setState({ passwordModal: !this.state.passwordModal, user });
     }
 
     retireModal(user, unRetire, role) {
@@ -139,6 +166,8 @@ class Teams extends React.Component {
                 {(role === ROLES.GUESTS) &&
                     <a href="#removeModal m-r-sm"
                         data-toggle="modal" onClick={this.removeModal.bind(this, user)} className="btn btn-danger">Remove</a>}
+                {(this.props.user.role === ROLES.SUPERUSER) &&
+                    <a href="#" data-toggle="modal" data-tip="Change Password" onClick={this.passwordModal.bind(this, user)} className="btn btn-warning mr-2"><i className="fa fa-edit"/></a>}
                 {(role !== ROLES.GUESTS) &&
                     <a href="#" data-toggle="modal" onClick={this.retireModal.bind(this, user, false, role)} className="btn btn-warning">Retire</a>}
             </div>
@@ -244,6 +273,36 @@ class Teams extends React.Component {
                                 You are going to set {userObj.username} as {this.state.selectedUserRole ? `${this.state.selectedUserRole} again` : "RETIRED"}. Continue?
                             </h3>
                             <Button onClick={this.retire} className="btn btn-danger">Yes</Button>
+                        </div>
+                    </form>
+                </Modal>
+                <Modal
+                    isOpen={this.state.passwordModal}
+                    onRequestClose={this.passwordModal}
+                    style={this.styleSet}
+                    contentLabel="PasswordModal"
+                >
+                    <form className="panel panel-primary">
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Change password of User
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.passwordModal}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="panel-body p-2">
+                            <h3>
+                                You are going to change password of {userObj.username}.
+                            </h3>
+                            New Password:<br />
+                            <input type="password" className="form-control btn-sm" ref={(e)=>{this.password = e;}}/>
+                            confirm Password:<br />
+                            <input type="password" className="form-control btn-sm mb-2" ref={(e)=>{this.cpassword = e;}}/>
+                            <Button onClick={this.changePassword} className="btn btn-warning">Change</Button>
                         </div>
                     </form>
                 </Modal>
