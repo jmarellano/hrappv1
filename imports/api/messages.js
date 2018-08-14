@@ -349,6 +349,10 @@ if (Meteor.isServer) {
             check(id, String);
             let user = Meteor.user();
             if ((user && isPermitted(user.profile.role, ROLES.MANAGE_EMAILS)) || !user) {
+                let obj = server.removeSender(id, credit.user);
+                server.removeListener(id, credit);
+                if (obj.connection)
+                    obj.connection.quit();
                 let connection = new SMTPConnection({
                     port: credit.smtp_port,
                     host: credit.smtp_host,
@@ -364,12 +368,12 @@ if (Meteor.isServer) {
                         if (error) {
                             Meteor.users.update({
                                 _id: id,
-                                'profile.emails': credit
+                                'profile.emails.user': credit.user
                             }, { $set: { 'profile.emails.$.status': 'disconnected' } });
                         } else {
                             Meteor.users.update({
                                 _id: id,
-                                'profile.emails': credit
+                                'profile.emails.user': credit.user
                             }, { $set: { 'profile.emails.$.status': 'connected' } });
                             server.addSender(id, credit.user, connection);
                             functions[MessagesAddListener].call(this, credit, id);

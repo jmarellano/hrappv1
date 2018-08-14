@@ -125,7 +125,11 @@ if (Meteor.isServer) {
             check(user, Object);
             if (!isPermitted(Meteor.users.findOne({ _id: this.userId }).profile.role, ROLES.MANAGE_EMAILS))
                 throw new Meteor.Error(403, 'Not authorized');
-            return Meteor.users.update({ _id: userid }, { $push: { 'profile.emails': user } });
+            user.status = "pending";
+            let result = Meteor.users.update({ _id: userid, 'profile.emails.user': user.user}, { $set:{'profile.emails.$': user} });
+            if(!result)
+                return Meteor.users.update({_id: userid},{$push: {'profile.emails':user}});
+            return result;
         } catch (err) {
             console.error(err);
             throw new Meteor.Error('bad', err.message);

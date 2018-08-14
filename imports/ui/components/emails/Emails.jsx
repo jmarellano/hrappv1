@@ -11,6 +11,7 @@ class Emails extends Component {
         this.state = {
             create: false,
             remove: false,
+            change: false,
             first: props.location.pathname === ROUTES.FIRST,
             id: '',
             credit: {
@@ -47,7 +48,7 @@ class Emails extends Component {
                 maxWidth: '600px',
                 width: 'auto',
                 height: 'auto',
-                maxHeight: '210px',
+                maxHeight: '240px',
                 margin: '1% auto',
                 padding: '0px'
             }
@@ -55,8 +56,10 @@ class Emails extends Component {
         this.create = this.create.bind(this);
         this.close = this.close.bind(this);
         this.saveCredit = this.saveCredit.bind(this);
+        this.saveChange = this.saveChange.bind(this);
         this.removeCredit = this.removeCredit.bind(this);
         this.closeRemove = this.closeRemove.bind(this);
+        this.closeChange = this.closeChange.bind(this);
         this.firstClose = this.firstClose.bind(this);
         this.handleChangeInput = this.handleChangeInput.bind(this);
     }
@@ -98,6 +101,39 @@ class Emails extends Component {
                         Bert.alert(error.reason, 'danger', 'growl-top-right');
                     else {
                         Bert.alert('Account is added', 'success', 'growl-top-right');
+                        this.setState({
+                            create: false,
+                            change: false,
+                            credit: {
+                                user: '',
+                                index: 0,
+                                password: '',
+                                status: 'pending'
+                            }
+                        });
+                    }
+                    this.setState({ processing: false });
+                });
+        });
+    }
+
+    saveChange(e) {
+        e.preventDefault();
+        let email = Meteor.settings.public.emailAccounts[this.state.credit.index];
+        let credit = { ...email, ...this.state.credit };
+        let user = this.props.user;
+        let userId = (user.role === ROLES.ADMIN || user.role === ROLES.SUPERUSER) ? this.state.member : user.id;
+        this.setState({ processing: true });
+        this.props.Account.addEmail(credit, userId, (err) => {
+            if (err) {
+                Bert.alert(err.reason, 'danger', 'growl-top-right');
+                this.setState({ processing: false });
+            } else
+                this.props.Message.addSender({ credit, id: userId }, (error) => {
+                    if (error)
+                        Bert.alert(error.reason, 'danger', 'growl-top-right');
+                    else {
+                        Bert.alert('Account is added / updated', 'success', 'growl-top-right');
                         this.setState({
                             create: false,
                             credit: {
@@ -170,6 +206,10 @@ class Emails extends Component {
         this.setState({ remove: false });
     }
 
+    closeChange() {
+        this.setState({ change: false });
+    }
+
     firstClose() {
         this.setState({ first: false });
     }
@@ -184,6 +224,10 @@ class Emails extends Component {
 
     setRemove(account) {
         this.setState({ credit: account, remove: true })
+    }
+
+    setChange(account) {
+        this.setState({ credit: account, change: true })
     }
 
     render() {
@@ -254,6 +298,7 @@ class Emails extends Component {
                                                             Default
                                                         </button>
                                                     }
+                                                    <button className="btn btn-warning mr-1" onClick={this.setChange.bind(this, account)}>Edit</button>
                                                     <button className="btn btn-danger mr-1" onClick={this.setRemove.bind(this, account)}>Remove</button>
                                                 </div>
                                             </td>
@@ -347,6 +392,56 @@ class Emails extends Component {
                                 You are going to remove an account. Continue?
                             </h3>
                             <Button type="submit" className="btn btn-danger" processing={this.state.processing}>Yes</Button>
+                        </div>
+                    </form>
+                </Modal>
+                <Modal
+                    isOpen={this.state.change}
+                    onRequestClose={this.closeChange}
+                    style={this.styleSetSmall}
+                    contentLabel="ChangeModal"
+                >
+                    <form className="panel panel-primary" onSubmit={this.saveChange}>
+                        <div className="panel-heading bg-secondary text-white p-2">
+                            <div className="panel-title">
+                                Change password of linked email account
+                                <span className="pull-right">
+                                    <a href="#" className="close-modal"
+                                        onClick={this.closeChange}>
+                                        <i className="fa fa-remove" />
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="panel-body p-2">
+                            <input
+                                className="mb-2 form-control"
+                                type="text"
+                                value={credit.user}
+                                name="user"
+                                placeholder="User"
+                                onChange={this.changeCredit.bind(this, "user")}
+                                required
+                            />
+                            <input
+                                className="mb-2 form-control"
+                                type="password"
+                                value={credit.password}
+                                name="password"
+                                placeholder="Password"
+                                onChange={this.changeCredit.bind(this, "password")}
+                                required
+                            />
+                            <select
+                                className="mb-2 form-control"
+                                name="index"
+                                value={credit.index}
+                                onChange={this.changeCredit.bind(this, "index")}
+                                required
+                            >
+                                {this.renderAccount()}
+                            </select>
+                            <Button type="submit" className="btn btn-warning" processing={this.state.processing}>Change</Button>
                         </div>
                     </form>
                 </Modal>
