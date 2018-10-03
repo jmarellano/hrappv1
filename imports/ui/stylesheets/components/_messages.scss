@@ -1,48 +1,65 @@
-#messages .form-control{
-    border-radius: 0px !important;
+.selected-candidate {
+  background-color: rgb(166, 197, 255) !important;
+}
+.selected-candidate::before {
+  background-color: rgb(166, 197, 255) !important;
+  content: '\00a0';
+  display: block;
+  height: 16px;
+  width: 16px;
+  position: absolute;
+  right: 7px;
+  transform: rotate(47deg) skew(5deg);
+  -moz-transform: rotate(47deg) skew(5deg);
+  -ms-transform: rotate(47deg) skew(5deg);
+  -o-transform: rotate(47deg) skew(5deg);
+  -webkit-transform: rotate(47deg) skew(5deg);
+}
+#messages .form-control {
+  border-radius: 0px !important;
 }
 
-#messages .dropdown-multi{
-    border: 0 !important;
+#messages .dropdown-multi {
+  border: 0 !important;
 }
 
-#candidates-list{
-    height: calc(100vh - 190px);
-    overflow-y: scroll;
-    overflow-x: none;
+#candidates-list {
+  height: calc(100vh - 190px);
+  overflow-y: scroll;
+  overflow-x: none;
 }
 
-#candidates-list .list-item{
-    border-bottom: 1px solid lighten($secondary, 20%) !important;
-    transition: all 0.5s ease;
+#candidates-list .list-item {
+  border-bottom: 1px solid lighten($secondary, 20%) !important;
+  transition: all 0.5s ease;
 }
 
-#candidates-list .list-item:hover{
-    background-color: darken($light, 10%);
-    transition: all 0.5s ease;
-    cursor:pointer;
+#candidates-list .list-item:hover {
+  background-color: darken($light, 10%);
+  transition: all 0.5s ease;
+  cursor: pointer;
 }
 
-.open-reply{
-    height: calc(100vh - 648px); 
-    overflow-y: scroll;
-    overflow-x: none;
+.open-reply {
+  height: calc(100vh - 648px);
+  overflow-y: scroll;
+  overflow-x: none;
 }
 
-.close-reply{
-    height: calc(100vh - 248px); 
-    overflow-y: scroll;
-    overflow-x: none;
+.close-reply {
+  height: calc(100vh - 248px);
+  overflow-y: scroll;
+  overflow-x: none;
 }
 
-.card-header{
-    cursor: pointer;
+.card-header {
+  cursor: pointer;
 }
 
-iframe{
-    min-height: 100px;
+iframe {
+  min-height: 100px;
 }
 
-#stat-file{
-    width:150px;
+#stat-file {
+  width: 150px;
 }
