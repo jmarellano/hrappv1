@@ -89,7 +89,7 @@ class DropdownSelect extends React.Component {
         >
           <input type="checkbox" checked={checked} readOnly />{' '}
           {option.element || option.label}{' '}
-          <small className="pull-right">({group.label}) </small>
+          <small className="pull-right ml-1 mr-1"> ({group.label}) </small>
         </a>
       );
     });

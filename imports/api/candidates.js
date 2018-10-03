@@ -92,27 +92,6 @@ if (Meteor.isServer) {
     try {
       check(this.userId, String);
       check(data, Object);
-      if (
-        CandidatesDB.findOne({
-          $or: [
-            {
-              name: data.name,
-              contact: {
-                $regex: '^((?!' + data.contact + ').)*$',
-                $options: 'i'
-              }
-            },
-            {
-              email: data.email,
-              contact: {
-                $regex: '^((?!' + data.contact + ').)*$',
-                $options: 'i'
-              }
-            }
-          ]
-        })
-      )
-        throw new Meteor.Error('BAD', 'Duplicate contact');
       return CandidateManager.updateCandidateInfo(
         data.contact,
         data,
