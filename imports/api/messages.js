@@ -584,6 +584,7 @@ if (Meteor.isServer) {
                     },
                     { $set: { 'profile.emails.$.status': 'disconnected' } }
                   );
+                  console.error(`Connection for ${credit.user}: ${error}`);
                 } else {
                   Meteor.users.update(
                     {
