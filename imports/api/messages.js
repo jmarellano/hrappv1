@@ -174,9 +174,13 @@ if (Meteor.isServer) {
                     'UNSEEN',
                     [
                       'SINCE',
-                      moment()
-                        .utc()
-                        .format('MMMM DD, YYYY')
+                      credit.lastDateRetrieved
+                        ? moment(credit.lastDateRetrieved).format(
+                            'MMMM DD, YYYY'
+                          )
+                        : moment()
+                            .utc()
+                            .format('MMMM DD, YYYY')
                     ]
                   ],
                   Meteor.bindEnvironment((error, results) => {
