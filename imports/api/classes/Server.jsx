@@ -125,9 +125,15 @@ export default class Server {
           if (user.profile.emails)
             user.profile.emails.forEach((credit, index) => {
               if (credit.status === 'connected') {
-                let set = {};
-                set['emails.' + index + '.lastDateRetrieved'] = time;
-                Meteor.users.update({ _id: user._id }, { $set: set });
+                Meteor.users.update(
+                  {
+                    _id: user._id,
+                    'profile.emails.user': credit.user,
+                    'profile.emails.status': 'connected'
+                  },
+                  { $set: { 'profile.emails.$.lastDateRetrieved': time } },
+                  { multi: true }
+                );
               }
             });
         });
